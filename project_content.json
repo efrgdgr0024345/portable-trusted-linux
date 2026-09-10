@@ -1,0 +1,95 @@
+{
+  "title": "Portable Trusted Linux",
+  "version": "0.2",
+  "phase": "Architecture / Pre-Prototype",
+  "progress": 35,
+  "updated": "2026-09-10",
+  "summary": "Portable Trusted Linux is a portable security environment designed to boot independently of an installed operating system, verify its own trusted components, collect hardware-backed boot evidence where available, run with minimal persistence, and preserve independently verifiable records of each security assessment.",
+  "sections": [
+    {
+      "title": "Project objective",
+      "content": "The project begins with a simple problem: if the operating system already installed on a computer may be compromised, asking that operating system whether the computer is safe creates a circular trust problem.\n\nPortable Trusted Linux therefore aims to boot directly from independently verified USB media without relying on the installed Windows or Linux system. The system then builds confidence in stages rather than presenting a simplistic SAFE or UNSAFE answer.\n\nThe central design rule is that every conclusion must state exactly what was verified, how it was verified, what trust anchor was used, and what remains unknown or outside the available trust model."
+    },
+    {
+      "title": "Trust model",
+      "content": "The proposed runtime trust chain is: trusted signing key -> authenticated USB image -> UEFI / Secure Boot -> measured boot -> TPM PCR evidence -> signed Unified Kernel Image -> Linux kernel and initrd -> authenticated dm-verity root hash -> immutable Linux root filesystem -> disposable RAM-backed working session -> TPM Quote -> independent attestation report verification.\n\nNo individual stage is treated as proof that the entire computer is safe. Secure Boot answers whether boot software was authorised under a configured policy. Measured Boot records cryptographic evidence about boot events. dm-verity protects a read-only filesystem relative to an authenticated root hash. TPM attestation allows another verifier to evaluate signed platform measurements."
+    },
+    {
+      "title": "Cryptographic image verification",
+      "content": "Cryptographic hashes such as SHA-256 are used as precise digital fingerprints. If the bytes of the USB image change, the resulting hash changes. A matching SHA-256 therefore gives very strong evidence that accessible data matches a known reference.\n\nA hash by itself does not establish authenticity. An attacker could distribute both malicious data and a matching hash. For that reason the reference hash or release metadata must ultimately be authenticated using a digital signature or another independently trusted source.\n\nAfter writing the Linux image to USB, the project plans to read the media back and calculate its digest again. This checks that the accessible USB storage actually matches the authenticated image rather than merely assuming that the write operation succeeded."
+    },
+    {
+      "title": "Boot security",
+      "content": "Modern PCs generally begin execution in UEFI firmware before Windows or Linux starts. Secure Boot provides a mechanism for checking whether boot components are signed by authorised keys.\n\nThe prototype is expected to use a signed Unified Kernel Image (UKI), which can package the Linux kernel, initrd and important boot information into a single signed PE executable.\n\nSecure Boot and Measured Boot are intentionally treated as separate controls. Secure Boot is an execution policy. Measured Boot records evidence about what was loaded or executed. The strongest design uses both where the target hardware supports them."
+    },
+    {
+      "title": "TPM, PCRs and attestation",
+      "content": "A Trusted Platform Module (TPM) is a hardware-backed security component available on many modern computers. Platform Configuration Registers (PCRs) can accumulate cryptographic measurements during the boot sequence.\n\nThe associated TCG event log records information describing measured events so a verifier can understand how PCR states were formed.\n\nA TPM Quote is a signed statement covering selected PCR values, normally combined with a fresh verifier challenge called a nonce. The nonce helps prevent an attacker from simply replaying a previously valid security report.\n\nThe target machine is treated as the Attester. A separate trusted system or process is the Verifier. Portable Trusted Linux will avoid letting the target PC simply certify itself as safe."
+    },
+    {
+      "title": "Immutable Linux and dm-verity",
+      "content": "The trusted Linux root filesystem should be immutable during normal operation. Linux dm-verity provides read-only block-integrity verification using a cryptographic Merkle tree. A trusted root hash represents the expected tree. If a protected block is modified, verification no longer leads to the authenticated root value.\n\nTemporary writable state can be placed in a RAM-backed overlay. This allows applications and users to operate normally while keeping the trusted base read-only. At shutdown the temporary session disappears unless information is deliberately exported to approved persistent storage."
+    },
+    {
+      "title": "Hardware and firmware limits",
+      "content": "The project must clearly distinguish software integrity from hardware trust. A matching USB image hash does not prove that the USB controller firmware itself is trustworthy. A valid TPM does not automatically prove that UEFI, CPU firmware, option ROMs, network adapters or other hardware are uncompromised.\n\nWhere reference firmware measurements are available, deviations may be detectable. On arbitrary hardware, however, some components will remain UNKNOWN or NOT VERIFIABLE. These states are intended to be first-class results rather than hidden failures."
+    },
+    {
+      "title": "Independent multi-PC corroboration",
+      "content": "The same USB may be used on multiple independent computers. Each host can produce its own attestation record containing the common USB image identity together with machine-specific TPM, firmware and boot evidence.\n\nA separate verifier can compare these reports. Agreement across independent hosts can provide useful corroborating evidence, especially about the stable identity of the USB image, while differences can highlight machine-specific boot or firmware conditions.\n\nThis is described as independent corroboration rather than proof by multiple PCs. Several machines agreeing does not mathematically prove that every machine is trustworthy."
+    },
+    {
+      "title": "External Evidence Anchoring",
+      "content": "Version 0.2 adds a second security problem: preserving the history of attestation evidence after it has been created. A valid report today should not be silently editable six months later without detection.\n\nThe proposed process is: create a canonical attestation report -> calculate SHA-256 of the exact report -> digitally sign the report or its commitment -> include the previous report hash -> maintain a local hash chain -> publish a cryptographic commitment to an independent external system.\n\nThe full report should normally remain private because it may contain machine identifiers, firmware information, TPM details and other sensitive metadata. Only a cryptographic commitment such as the report hash needs to be externally anchored."
+    },
+    {
+      "title": "Transparency logs and blockchain",
+      "content": "A public blockchain can be useful as an optional external timestamp or commitment layer. Its role is to make retrospective rewriting of report history significantly harder by establishing that a particular report fingerprint existed at or before a point in the public ledger's history.\n\nBlockchain does not prove that the original report was true. If false evidence is recorded, an immutable ledger can preserve the false report just as effectively as a correct one. Truth must come from the earlier trust chain: authenticated software, measured boot, TPM evidence, reference profiles and independent verification.\n\nA cryptographic transparency log may be an even better primary fit because the project's goal is auditable security evidence rather than financial transactions. The architecture therefore uses the neutral term External Evidence Anchoring and leaves room for transparency logs, public blockchains or independent organisational witnesses as interchangeable backends."
+    },
+    {
+      "title": "Offline-first verification",
+      "content": "The initial trust assessment should not require Internet connectivity. Networking increases attack surface and should not be activated merely so that a report can immediately reach a blockchain or transparency service.\n\nThe preferred workflow is: boot offline -> verify the USB and operating system -> collect TPM and event-log evidence -> create the report -> calculate and sign its hash -> store a pending external commitment -> later enable approved networking -> publish the commitment.\n\nThis keeps the verification process independent from the external evidence service and avoids making network availability part of the trusted boot path."
+    },
+    {
+      "title": "Current prototype direction",
+      "content": "The first engineering prototype will remain deliberately small. The current direction is Debian Live + systemd/UKI + UEFI Secure Boot + TPM 2.0 measurements + dm-verity + RAM-backed disposable state + a structured attestation report + an independent command-line verifier.\n\nThe project will not initially create a custom kernel, bootloader, TPM implementation, encryption algorithm or filesystem-integrity algorithm. Existing mature components should be reused wherever possible.\n\nExternal Evidence Anchoring will be designed into the report format now, but public transparency or blockchain publication should come only after the local trust chain and independent verifier work correctly."
+    }
+  ],
+  "milestones": [
+    {"id":"M01","title":"Research existing secure Linux, measured-boot and attestation technologies","status":"complete"},
+    {"id":"M02","title":"Define the trust model and limits of what can be proven","status":"complete"},
+    {"id":"M03","title":"Produce Trust Chain & Threat Model v0.1","status":"complete"},
+    {"id":"M04","title":"Create plain-English project explainer","status":"complete"},
+    {"id":"M05","title":"Create beginner-to-technical learning bridge","status":"complete"},
+    {"id":"M06","title":"Add External Evidence Anchoring architecture","status":"complete"},
+    {"id":"M07","title":"Create Prototype Build Specification","status":"current"},
+    {"id":"M08","title":"Build reproducible Debian Live reference image","status":"planned"},
+    {"id":"M09","title":"Implement signed UKI and Secure Boot path","status":"planned"},
+    {"id":"M10","title":"Capture TPM PCRs and TCG event log","status":"planned"},
+    {"id":"M11","title":"Implement dm-verity protected root filesystem","status":"planned"},
+    {"id":"M12","title":"Implement RAM-backed disposable runtime","status":"planned"},
+    {"id":"M13","title":"Generate nonce-bound TPM Quote and attestation bundle","status":"planned"},
+    {"id":"M14","title":"Build independent attestation verifier","status":"planned"},
+    {"id":"M15","title":"Implement canonical report hashing and local hash chain","status":"planned"},
+    {"id":"M16","title":"Integrate transparency-log anchoring","status":"planned"},
+    {"id":"M17","title":"Evaluate optional blockchain anchoring","status":"planned"},
+    {"id":"M18","title":"Perform multi-PC independent corroboration tests","status":"planned"},
+    {"id":"M19","title":"Security review and adversarial testing","status":"planned"},
+    {"id":"M20","title":"Publish first usable prototype","status":"planned"}
+  ],
+  "decisions": [
+    {"date":"2026-09-08","title":"Do not build a new Linux distribution from scratch","text":"Use mature Linux and platform security components and focus custom engineering on verification, evidence and orchestration."},
+    {"date":"2026-09-08","title":"Debian Live selected as the initial base","text":"The first prototype will use Debian Live rather than a custom kernel or operating-system stack."},
+    {"date":"2026-09-08","title":"Separate Secure Boot from Measured Boot","text":"Secure Boot controls authorised execution while Measured Boot records evidence. The architecture may use both rather than treating them as interchangeable."},
+    {"date":"2026-09-08","title":"TPM evidence requires independent verification","text":"The target machine will not be allowed to turn TPM presence into a self-issued SAFE result. TPM Quotes, PCRs and event logs must be evaluated by a verifier."},
+    {"date":"2026-09-08","title":"Unknown and Not Verifiable are valid security states","text":"The user interface must state uncertainty explicitly rather than hiding unsupported hardware or firmware claims."},
+    {"date":"2026-09-10","title":"Add External Evidence Anchoring","text":"Attestation reports will be designed for canonical hashing, signatures, report-to-report hash linking and later independent publication of cryptographic commitments."},
+    {"date":"2026-09-10","title":"Do not publish full attestation reports to a blockchain","text":"If public evidence anchoring is used, publish a cryptographic commitment such as SHA-256 of the report rather than machine-identifying report contents."},
+    {"date":"2026-09-10","title":"Transparency log first, blockchain optional","text":"Use the neutral External Evidence Anchoring abstraction. A purpose-built transparency log is the preferred initial public evidence backend; blockchain can be an optional additional anchor."},
+    {"date":"2026-09-10","title":"Verification remains offline-first","text":"External evidence publication must not become a dependency of trusted boot or initial assessment. Reports can be anchored later after approved networking is enabled."}
+  ],
+  "changelog": [
+    {"date":"2026-09-08","version":"0.1","summary":"Initial Trust Chain & Threat Model: verified USB, Secure Boot, TPM measured boot, dm-verity, disposable RAM operation and independent verification."},
+    {"date":"2026-09-10","version":"0.2","summary":"Added External Evidence Anchoring, report hashing, report hash chains, transparency-log architecture, optional blockchain anchoring, privacy constraints and offline-first publication."}
+  ]
+}
