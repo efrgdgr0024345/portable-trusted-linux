@@ -19,7 +19,10 @@ jobs:
     runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 60
     env:
-      PTL_BUILD_WORK_DIR: /tmp/ptl-live-build-${{ github.run_id }}-${{ github.run_attempt }}
+      # debootstrap must create device nodes in its target. On Debian 13/trixie
+      # this builder mounts /tmp as nodev tmpfs, so use /var/tmp on the root
+      # ext4 filesystem instead.
+      PTL_BUILD_WORK_DIR: /var/tmp/ptl-live-build-${{ github.run_id }}-${{ github.run_attempt }}
 
     steps:
       - name: Checkout repository
