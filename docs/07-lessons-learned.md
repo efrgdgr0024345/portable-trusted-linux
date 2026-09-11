@@ -286,3 +286,98 @@ The preparation script now uses the stable `work/live-build` directory and runs 
 
 ### Evidence classification
 **VERIFIED SOURCE DEFECT / FIXED BEFORE EXECUTION.** The privilege design is transitional and not equivalent to the final security architecture.
+
+---
+
+## 2026-09-11 — systemd-boot inside the live chroot blocked the first ISO attempt
+
+### What was attempted
+Build the first complete Debian Live hybrid ISO on `ptl-builder-01`.
+
+### What happened
+The build reached deep into live-image construction but failed when the full `systemd-boot` integration package ran package/ESP-related trigger logic inside the live-build chroot. A normal ESP is not present in that build context. Removing `systemd-boot` from the live root package seed while retaining the required EFI/UKI tooling resolved the blocker.
+
+### Why it matters
+A package that is appropriate for an installed UEFI host is not automatically appropriate inside a live-image chroot. Boot-manager integration and UKI tooling must be separated rather than assuming they belong in the same package seed.
+
+### Decision / change
+Do not seed the full `systemd-boot` integration package into the live root. Stage only the boot components actually required by the selected boot architecture.
+
+### Evidence classification
+**OBSERVED / FIXED.** The failed build and subsequent successful builds establish the practical cause/effect for this builder configuration.
+
+---
+
+## 2026-09-11 — A successful build is not enough unless source identity is unambiguous
+
+### What was attempted
+Generate the first successful ISO and record its provenance from GitHub Actions.
+
+### What happened
+The first success exposed a provenance ambiguity: pull-request checkout can place Actions on a temporary merge commit, while the intended source identity is the PR head commit. Recording only `git rev-parse HEAD` could therefore describe the checkout identity rather than the intended source identity.
+
+### Why it matters
+A manifest can be internally consistent yet still be ambiguous about which source revision was intended. That weakens later reproducibility and audit work.
+
+### Decision / change
+The workflow passes explicit source commit/ref information to the manifest, and the manifest separately records intended source identity and checked-out identity.
+
+### Evidence classification
+**VERIFIED / FIXED.** Successful run `34578438852` used explicit source identity `19deceb045a68112923dbd809e29e327d0736d32` and completed the build-and-fingerprint workflow successfully.
+
+---
+
+## 2026-09-12 — The first generated live image physically booted from USB
+
+### What was attempted
+Move from build-only evidence to the first real-hardware boot test.
+
+### What happened
+The generated `live-image-amd64.hybrid.iso` was written to USB using the imaging tool's raw/DD mode rather than file-extraction mode. The target PC then successfully booted the live image from the USB device.
+
+### Why it matters
+This crosses an important engineering boundary: the project is no longer only producing an ISO in CI; the artifact is bootable on at least one real hardware configuration. It also confirmed that raw/DD imaging is the appropriate early test path when we want to preserve the hybrid image rather than let the writer substitute/reconstruct bootloader files.
+
+### Decision / change
+Record the result strictly as **OBSERVED bootability on the tested machine**. Do not infer Secure Boot enforcement, TPM measurement, dm-verity integrity, release authenticity, firmware cleanliness or USB-controller integrity from this boot alone.
+
+### Evidence classification
+**OBSERVED.** Operator confirmed successful boot from the generated USB image. Cryptographic/hardware trust gates remain separate and pending.
+
+---
+
+## 2026-09-12 — Real-hardware testing must not depend on long commands typed by the operator
+
+### What was attempted
+Collect UEFI, Secure Boot, TPM and other runtime observations from the first physical boot.
+
+### What happened
+Long diagnostic command blocks were impractical to transfer into an offline live environment. A photo of the screen is easy to return, but manually entering multi-line shell logic is not.
+
+### Why it matters
+A technically correct diagnostic flow that is awkward to operate will create transcription errors and slow multi-machine testing. This becomes especially important when Black Cat is tested on arbitrary computers with networking intentionally disabled.
+
+### Decision / change
+The image now includes a modular `/usr/local/bin/blackcat-check` diagnostic and a **Black Cat - System Check (no typing)** boot entry. The menu adds `blackcat.check=1`; the live session detects the flag, runs the check automatically, and presents a photograph-friendly result. The initial result remains `OBSERVED` unless a separate verifier establishes stronger evidence.
+
+### Evidence classification
+**IMPLEMENTED IN SOURCE / BUILD TEST PENDING.** The new menu and diagnostic are committed; the rebuilt ISO still needs CI validation and physical menu testing.
+
+---
+
+## 2026-09-12 — Black Cat is branding, not a protocol rename
+
+### What was attempted
+Give the project a clearer user-facing identity without destabilising working engineering infrastructure.
+
+### What happened
+The user-facing name changed from Portable Trusted Linux to **Black Cat**, while the repository name, `PTL_` variables, workflow names and existing evidence identifiers remain stable.
+
+### Why it matters
+Renaming every internal identifier during active prototype engineering would create needless risk and noisy diffs while providing no security benefit. Brand and protocol identity can be separated cleanly.
+
+### Decision / change
+Use Black Cat in user-facing boot menus, documentation and status output. Retain PTL internally until a later deliberate migration is justified.
+
+### Evidence classification
+**IMPLEMENTED DESIGN / BRANDING DECISION.**
