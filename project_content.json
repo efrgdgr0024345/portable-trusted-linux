@@ -1,219 +1,83 @@
 {
   "title": "Portable Trusted Linux",
-  "version": "0.5",
+  "version": "0.6",
   "phase": "Prototype 1 Engineering",
-  "progress": 52,
+  "progress": 53,
   "updated": "2026-09-11",
-  "summary": "Portable Trusted Linux is a portable security environment designed to boot independently of an installed operating system, authenticate its own trusted components, collect hardware-backed boot evidence where available, run with minimal persistence, produce independently verifiable attestation records, and preserve the history of those records through cryptographic evidence anchoring. Prototype 1 is now moving from architecture into a staged Debian 13/trixie build pipeline.",
+  "summary": "Portable Trusted Linux is now focused exclusively on completing Prototype 1: a Debian 13/trixie portable environment with authenticated boot artifacts, TPM measured-boot evidence, dm-verity protected root integrity, disposable writable state, structured attestation and an independent verifier. Community Compute Commons research is preserved but paused until the core trust-chain acceptance gates pass.",
   "documents": [
-    {
-      "type": "Project rules",
-      "title": "Mandatory Project Rules",
-      "description": "Hardcoded development rules, including the requirement to record lessons learned on every meaningful engineering session and to update project_content.json last.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/PROJECT_RULES.md"
-    },
-    {
-      "type": "Project index",
-      "title": "Repository README",
-      "description": "High-level repository guide, project structure, runtime trust chain and evidence-history chain.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/README.md"
-    },
-    {
-      "type": "Overview",
-      "title": "Project Overview",
-      "description": "Plain-language explanation of the problem, project goal, assurance levels and limits of what the system can claim.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/01-project-overview.md"
-    },
-    {
-      "type": "Learning guide",
-      "title": "Beginner-to-Technical Learning Bridge",
-      "description": "Explains SHA-256, signatures, UEFI, Secure Boot, UKI, TPM, PCRs, attestation, dm-verity, RAM overlays, trust anchors and evidence history.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/02-learning-bridge.md"
-    },
-    {
-      "type": "Threat model",
-      "title": "Trust Chain & Threat Model v0.1",
-      "description": "Formal trust boundaries, threat coverage, attestation fields, assurance levels, forbidden claims and prototype acceptance gates.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/03-trust-chain-threat-model-v0.1.md"
-    },
-    {
-      "type": "PDF",
-      "title": "Original Trust Chain & Threat Model PDF v0.1",
-      "description": "Original technical PDF retained as a historical project artifact.",
-      "url": "https://easyai.com.au/USB/Portable_Trusted_Linux_Trust_Chain_Threat_Model_v0.1.pdf"
-    },
-    {
-      "type": "Architecture",
-      "title": "External Evidence Anchoring",
-      "description": "Design for canonical report hashing, signatures, local hash chains, transparency logs, privacy protection and optional blockchain anchoring.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/04-external-evidence-anchoring.md"
-    },
-    {
-      "type": "Decision record",
-      "title": "Architecture Decision Register",
-      "description": "Durable architecture decisions, including Debian baseline, payload/envelope report design, build provenance and USB safety boundaries.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/05-architecture-decisions.md"
-    },
-    {
-      "type": "Build specification",
-      "title": "Prototype Build Specification v0.1",
-      "description": "Implementation specification for Debian Live, signed UKI, TPM evidence, dm-verity, RAM runtime, attestation reports, verifier behavior and negative tests.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/06-prototype-build-specification-v0.1.md"
-    },
-    {
-      "type": "Engineering record",
-      "title": "Lessons Learned Register",
-      "description": "Mandatory running record of experiments, failures, research findings, assumptions, design corrections and resulting implementation changes.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/07-lessons-learned.md"
-    },
-    {
-      "type": "Build guide",
-      "title": "Prototype 1 Build Scaffold",
-      "description": "Current safe build sequence and safety boundaries for producing the first Debian Live artifact.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/README.md"
-    },
-    {
-      "type": "Build script",
-      "title": "Host Preflight",
-      "description": "Checks architecture, Debian release, required commands and package/version evidence before a build is attempted.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/00-host-check.sh"
-    },
-    {
-      "type": "Build script",
-      "title": "Dependency Installer",
-      "description": "Installs the Debian 13/trixie packaged toolchain required for the first prototype stages.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/01-install-deps.sh"
-    },
-    {
-      "type": "Build script",
-      "title": "Prepare Live Build",
-      "description": "Creates the controlled Debian Live build workspace and initial live-build configuration.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/10-prepare-live-build.sh"
-    },
-    {
-      "type": "Build script",
-      "title": "Build Debian Live Artifact",
-      "description": "Runs the first Debian Live build and records the generated image SHA-256.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/20-build-live.sh"
-    },
-    {
-      "type": "Build script",
-      "title": "Artifact Manifest Generator",
-      "description": "Records image digest, size, Git commit, builder identity and selected package versions as build provenance evidence.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/30-artifact-manifest.sh"
-    },
-    {
-      "type": "Test",
-      "title": "Static Project Checks",
-      "description": "Checks required repository files, JSON validity when jq is present, and shell-script syntax before real build execution.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/tests/00-static-check.sh"
-    },
-    {
-      "type": "Web source",
-      "title": "Living Project Viewer — PHP Source",
-      "description": "Canonical GitHub source for the public living-project page.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/web/project.php"
-    },
-    {
-      "type": "Live page",
-      "title": "Public Living Project Page",
-      "description": "Public project viewer hosted at easyai.com.au.",
-      "url": "https://easyai.com.au/USB/project.php"
-    },
-    {
-      "type": "Canonical data",
-      "title": "Living Project JSON",
-      "description": "Machine-readable canonical project index. By project rule this file is updated last after substantive repository changes.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/project_content.json"
-    }
+    {"type":"Project rules","title":"Mandatory Project Rules","description":"Hardcoded development rules including mandatory lessons learned and JSON-last updates.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/PROJECT_RULES.md"},
+    {"type":"Project index","title":"Repository README","description":"Current repository structure and project status.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/README.md"},
+    {"type":"Overview","title":"Project Overview","description":"Plain-language project objective, assurance levels and claim boundaries.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/01-project-overview.md"},
+    {"type":"Learning guide","title":"Beginner-to-Technical Learning Bridge","description":"Technical learning path for hashes, signatures, UEFI, Secure Boot, TPM, PCRs, attestation and dm-verity.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/02-learning-bridge.md"},
+    {"type":"Threat model","title":"Trust Chain & Threat Model v0.1","description":"Core security threats, trust boundaries and acceptance gates.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/03-trust-chain-threat-model-v0.1.md"},
+    {"type":"Architecture","title":"External Evidence Anchoring","description":"Future evidence hashing, signatures, history chaining and external anchoring design.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/04-external-evidence-anchoring.md"},
+    {"type":"Decision record","title":"Architecture Decision Register","description":"Durable technical and project-priority decisions including the pause of Community Compute Commons.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/05-architecture-decisions.md"},
+    {"type":"Build specification","title":"Prototype Build Specification v0.1","description":"Implementation-ready specification for Prototype 1.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/06-prototype-build-specification-v0.1.md"},
+    {"type":"Engineering record","title":"Lessons Learned Register","description":"Mandatory record of observed results, failed assumptions and design changes.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/07-lessons-learned.md"},
+    {"type":"Paused research","title":"Community Compute Commons Feasibility Study","description":"Preserved deep research; implementation paused while core Prototype 1 is completed.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/08-compute-commons-feasibility-study.md"},
+    {"type":"Paused research","title":"Community Compute Commons Architecture","description":"Future architecture retained for later work.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/09-community-compute-commons-architecture.md"},
+    {"type":"Paused research","title":"Community Compute Commons Threat Extension","description":"Future threat-model extension retained for later work.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/10-threat-model-extension-community-compute-v0.1.md"},
+    {"type":"Build guide","title":"Prototype 1 Build Scaffold","description":"Staged build sequence and safety boundaries.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/README.md"},
+    {"type":"Build script","title":"First Real Builder Report","description":"Single-command evidence collector for the first Debian 13/trixie machine.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/05-first-run-report.sh"},
+    {"type":"Build script","title":"Host Preflight","description":"Checks Debian version, architecture, commands and package evidence.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/00-host-check.sh"},
+    {"type":"Build script","title":"Dependency Installer","description":"Installs the first-stage Debian toolchain.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/01-install-deps.sh"},
+    {"type":"Build script","title":"Prepare Live Build","description":"Prepares controlled Debian Live configuration.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/10-prepare-live-build.sh"},
+    {"type":"Build script","title":"Build Debian Live Artifact","description":"Builds the first live artifact and captures its digest.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/20-build-live.sh"},
+    {"type":"Build script","title":"Artifact Manifest Generator","description":"Records artifact digest, source commit, builder and package provenance.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/30-artifact-manifest.sh"},
+    {"type":"Test","title":"Static Project Checks","description":"Checks repository files, JSON syntax and shell syntax before real execution.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/tests/00-static-check.sh"},
+    {"type":"Live page","title":"Public Living Project Page","description":"Public project status viewer.","url":"https://easyai.com.au/USB/project.php"}
   ],
   "sections": [
-    {
-      "title": "Project objective",
-      "content": "Portable Trusted Linux addresses the circular-trust problem created when an already-installed operating system may be compromised. The project boots independently from authenticated portable media and builds confidence in separately testable stages instead of issuing a simplistic SAFE/UNSAFE result."
-    },
-    {
-      "title": "Runtime trust chain",
-      "content": "The target chain is: authenticated release reference -> verified USB image -> UEFI/Secure Boot -> measured boot and TCG event log -> TPM PCR evidence -> signed UKI -> authenticated dm-verity root -> immutable Linux -> RAM-backed session -> nonce-bound TPM Quote -> independent verifier -> attestation report."
-    },
-    {
-      "title": "Prototype 1 build baseline",
-      "content": "Prototype 1 targets Debian 13 trixie on amd64/x86-64. Current Debian package metadata confirms that trixie provides live-build, systemd-ukify and tpm2-tools, while the live-build package itself includes a dm-verity build component. The repository now contains a staged dependency installer, host preflight, live-build runner, artifact manifest generator and static validation script. Exact package versions are captured from the real build host rather than assumed permanently from the moving Debian repository."
-    },
-    {
-      "title": "Build provenance versus authenticity",
-      "content": "The generated build manifest records an artifact SHA-256, file size, source Git commit, builder identity and selected package versions. This is provenance evidence about how a file was produced; it is not yet proof that an external user should trust that release. Release signing is deliberately kept as a separate future security gate."
-    },
-    {
-      "title": "TPM and attestation",
-      "content": "TPM 2.0 evidence is treated as evidence requiring verification rather than a self-issued SAFE result. The target attester produces nonce-bound Quote evidence over selected PCRs and supplies the TCG event log. The independent verifier evaluates signatures, freshness, PCR selection, log consistency and reference policy."
-    },
-    {
-      "title": "Immutable runtime",
-      "content": "The trusted root is intended to be read-only and protected by dm-verity. Normal writable state will be separated into a RAM-backed layer so ordinary session changes disappear after shutdown unless deliberately exported."
-    },
-    {
-      "title": "Evidence history",
-      "content": "Attestation evidence is designed as a deterministic payload plus an outer envelope. The payload is canonicalised and hashed; the envelope carries the payload digest, signatures and future external-anchor receipts. This prevents a self-referential report-hash design and supports later hash chaining and transparency-log anchoring."
-    },
-    {
-      "title": "Safety boundary",
-      "content": "The project intentionally does not yet include a raw USB-writing script. Destructive media writing will only be added after target-device safety checks and negative tests can prove that ambiguous, internal or otherwise unsafe devices are refused by default. Random-PC mode also avoids silent Secure Boot key enrollment, TPM clearing, firmware changes or writes to internal disks."
-    },
-    {
-      "title": "Mandatory lessons-learned discipline",
-      "content": "Every meaningful engineering session, research finding, failure or architecture surprise must be recorded in docs/07-lessons-learned.md, propagated into affected specifications or decisions, and followed by a final update to project_content.json. This rule is part of PROJECT_RULES.md and the Architecture Decision Register."
-    },
-    {
-      "title": "Current next step",
-      "content": "Run tests/00-static-check.sh and build/00-host-check.sh on a clean Debian 13/trixie amd64 machine, install the packaged dependencies, rerun preflight, then execute the first Debian Live build. Preserve the real command output and record every unexpected result before moving on to UKI, dm-verity and TPM integration."
-    }
+    {"title":"Current focus","content":"All active engineering is focused on Portable Trusted Linux Prototype 1. Community Compute Commons is retained only as paused research and will not consume implementation effort until the core security acceptance gates pass."},
+    {"title":"Core trust chain","content":"Authenticated release reference -> verified USB image -> UEFI/Secure Boot -> measured boot and TCG event log -> TPM PCR evidence -> signed UKI -> authenticated dm-verity root -> immutable Linux -> RAM-backed disposable state -> nonce-bound TPM Quote -> independent verifier -> attestation report."},
+    {"title":"Current engineering state","content":"The repository contains the Prototype Build Specification, host preflight, dependency installer, live-build preparation/build scripts, artifact manifest tooling, static tests, attestation schemas and verifier design. No destructive USB-writing step has been enabled yet."},
+    {"title":"Immediate evidence gate","content":"The next unknown is no longer architectural. We need a real Debian 13/trixie amd64 builder to execute the repository checks. build/05-first-run-report.sh now collects the exact machine, OS, Git, toolchain, storage, memory, CPU, UEFI and TPM exposure evidence needed for the next engineering decision."},
+    {"title":"Mandatory lessons discipline","content":"Every meaningful session updates docs/07-lessons-learned.md and affected specifications or decisions. project_content.json is always written last. This session recorded the decision to pause Community Compute Commons and the addition of a one-command first-builder evidence report."}
   ],
   "milestones": [
     {"id":"M01","title":"Research secure Linux, measured boot and attestation technologies","status":"complete"},
     {"id":"M02","title":"Define trust model and claim boundaries","status":"complete"},
     {"id":"M03","title":"Produce Trust Chain & Threat Model v0.1","status":"complete"},
-    {"id":"M04","title":"Create plain-English explainer and learning bridge","status":"complete"},
-    {"id":"M05","title":"Add External Evidence Anchoring architecture","status":"complete"},
+    {"id":"M04","title":"Create explainers and learning bridge","status":"complete"},
+    {"id":"M05","title":"Add evidence-history architecture","status":"complete"},
     {"id":"M06","title":"Establish private GitHub canonical workspace","status":"complete"},
     {"id":"M07","title":"Hardcode lessons-learned and JSON-last project rules","status":"complete"},
     {"id":"M08","title":"Create Prototype Build Specification v0.1","status":"complete"},
-    {"id":"M09","title":"Verify Debian 13/trixie first-stage package availability","status":"complete"},
-    {"id":"M10","title":"Create safe first-stage build scripts and static checks","status":"complete"},
-    {"id":"M11","title":"Run preflight on a clean Debian 13/trixie amd64 builder","status":"current"},
-    {"id":"M12","title":"Build and fingerprint first Debian Live reference artifact","status":"planned"},
-    {"id":"M13","title":"Implement authenticated release signing","status":"planned"},
-    {"id":"M14","title":"Implement signed UKI and Secure Boot path","status":"planned"},
-    {"id":"M15","title":"Capture TPM PCRs and TCG event log","status":"planned"},
-    {"id":"M16","title":"Implement dm-verity protected root filesystem","status":"planned"},
-    {"id":"M17","title":"Implement RAM-backed disposable runtime","status":"planned"},
-    {"id":"M18","title":"Generate nonce-bound TPM Quote and canonical attestation bundle","status":"planned"},
-    {"id":"M19","title":"Build independent attestation verifier","status":"planned"},
-    {"id":"M20","title":"Run mandatory positive and negative trust-chain tests","status":"planned"},
-    {"id":"M21","title":"Implement safe physical USB writer with device refusal tests","status":"planned"},
-    {"id":"M22","title":"Implement report signature and local hash chain","status":"planned"},
-    {"id":"M23","title":"Integrate transparency-log anchoring","status":"planned"},
-    {"id":"M24","title":"Evaluate optional blockchain anchoring","status":"planned"},
-    {"id":"M25","title":"Perform multi-PC independent corroboration tests","status":"planned"},
-    {"id":"M26","title":"Security review and adversarial testing","status":"planned"},
-    {"id":"M27","title":"Publish first usable prototype","status":"planned"}
+    {"id":"M09","title":"Create safe first-stage build scripts and static checks","status":"complete"},
+    {"id":"M10","title":"Create single-command real-builder evidence collector","status":"complete"},
+    {"id":"M11","title":"Run first real-builder report on clean Debian 13/trixie amd64","status":"current"},
+    {"id":"M12","title":"Install verified build dependencies and rerun preflight","status":"planned"},
+    {"id":"M13","title":"Build and fingerprint first Debian Live reference artifact","status":"planned"},
+    {"id":"M14","title":"Implement authenticated release signing","status":"planned"},
+    {"id":"M15","title":"Implement signed UKI and Secure Boot path","status":"planned"},
+    {"id":"M16","title":"Capture TPM PCRs and TCG event log","status":"planned"},
+    {"id":"M17","title":"Implement dm-verity protected root","status":"planned"},
+    {"id":"M18","title":"Implement RAM-backed disposable runtime","status":"planned"},
+    {"id":"M19","title":"Generate nonce-bound TPM Quote and attestation bundle","status":"planned"},
+    {"id":"M20","title":"Build independent attestation verifier","status":"planned"},
+    {"id":"M21","title":"Run mandatory positive and negative trust-chain tests","status":"planned"},
+    {"id":"M22","title":"Implement safe USB writer and read-back verification","status":"planned"},
+    {"id":"M23","title":"Perform independent multi-PC corroboration tests","status":"planned"},
+    {"id":"M24","title":"Security review and adversarial testing","status":"planned"},
+    {"id":"M25","title":"Publish first usable core prototype","status":"planned"},
+    {"id":"CCC","title":"Community Compute Commons implementation","status":"paused"}
   ],
   "decisions": [
-    {"date":"2026-09-08","title":"Reuse mature security components","text":"Use Debian, UEFI Secure Boot, systemd UKI, TPM 2.0 and dm-verity rather than inventing replacement security primitives."},
+    {"date":"2026-09-08","title":"Reuse mature security components","text":"Use Debian, UEFI Secure Boot, systemd UKI, TPM 2.0 and dm-verity rather than inventing replacement primitives."},
     {"date":"2026-09-08","title":"Independent verification is mandatory","text":"The target computer cannot be the sole authority deciding that its own measurements are trustworthy."},
-    {"date":"2026-09-10","title":"External Evidence Anchoring added","text":"Attestation history supports hashing, signatures, previous-report linkage and later external commitments, with transparency logs preferred and blockchain optional."},
     {"date":"2026-09-10","title":"GitHub is the canonical development workspace","text":"Documents, source and the living JSON index are versioned in the private repository."},
-    {"date":"2026-09-11","title":"Lessons learned are mandatory output","text":"Every meaningful engineering session must record lessons before project_content.json is updated last."},
-    {"date":"2026-09-11","title":"Prototype 1 baseline is Debian 13/trixie amd64","text":"Exact point release and package versions are recorded as build provenance."},
-    {"date":"2026-09-11","title":"Attestation reports use payload plus envelope","text":"The deterministic payload is hashed and an outer envelope carries digest, signatures and future anchor receipts."},
-    {"date":"2026-09-11","title":"Build provenance is separate from release authenticity","text":"A detailed unsigned manifest does not authenticate a release; signing remains a separate gate."},
-    {"date":"2026-09-11","title":"No destructive USB writer before safety tests","text":"Raw media writing waits until device-refusal checks and negative tests protect internal or ambiguous storage targets."}
+    {"date":"2026-09-11","title":"Lessons learned are mandatory output","text":"Every meaningful engineering/research session records lessons before project_content.json is updated last."},
+    {"date":"2026-09-11","title":"Prototype 1 baseline is Debian 13/trixie amd64","text":"Exact build-host and package versions are captured as provenance."},
+    {"date":"2026-09-11","title":"Community Compute Commons paused","text":"The research remains preserved, but active implementation returns exclusively to the Portable Trusted Linux core trust chain until its initial acceptance gates pass."},
+    {"date":"2026-09-11","title":"First real-machine evidence becomes the next gate","text":"Use build/05-first-run-report.sh to collect consistent evidence from a clean Debian 13/trixie amd64 builder before changing later build stages."}
   ],
   "changelog": [
     {"date":"2026-09-08","version":"0.1","summary":"Initial trust chain and threat model."},
-    {"date":"2026-09-10","version":"0.2","summary":"Added External Evidence Anchoring, report hash chains, transparency logs and optional blockchain anchoring."},
-    {"date":"2026-09-10","version":"0.3","summary":"Established GitHub as the canonical project workspace and expanded the document library."},
-    {"date":"2026-09-11","version":"0.4","summary":"Added mandatory lessons-learned rules, Prototype Build Specification, attestation schemas and initial engineering scaffolding."},
-    {"date":"2026-09-11","version":"0.5","summary":"Added Debian 13 dependency installation, first live-build runner, artifact provenance manifest, static validation checks, build-provenance/authenticity separation and explicit USB-writing safety gate."}
+    {"date":"2026-09-10","version":"0.2","summary":"Added External Evidence Anchoring."},
+    {"date":"2026-09-10","version":"0.3","summary":"Established GitHub as canonical workspace and expanded documentation."},
+    {"date":"2026-09-11","version":"0.4","summary":"Locked Prototype 1 baseline and mandatory lessons-learned process."},
+    {"date":"2026-09-11","version":"0.5","summary":"Added safe first-stage build tooling and static validation."},
+    {"date":"2026-09-11","version":"0.6","summary":"Paused Community Compute Commons implementation, restored exclusive focus to core Prototype 1, and added the single-command first real-builder evidence collector."}
   ]
 }
