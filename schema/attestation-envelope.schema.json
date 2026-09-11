@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://portable-trusted-linux.invalid/schema/attestation-envelope.schema.json",
+  "title": "Portable Trusted Linux Attestation Envelope",
+  "type": "object",
+  "required": [
+    "envelope_schema_version",
+    "payload",
+    "payload_digest",
+    "signatures",
+    "anchor_receipts"
+  ],
+  "properties": {
+    "envelope_schema_version": {"type":"string"},
+    "payload": {"type":"object"},
+    "payload_digest": {
+      "type":"object",
+      "required":["algorithm","value"],
+      "properties": {
+        "algorithm":{"const":"sha256"},
+        "value":{"type":"string","pattern":"^[a-fA-F0-9]{64}$"}
+      }
+    },
+    "signatures":{"type":"array"},
+    "anchor_receipts":{"type":"array"}
+  },
+  "additionalProperties": true
+}
