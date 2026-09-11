@@ -9,8 +9,9 @@ require_cmd lb
 require_cmd git
 
 BUILD_ID="${BUILD_ID:-$(new_build_id)}"
-# Keep this path stable because build/20-build-live.sh consumes the same directory.
-WORK_DIR="${PTL_ROOT}/work/live-build"
+# CI uses a unique directory outside the repository checkout so root-owned
+# live-build scratch files cannot poison a later git clean/checkout.
+WORK_DIR="${PTL_BUILD_WORK_DIR:-${PTL_ROOT}/work/live-build}"
 ARTIFACT_DIR="${PTL_ARTIFACTS_DIR}/${BUILD_ID}"
 
 ensure_dir "$WORK_DIR"
@@ -43,6 +44,7 @@ cat > "${ARTIFACT_DIR}/prepare.json" <<EOF
   "build_id": "${BUILD_ID}",
   "suite": "trixie",
   "architecture": "amd64",
+  "work_dir": "${WORK_DIR}",
   "prepared_utc": "$(date -u '+%Y-%m-%dT%H:%M:%SZ')",
   "repository_commit": "$(git -C "${PTL_ROOT}" rev-parse HEAD 2>/dev/null || printf 'unknown')"
 }
