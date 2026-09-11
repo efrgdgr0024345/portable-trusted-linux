@@ -1,0 +1,6 @@
+scenario,enrolled_pc_devices,enrolled_smartphones,total_enrolled_devices,simultaneous_share,active_devices,estimated_incremental_power_gw,annual_energy_twh,notes
+reference_5pct,600000000,1320000000,1920000000,0.05,96000000,1.6665,14.5985,"Reference device counts; 25W laptop, 100W desktop, 4W phone; 71/29 laptop/desktop proxy"
+reference_10pct,600000000,1320000000,1920000000,0.10,192000000,3.3330,29.1971,"Reference device counts; power is scenario estimate, not measured global average"
+reference_25pct,600000000,1320000000,1920000000,0.25,480000000,8.3325,72.9927,"Reference device counts; electrical load is not equivalent to hyperscale AI throughput"
+reference_50pct,600000000,1320000000,1920000000,0.50,960000000,16.6650,145.9854,"Reference device counts; unrealistic as an initial availability assumption"
+reference_100pct,600000000,1320000000,1920000000,1.00,1920000000,33.3300,291.9708,"Theoretical all-enrolled-at-once ceiling"
