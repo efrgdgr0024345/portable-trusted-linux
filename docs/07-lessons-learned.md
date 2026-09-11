@@ -154,152 +154,19 @@ USB writing remains intentionally absent. Before it is added, the project must i
 
 ---
 
-## 2026-09-11 — A 30% volunteer-compute idea is large enough to justify a dedicated research track
+## 2026-09-11 — Community Compute Commons research is useful but must remain paused while the core trust chain is unfinished
 
 ### What was attempted
-Estimate how much consumer compute could exist if roughly 30% of the addressable global PC and smartphone base opted into a shared LLM compute commons.
+Explore an opt-in Community Compute Commons concept that could donate spare consumer CPU/GPU/NPU capacity to approved LLM workloads.
 
 ### What happened
-Public estimates support an order-of-magnitude pool of roughly 2 billion PCs and at least 4.4 billion own-smartphone mobile-internet users. A 30% device-level adoption thought experiment therefore produces about 600 million PCs and 1.32 billion smartphones, or roughly 1.92 billion enrolled devices before capability filtering.
+The feasibility study produced a plausible large-scale scenario and a separate architecture/threat-model extension. It also showed that the idea introduces networking, remote workload execution, privacy, scheduler trust and resource-accounting problems that are distinct from the original Portable Trusted Linux objective.
 
 ### Why it matters
-Even low simultaneous availability can produce physically significant aggregate electrical scale. This is not enough to claim equivalent hyperscale AI throughput, but it is large enough that the idea should be evaluated experimentally rather than dismissed as marginal.
+Continuing to design CCC now would divide engineering attention before the core boot, dm-verity, TPM and independent-verifier chain has been demonstrated on real hardware.
 
 ### Decision / change
-Create a separate Community Compute Commons (CCC) research/architecture track and measure useful completed AI work, not merely theoretical device count or TOPS.
+CCC research is preserved in `docs/08` through `docs/10` and `research/`, but its implementation milestones are **PAUSED / FUTURE**. Active engineering returns exclusively to Portable Trusted Linux Prototype 1 until the core trust-chain acceptance gates pass.
 
 ### Evidence classification
-**RESEARCH ESTIMATE.** Device-count inputs are sourced; 30% adoption is a hypothetical scenario, not a forecast.
-
----
-
-## 2026-09-11 — Enrolment and simultaneous availability are different quantities
-
-### What was attempted
-Translate billions of enrolled devices into a usable compute-capacity estimate.
-
-### What happened
-Consumer workers are intermittent: they may be powered off, in use, on battery, thermally limited, on metered networks or disconnected. A reference power model gives approximately 33 GW only if the entire 30%-adoption pool computes simultaneously. At 10% simultaneous availability the same model is around 3.3 GW; at 25%, around 8.3 GW.
-
-### Why it matters
-Quoting the full enrolled fleet as permanently available would overstate capacity by potentially an order of magnitude or more.
-
-### Decision / change
-All future CCC capacity reporting must show at least enrolled devices, active workers, accepted useful work, availability distribution and power/energy separately.
-
-### Evidence classification
-**ARCHITECTURAL REQUIREMENT / SCENARIO MODEL.** Concurrency assumptions must be replaced with pilot measurements.
-
----
-
-## 2026-09-11 — Electrical scale is not equivalent to LLM compute scale
-
-### What was attempted
-Compare volunteer-device capacity with multi-gigawatt AI data centres.
-
-### What happened
-The volunteer network can reach comparable power-scale numbers under some concurrency scenarios, but hyperscale AI centres concentrate modern accelerators, high-bandwidth memory and specialised low-latency interconnect. Consumer hardware is heterogeneous and geographically separated.
-
-### Why it matters
-A statement such as '8 GW of volunteered devices equals an 8 GW AI data centre' would be technically misleading.
-
-### Decision / change
-CCC will avoid an 'equivalent data centre' compute claim until real model-specific throughput, energy and network measurements exist. Comparisons may use electrical scale only when clearly labelled as such.
-
-### Evidence classification
-**HIGH-CONFIDENCE ARCHITECTURAL CONSTRAINT.**
-
----
-
-## 2026-09-11 — The pre-OS screen should collect consent; it should not execute the LLM workload
-
-### What was attempted
-Place the Community Compute feature at the pre-OS loading page.
-
-### What happened
-The pre-OS location is valuable for explicit mode selection, but actual LLM work requires accelerator drivers, networking, model runtimes and sandboxing. Putting those into firmware/pre-OS code would dramatically expand the trusted computing base.
-
-### Why it matters
-The original project exists to minimise and verify the boot/runtime trust chain. Mixing a remote-work execution stack into that same early environment would work against the core security goal.
-
-### Decision / change
-The pre-OS menu offers Secure Inspection Mode and Community Compute Commons Mode. CCC then boots a separate signed minimal Linux worker environment before enabling the network and accepting jobs.
-
-### Evidence classification
-**ARCHITECTURE DECISION.** Implementation remains future work.
-
----
-
-## 2026-09-11 — Secure Inspection Mode and Community Compute Mode must be separate boot profiles
-
-### What was attempted
-Determine whether donated compute could run alongside the normal trusted user/inspection session.
-
-### What happened
-CCC intentionally enables external networking, remote job scheduling and large accelerator runtimes, all of which increase attack surface.
-
-### Why it matters
-A compromise of the volunteer worker should not contaminate the trust assumptions of the high-assurance inspection environment.
-
-### Decision / change
-Use separate signed boot profiles/UKIs and security policies. Transition from CCC to Secure Inspection Mode requires a complete reboot.
-
-### Evidence classification
-**SECURITY ARCHITECTURE DECISION.**
-
----
-
-## 2026-09-11 — High-throughput independent AI jobs are a better first target than frontier synchronous training
-
-### What was attempted
-Assess whether billions of household devices could act like one giant AI training supercomputer.
-
-### What happened
-BOINC shows that heterogeneous volunteer systems excel at high-throughput work. Petals demonstrates that large-model inference can be distributed over consumer-grade networks, and DiLoCo/Decoupled DiLoCo demonstrate substantial reductions in training communication. But tightly coupled frontier training still depends heavily on fast predictable interconnect and accelerator memory bandwidth.
-
-### Why it matters
-Trying to imitate a hyperscale training fabric across random phones and PCs would waste much of the theoretical compute on communication, stragglers and churn.
-
-### Decision / change
-Initial CCC workloads should prioritize independent inference, embeddings, reranking, evaluation, synthetic-data generation and other batchable jobs. Distributed training remains a research track for stronger worker clusters.
-
-### Evidence classification
-**RESEARCH-SUPPORTED DESIGN DECISION.**
-
----
-
-## 2026-09-11 — 'Free compute' can unfairly move costs onto volunteers
-
-### What was attempted
-Evaluate the social goal of using donated compute to reduce the rich/poor AI compute divide.
-
-### What happened
-The central infrastructure cost may be avoided, but volunteers still pay electricity, data charges and hardware/battery wear. A simple 10%-concurrency scenario is tens of TWh/year globally.
-
-### Why it matters
-A system intended to reduce inequality could accidentally ask lower-income people to subsidise other users' electricity and hardware costs.
-
-### Decision / change
-CCC must be explicitly opt-in, expose power/data controls, prefer AC/unmetered operation, account for useful verified work, and support donated/community credits without making cryptocurrency a requirement. Social recipients should not necessarily have to donate hardware themselves.
-
-### Evidence classification
-**SOCIAL/ENGINEERING CONSTRAINT.** Exact energy economics require pilot measurements.
-
----
-
-## 2026-09-11 — Volunteer nodes and private prompts must be treated as mutually distrustful by default
-
-### What was attempted
-Consider arbitrary user inference on anonymous volunteer devices.
-
-### What happened
-TLS protects network transport but does not prevent a worker executing a model from seeing the data needed for the computation. Likewise, the coordinator cannot assume a volunteer worker returns honest results.
-
-### Why it matters
-A public LLM commons creates two trust problems at once: protecting volunteers from jobs and protecting jobs/users from volunteers.
-
-### Decision / change
-The first CCC version uses public/non-sensitive workloads and open-weight models. It requires signed job manifests, sandboxing and result-verification/redundancy. Confidential inference is a separate future research problem.
-
-### Evidence classification
-**SECURITY ARCHITECTURE DECISION.**
+**PROJECT PRIORITY DECISION.**
