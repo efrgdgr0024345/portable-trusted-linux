@@ -1,23 +1,38 @@
-# Portable Trusted Linux
+# Black Cat
 
-Portable Trusted Linux is a security research and engineering project exploring a portable, independently verifiable Linux environment for use on computers that may not be trustworthy.
+**Black Cat** is the user-facing name for the Portable Trusted Linux (PTL) security research and engineering project.
 
-The core design boots independently of the installed operating system, authenticates the portable OS, collects measured-boot and TPM evidence where available, operates with minimal persistence, and generates an attestation record that can be independently verified and later anchored to an external transparency system.
+The project explores a portable, independently verifiable Linux environment for use on computers that may not be trustworthy. It boots independently of the installed operating system, progressively authenticates the portable OS, collects measured-boot and TPM evidence where available, minimizes persistence, and produces evidence that can later be independently verified.
 
-A second, explicitly separated research track now explores **Community Compute Commons (CCC)**: an opt-in mode that could donate otherwise idle consumer CPU/GPU/NPU resources to approved LLM and public-interest workloads. CCC is deliberately isolated from Secure Inspection Mode so that networking and remote workload execution cannot weaken the original security objective.
+Internal repository names, `PTL_` environment variables, workflow names and evidence identifiers remain unchanged for stability. The Black Cat change is branding, not a trust-model or protocol rename.
 
 ## Current status
 
-**Living document version:** 0.6  
-**Core phase:** Prototype 1 Engineering  
-**Current core milestone:** Run the build-host preflight and first Debian 13/trixie build on a real clean builder  
-**Research track:** Community Compute Commons architecture and feasibility baseline completed
+- Debian 13/trixie amd64 build baseline established.
+- First Debian Live hybrid ISO built successfully on the remote builder.
+- The first ISO was written to USB in raw/DD mode and **physically booted successfully on real hardware**.
+- That physical boot is currently classified as **OBSERVED bootability**, not proof of Secure Boot, TPM attestation, dm-verity or release authenticity.
+- The next Black Cat ISO adds a no-typing **System Check** boot-menu entry.
+
+## No-typing diagnostic path
+
+The next image presents a boot choice similar to:
+
+```text
+Black Cat - Start
+Black Cat - System Check (no typing)
+Black Cat - Advanced options
+```
+
+Selecting the System Check entry adds `blackcat.check=1` to the kernel command line. The live environment then runs `/usr/local/bin/blackcat-check` automatically and displays a photograph-friendly summary of boot mode, Secure Boot state, TPM exposure, TCG event-log exposure, dm-verity state, network-link state, kernel and architecture.
+
+The quick-check output is deliberately classified as **OBSERVED** unless a later independent cryptographic verifier upgrades an individual result. It must never display a universal "SAFE" claim.
 
 ## Living project page
 
 Public viewer: https://easyai.com.au/USB/project.php
 
-The public PHP viewer reads `project_content.json` from this private repository using a server-side, read-only GitHub token. Project content can therefore be updated in GitHub without manually rewriting the public page.
+The public PHP viewer reads `project_content.json` from this private repository using a server-side, read-only GitHub token.
 
 ## Repository structure
 
@@ -36,22 +51,15 @@ portable-trusted-linux/
 │   ├── 30-artifact-manifest.sh
 │   └── lib/
 ├── config/
+│   ├── packages.list
+│   └── live-build/
+│       ├── bootloaders/
+│       └── includes.chroot/
 ├── schema/
 ├── verifier/
 ├── tests/
 ├── research/
-│   └── community-compute-30pct-scenarios.csv
 └── docs/
-    ├── 01-project-overview.md
-    ├── 02-learning-bridge.md
-    ├── 03-trust-chain-threat-model-v0.1.md
-    ├── 04-external-evidence-anchoring.md
-    ├── 05-architecture-decisions.md
-    ├── 06-prototype-build-specification-v0.1.md
-    ├── 07-lessons-learned.md
-    ├── 08-compute-commons-feasibility-study.md
-    ├── 09-community-compute-commons-architecture.md
-    └── 10-threat-model-extension-community-compute-v0.1.md
 ```
 
 ## Core runtime trust chain
@@ -80,50 +88,12 @@ Independent verifier
 Attestation report
 ```
 
-## Evidence-history chain
-
-```text
-Attestation report
-        ↓
-Canonical representation
-        ↓
-SHA-256
-        ↓
-Digital signature
-        ↓
-Previous-report hash
-        ↓
-Local hash chain
-        ↓
-External transparency log
-        ↓
-Optional blockchain anchor
-```
-
-## Future Community Compute Commons boot separation
-
-```text
-Pre-OS signed menu
-      ├── Secure Inspection Mode
-      │     └── offline-first trusted inspection/session
-      │
-      └── Community Compute Commons
-            └── separate signed minimal worker OS
-                  └── approved volunteer LLM workloads
-```
-
-The pre-OS page records consent and chooses the mode. The LLM worker itself runs only after the separate verified Linux worker environment has booted; it does not run inside firmware/pre-OS code.
-
 ## Security principle
 
-The project does **not** attempt to produce a misleading universal `SAFE` result. It distinguishes between what is verified, measured, attested, observed, unknown, not verifiable and failed.
+Black Cat does **not** attempt to produce a misleading universal `SAFE` result. It distinguishes what is `VERIFIED`, `ATTESTED`, `OBSERVED`, `WARNING`, `UNKNOWN`, `NOT VERIFIABLE` and `FAILED`.
 
-The same principle applies to CCC: aggregate device count or electrical power is not automatically equivalent to hyperscale LLM compute. Useful work must be measured in accepted jobs/tokens, energy, bandwidth, reliability and model-specific performance.
+A successful physical boot proves bootability on the tested configuration. It does not, by itself, authenticate the release or establish firmware, TPM, root-filesystem or hardware trust.
 
 ## Mandatory lessons-learned rule
 
 Every meaningful engineering/research session updates `docs/07-lessons-learned.md`, relevant technical/decision documents, and finally `project_content.json` **last**. See `PROJECT_RULES.md`.
-
-## Version history
-
-Git commits preserve the repository's technical history. The human-readable project version history is maintained in `project_content.json`.
