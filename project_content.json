@@ -1,12 +1,12 @@
 {
   "title": "Portable Trusted Linux",
-  "version": "0.6",
+  "version": "0.7",
   "phase": "Prototype 1 Engineering",
-  "progress": 53,
+  "progress": 54,
   "updated": "2026-09-11",
-  "summary": "Portable Trusted Linux is now focused exclusively on completing Prototype 1: a Debian 13/trixie portable environment with authenticated boot artifacts, TPM measured-boot evidence, dm-verity protected root integrity, disposable writable state, structured attestation and an independent verifier. Community Compute Commons research is preserved but paused until the core trust-chain acceptance gates pass.",
+  "summary": "Portable Trusted Linux is focused exclusively on completing Prototype 1. A Debian 13/trixie DigitalOcean builder has now been provisioned for the first real execution pass. The project also adopted an explicit progressive-hardening rule: temporary weaker controls may be used to prove the workflow, but each trust assumption, compromise path and stronger replacement must be documented.",
   "documents": [
-    {"type":"Project rules","title":"Mandatory Project Rules","description":"Hardcoded development rules including mandatory lessons learned and JSON-last updates.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/PROJECT_RULES.md"},
+    {"type":"Project rules","title":"Mandatory Project Rules","description":"Hardcoded development rules including mandatory lessons learned, JSON-last updates and progressive hardening.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/PROJECT_RULES.md"},
     {"type":"Project index","title":"Repository README","description":"Current repository structure and project status.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/README.md"},
     {"type":"Overview","title":"Project Overview","description":"Plain-language project objective, assurance levels and claim boundaries.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/01-project-overview.md"},
     {"type":"Learning guide","title":"Beginner-to-Technical Learning Bridge","description":"Technical learning path for hashes, signatures, UEFI, Secure Boot, TPM, PCRs, attestation and dm-verity.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/02-learning-bridge.md"},
@@ -29,11 +29,12 @@
     {"type":"Live page","title":"Public Living Project Page","description":"Public project status viewer.","url":"https://easyai.com.au/USB/project.php"}
   ],
   "sections": [
-    {"title":"Current focus","content":"All active engineering is focused on Portable Trusted Linux Prototype 1. Community Compute Commons is retained only as paused research and will not consume implementation effort until the core security acceptance gates pass."},
+    {"title":"Current focus","content":"All active engineering is focused on Portable Trusted Linux Prototype 1. Community Compute Commons remains paused."},
     {"title":"Core trust chain","content":"Authenticated release reference -> verified USB image -> UEFI/Secure Boot -> measured boot and TCG event log -> TPM PCR evidence -> signed UKI -> authenticated dm-verity root -> immutable Linux -> RAM-backed disposable state -> nonce-bound TPM Quote -> independent verifier -> attestation report."},
-    {"title":"Current engineering state","content":"The repository contains the Prototype Build Specification, host preflight, dependency installer, live-build preparation/build scripts, artifact manifest tooling, static tests, attestation schemas and verifier design. No destructive USB-writing step has been enabled yet."},
-    {"title":"Immediate evidence gate","content":"The next unknown is no longer architectural. We need a real Debian 13/trixie amd64 builder to execute the repository checks. build/05-first-run-report.sh now collects the exact machine, OS, Git, toolchain, storage, memory, CPU, UEFI and TPM exposure evidence needed for the next engineering decision."},
-    {"title":"Mandatory lessons discipline","content":"Every meaningful session updates docs/07-lessons-learned.md and affected specifications or decisions. project_content.json is always written last. This session recorded the decision to pause Community Compute Commons and the addition of a one-command first-builder evidence report."}
+    {"title":"Current engineering state","content":"The repository contains the Prototype Build Specification, host preflight, dependency installer, live-build preparation/build scripts, artifact manifest tooling, static tests, attestation schemas and verifier design. A Debian 13/trixie DigitalOcean builder named ptl-builder-01 has been provisioned for real execution. No destructive USB-writing step has been enabled."},
+    {"title":"Immediate evidence gate","content":"The next step is to obtain direct controlled access to the remote builder and execute build/05-first-run-report.sh. Until that report is collected, builder capabilities remain unverified by the project tooling."},
+    {"title":"Progressive hardening","content":"Prototype stages may temporarily use weaker controls to prove the workflow, but every such control must document its trust assumption, compromise path, temporary justification and stronger replacement. The current cPanel-held SSH key is explicitly a bootstrap mechanism rather than the final trust architecture."},
+    {"title":"Mandatory lessons discipline","content":"Every meaningful session updates docs/07-lessons-learned.md and affected specifications or decisions. project_content.json is always written last."}
   ],
   "milestones": [
     {"id":"M01","title":"Research secure Linux, measured boot and attestation technologies","status":"complete"},
@@ -70,7 +71,8 @@
     {"date":"2026-09-11","title":"Lessons learned are mandatory output","text":"Every meaningful engineering/research session records lessons before project_content.json is updated last."},
     {"date":"2026-09-11","title":"Prototype 1 baseline is Debian 13/trixie amd64","text":"Exact build-host and package versions are captured as provenance."},
     {"date":"2026-09-11","title":"Community Compute Commons paused","text":"The research remains preserved, but active implementation returns exclusively to the Portable Trusted Linux core trust chain until its initial acceptance gates pass."},
-    {"date":"2026-09-11","title":"First real-machine evidence becomes the next gate","text":"Use build/05-first-run-report.sh to collect consistent evidence from a clean Debian 13/trixie amd64 builder before changing later build stages."}
+    {"date":"2026-09-11","title":"First real-machine evidence becomes the next gate","text":"Use build/05-first-run-report.sh to collect consistent evidence from a clean Debian 13/trixie amd64 builder before changing later build stages."},
+    {"date":"2026-09-11","title":"Progressive hardening is mandatory","text":"Temporary weaker controls may be used to make demonstrable progress only when their assumptions, weaknesses and stronger replacements are explicit. They must never be presented as final security controls."}
   ],
   "changelog": [
     {"date":"2026-09-08","version":"0.1","summary":"Initial trust chain and threat model."},
@@ -78,6 +80,7 @@
     {"date":"2026-09-10","version":"0.3","summary":"Established GitHub as canonical workspace and expanded documentation."},
     {"date":"2026-09-11","version":"0.4","summary":"Locked Prototype 1 baseline and mandatory lessons-learned process."},
     {"date":"2026-09-11","version":"0.5","summary":"Added safe first-stage build tooling and static validation."},
-    {"date":"2026-09-11","version":"0.6","summary":"Paused Community Compute Commons implementation, restored exclusive focus to core Prototype 1, and added the single-command first real-builder evidence collector."}
+    {"date":"2026-09-11","version":"0.6","summary":"Paused Community Compute Commons implementation, restored exclusive focus to core Prototype 1, and added the single-command first real-builder evidence collector."},
+    {"date":"2026-09-11","version":"0.7","summary":"Provisioned the first remote Debian 13 builder and formalized weak-to-strong progressive hardening as a mandatory project rule."}
   ]
 }
