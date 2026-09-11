@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+# Self-hosted service accounts may start with a reduced PATH that omits
+# administrative binary directories such as /usr/sbin. Use a deterministic
+# system PATH so capability checks reflect installed tools rather than the
+# launching service's environment.
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=build/lib/common.sh
 source "${SCRIPT_DIR}/lib/common.sh"
@@ -61,7 +67,7 @@ done
 printf '\nOptional/build-stage tools:\n'
 for cmd in "${build_tools[@]}"; do
   if command -v "$cmd" >/dev/null 2>&1; then
-    printf '  [OK]      %s\n' "$cmd"
+    printf '  [OK]      %s (%s)\n' "$cmd" "$(command -v "$cmd")"
   else
     printf '  [MISSING] %s\n' "$cmd"
   fi
