@@ -29,7 +29,6 @@ apt-get install -y --no-install-recommends \
   live-tools \
   systemd \
   systemd-ukify \
-  systemd-boot \
   systemd-boot-efi \
   systemd-cryptsetup \
   cryptsetup-bin \
@@ -54,6 +53,10 @@ printf 'Installed tool versions:\n'
 for cmd in lb ukify veritysetup tpm2_getcap tpm2_pcrread tpm2_quote sbsign xorriso jq openssl; do
   if command -v "$cmd" >/dev/null 2>&1; then
     printf '  [OK] %-16s %s\n' "$cmd" "$(command -v "$cmd")"
+  elif [[ -x "/usr/sbin/$cmd" ]]; then
+    printf '  [OK] %-16s %s\n' "$cmd" "/usr/sbin/$cmd"
+  elif [[ -x "/sbin/$cmd" ]]; then
+    printf '  [OK] %-16s %s\n' "$cmd" "/sbin/$cmd"
   else
     printf '  [MISSING] %s\n' "$cmd"
   fi
@@ -61,7 +64,7 @@ done
 
 echo
 printf 'Package versions:\n'
-for pkg in live-build systemd systemd-ukify systemd-boot systemd-cryptsetup cryptsetup-bin tpm2-tools sbsigntool xorriso; do
+for pkg in live-build systemd systemd-ukify systemd-boot-efi systemd-cryptsetup cryptsetup-bin tpm2-tools sbsigntool xorriso; do
   version="$(dpkg-query -W -f='${Version}' "$pkg" 2>/dev/null || true)"
   printf '  %-20s %s\n' "$pkg" "${version:-NOT INSTALLED}"
 done
