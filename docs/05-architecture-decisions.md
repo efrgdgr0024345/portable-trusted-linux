@@ -131,3 +131,13 @@ This file records durable project decisions. Changes should be made by new commi
 
 **Status:** Accepted  
 **Decision:** From 2026-09-11, active implementation work focuses exclusively on the Portable Trusted Linux core trust chain until its initial acceptance gates have been exercised on real hardware/build infrastructure. CCC remains preserved as a paused research track and does not consume current implementation effort.
+
+## ADR-027 — Remote cloud builder and attestation target are separate roles
+
+**Status:** Accepted  
+**Decision:** The DigitalOcean Debian 13 builder may be used for reproducible build, static-test and artifact-generation work through a repository-scoped self-hosted GitHub Actions runner. It is not an attestation target and must not be used to claim successful UEFI measured boot or TPM evidence when those interfaces are not exposed by the VM. Measured-boot, PCR, event-log and TPM Quote gates require a separate suitably capable platform.
+
+## ADR-028 — Self-hosted runner is the initial remote execution control plane
+
+**Status:** Accepted / Transitional  
+**Decision:** During Prototype 1 engineering, GitHub Actions is the primary auditable command path into the disposable remote builder. The runner initially operates as the unprivileged `github-runner` account. Any later elevation needed for package installation or live-image build operations must be explicit, bounded and recorded under the progressive-hardening rule rather than silently granting permanent root-equivalent workflow access.
