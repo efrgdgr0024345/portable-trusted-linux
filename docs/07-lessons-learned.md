@@ -189,3 +189,22 @@ The preferred first real-builder interaction is now a single evidence-collection
 
 ### Evidence classification
 **IMPLEMENTED TOOLING; NOT YET EXECUTED ON THE TARGET BUILDER.**
+
+---
+
+## 2026-09-11 — Progressive hardening is an explicit engineering strategy
+
+### What was attempted
+Decide how to make practical progress while the final security architecture is still being built.
+
+### What happened
+The first remote builder was provisioned with a deliberately transitional trust setup: the SSH key is currently held on the user's cPanel Linux host rather than in final hardware-backed or short-lived credential infrastructure. The project rule set was updated to require temporary weaknesses to be named, bounded and replaced later.
+
+### Why it matters
+A prototype can become misleading if an early convenience control is silently treated as production security. Explicit weak-to-strong stages let the team validate functionality first without losing sight of the stronger target design.
+
+### Decision / change
+`PROJECT_RULES.md` now requires progressive hardening: document the current trust assumption, compromise path, temporary justification and stronger replacement for every intentionally weak control. The current cPanel-held SSH key is a temporary bootstrap control, not the final trust design.
+
+### Evidence classification
+**IMPLEMENTED POLICY / OBSERVED SETUP.** The DigitalOcean Droplet was created and the public key was enrolled according to the operator-provided control-panel evidence; direct connector-based execution is still pending.
