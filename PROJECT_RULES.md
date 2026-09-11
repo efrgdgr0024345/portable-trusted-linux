@@ -67,3 +67,19 @@ The initial verification process should not depend on network access. External e
 ## Rule 10 — Preserve history
 
 Git history, the human-readable changelog, architecture decision records, lessons learned and future evidence hash chains are all part of the project's auditability. Do not overwrite historical conclusions without recording why they changed.
+
+## Rule 11 — Build weak-to-strong through explicit progressive hardening
+
+Early development may deliberately use weaker or more convenient controls when that is necessary to make progress, provided the weakness is explicit, bounded and documented.
+
+For every temporary weak control:
+
+1. state the current trust assumption;
+2. state what could compromise it;
+3. state why it is acceptable for the current stage;
+4. identify the stronger replacement or next hardening step;
+5. never describe the temporary control as equivalent to the final security design.
+
+Examples include temporarily storing an SSH private key on a trusted cPanel host before later moving to hardware-backed keys, short-lived credentials, dedicated build infrastructure or stronger machine identity.
+
+The project should progress in demonstrable stages: first make the workflow function, then harden individual trust boundaries, then run negative tests against each hardened control.
