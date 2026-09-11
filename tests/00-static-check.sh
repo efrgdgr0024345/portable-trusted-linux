@@ -24,7 +24,11 @@ for path in \
   build/01-install-deps.sh \
   build/10-prepare-live-build.sh \
   build/20-build-live.sh \
-  build/30-artifact-manifest.sh; do
+  build/30-artifact-manifest.sh \
+  config/live-build/includes.chroot/usr/local/bin/blackcat-check \
+  config/live-build/includes.chroot/etc/profile.d/blackcat-auto-check.sh \
+  config/live-build/bootloaders/grub-pc/grub.cfg \
+  config/live-build/bootloaders/syslinux_common/live.cfg.in; do
   check_file "$path"
 done
 
@@ -39,7 +43,10 @@ else
   printf '[SKIP]    jq unavailable; JSON parse check skipped\n'
 fi
 
-for script in "${ROOT_DIR}"/build/*.sh "${ROOT_DIR}"/tests/*.sh; do
+for script in \
+  "${ROOT_DIR}"/build/*.sh \
+  "${ROOT_DIR}"/tests/*.sh \
+  "${ROOT_DIR}"/config/live-build/includes.chroot/usr/local/bin/blackcat-check; do
   [[ -f "$script" ]] || continue
   if bash -n "$script"; then
     printf '[OK]      syntax %s\n' "${script#${ROOT_DIR}/}"
