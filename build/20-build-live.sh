@@ -20,16 +20,18 @@ cd "$WORK_DIR"
 
 printf 'Starting Debian Live build in %s\n' "$WORK_DIR"
 if [[ ${EUID} -eq 0 ]]; then
-  lb build 2>&1 | tee "${OUT_DIR}/live-build.log"
+  /usr/bin/lb build 2>&1 | tee "${OUT_DIR}/live-build.log"
 else
   command -v sudo >/dev/null 2>&1 || {
     echo "sudo is required for the privileged live-build stage." >&2
     exit 1
   }
-  if ! sudo -n lb build 2>&1 | tee "${OUT_DIR}/live-build.log"; then
+  if sudo -n /usr/bin/lb build 2>&1 | tee "${OUT_DIR}/live-build.log"; then
+    :
+  else
     rc=${PIPESTATUS[0]}
     echo "The privileged live-build stage failed (exit ${rc})." >&2
-    echo "If sudo reports that a password is required, grant only the documented temporary build privilege and retry." >&2
+    echo "The runner is expected to have only the documented temporary permission for /usr/bin/lb build." >&2
     exit "$rc"
   fi
 fi
