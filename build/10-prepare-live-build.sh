@@ -5,12 +5,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=build/lib/common.sh
 source "${SCRIPT_DIR}/lib/common.sh"
 
-require_root
 require_cmd lb
 require_cmd git
 
 BUILD_ID="${BUILD_ID:-$(new_build_id)}"
-WORK_DIR="${PTL_ROOT}/work/live-${BUILD_ID}"
+# Keep this path stable because build/20-build-live.sh consumes the same directory.
+WORK_DIR="${PTL_ROOT}/work/live-build"
 ARTIFACT_DIR="${PTL_ARTIFACTS_DIR}/${BUILD_ID}"
 
 ensure_dir "$WORK_DIR"
@@ -22,6 +22,7 @@ log "Work dir: $WORK_DIR"
 
 cd "$WORK_DIR"
 
+# Preparation only writes configuration files and does not require root.
 lb config \
   --mode debian \
   --distribution trixie \
