@@ -26,12 +26,12 @@ else
     echo "sudo is required for the privileged live-build stage." >&2
     exit 1
   }
-  if ! sudo -n true 2>/dev/null; then
-    echo "The runner does not currently have non-interactive sudo permission for the live-build stage." >&2
-    echo "Grant only the documented temporary build privilege before retrying." >&2
-    exit 1
+  if ! sudo -n lb build 2>&1 | tee "${OUT_DIR}/live-build.log"; then
+    rc=${PIPESTATUS[0]}
+    echo "The privileged live-build stage failed (exit ${rc})." >&2
+    echo "If sudo reports that a password is required, grant only the documented temporary build privilege and retry." >&2
+    exit "$rc"
   fi
-  sudo -n lb build 2>&1 | tee "${OUT_DIR}/live-build.log"
 fi
 
 image="$(find . -maxdepth 1 -type f \( -name '*.iso' -o -name '*.img' \) | sort | head -n 1 || true)"
