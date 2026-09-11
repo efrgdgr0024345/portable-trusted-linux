@@ -94,3 +94,60 @@ Use a two-part model: a deterministic `payload` is canonicalised and hashed; an 
 
 ### Evidence classification
 **DESIGN DECISION.** Implementation and cross-language test vectors remain to be completed.
+
+---
+
+## 2026-09-11 — Debian 13/trixie has the required first-stage tooling
+
+### What was attempted
+Confirm that the selected Debian 13/trixie baseline actually provides the core build tools instead of assuming package availability.
+
+### What happened
+Current Debian package metadata confirms `live-build` is available in trixie, `systemd-ukify` is available as a separate package, `tpm2-tools` is available, and the trixie live-build package includes a `binary_dm-verity` build component.
+
+### Why it matters
+This removes an avoidable architecture risk: the first prototype can be built around tools distributed by Debian rather than immediately depending on manually compiled security tooling.
+
+### Decision / change
+`build/01-install-deps.sh` now installs the Debian-packaged first-stage toolchain. Exact installed package versions are recorded on the real builder and in the generated build manifest rather than silently assuming the repository version will never change.
+
+### Evidence classification
+**VERIFIED AGAINST CURRENT DEBIAN PACKAGE METADATA.** Real build-host installation still needs to be executed and recorded.
+
+---
+
+## 2026-09-11 — Build evidence and release authenticity are different things
+
+### What was attempted
+Create a manifest for the first generated Debian Live artifact.
+
+### What happened
+The manifest can record SHA-256, artifact size, source Git commit, build host and package versions, but none of those fields alone authenticate the release to an external user.
+
+### Why it matters
+It would be easy to overstate a detailed manifest as proof of authenticity. An attacker capable of replacing both an image and an unsigned manifest could produce internally consistent values.
+
+### Decision / change
+`build/30-artifact-manifest.sh` is explicitly classified as build evidence. Release signing and verification remain separate future gates.
+
+### Evidence classification
+**IMPLEMENTED DESIGN CONSTRAINT.** Cryptographic release signing is not implemented yet.
+
+---
+
+## 2026-09-11 — Destructive USB writing should come after device-safety negative tests
+
+### What was attempted
+Plan the transition from ISO generation to physical USB media.
+
+### What happened
+A convenient early `dd`-style writer would introduce a serious operational risk: selecting the wrong block device could destroy unrelated data before the trust-chain work is even mature.
+
+### Why it matters
+Safety of the development process is part of project quality. A security tool should not introduce avoidable destructive behavior during its own build pipeline.
+
+### Decision / change
+USB writing remains intentionally absent. Before it is added, the project must implement explicit device-selection checks and negative tests proving ambiguous/internal devices are refused.
+
+### Evidence classification
+**ENGINEERING SAFETY DECISION.** USB-writing implementation remains pending.
