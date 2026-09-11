@@ -86,3 +86,13 @@ This file records durable project decisions. Changes should be made by new commi
 
 **Status:** Accepted  
 **Decision:** Prototype 1 succeeds when the local trust chain through independent attestation passes its defined positive and negative gates. Transparency-log/blockchain publication, broad multi-host automation and polished UI follow only after that core path is demonstrated.
+
+## ADR-018 — Build provenance is recorded separately from release authenticity
+
+**Status:** Accepted  
+**Decision:** Each produced image gets a build manifest containing its SHA-256 digest, size, source Git commit, build host and selected package versions. This manifest is evidence about how the artifact was produced; it is not itself proof of release authenticity. A separate signing/verification gate will authenticate approved releases.
+
+## ADR-019 — No destructive USB writer before device-safety tests
+
+**Status:** Accepted  
+**Decision:** Prototype build tooling will not write raw images to a block device until explicit device-selection safety checks and negative tests exist. Ambiguous, internal, mounted or otherwise unsafe targets must be refused by default.
