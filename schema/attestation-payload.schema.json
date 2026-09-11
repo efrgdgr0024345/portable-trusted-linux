@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://portable-trusted-linux.invalid/schema/attestation-payload.schema.json",
+  "title": "Portable Trusted Linux Attestation Payload",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project_version",
+    "report_id",
+    "session_id",
+    "sequence",
+    "portable_image",
+    "boot",
+    "root_integrity",
+    "tpm",
+    "checks",
+    "warnings",
+    "unknowns"
+  ],
+  "properties": {
+    "schema_version": {"type":"string"},
+    "project_version": {"type":"string"},
+    "report_id": {"type":"string","minLength":1},
+    "session_id": {"type":"string","minLength":1},
+    "sequence": {"type":"integer","minimum":1},
+    "previous_payload_digest": {"type":["string","null"]},
+    "time": {
+      "type":"object",
+      "properties": {
+        "observed_utc":{"type":["string","null"]},
+        "source":{"type":"string"},
+        "trusted":{"type":"boolean"}
+      },
+      "required":["source","trusted"]
+    },
+    "portable_image": {
+      "type":"object",
+      "required":["sha256","build_id"],
+      "properties": {
+        "sha256":{"type":"string","pattern":"^[a-fA-F0-9]{64}$"},
+        "build_id":{"type":"string"}
+      }
+    },
+    "boot": {
+      "type":"object",
+      "required":["uki_sha256","secure_boot_state"],
+      "properties": {
+        "uki_sha256":{"type":["string","null"]},
+        "secure_boot_state":{"type":"string"}
+      }
+    },
+    "root_integrity": {
+      "type":"object",
+      "required":["method","root_hash","status"],
+      "properties": {
+        "method":{"const":"dm-verity"},
+        "root_hash":{"type":["string","null"]},
+        "status":{"type":"string"}
+      }
+    },
+    "tpm": {
+      "type":"object",
+      "required":["present"],
+      "properties": {
+        "present":{"type":"boolean"},
+        "pcr_bank":{"type":["string","null"]},
+        "pcrs":{"type":"object"},
+        "event_log_sha256":{"type":["string","null"]},
+        "quote":{"type":"object"},
+        "nonce":{"type":["string","null"]}
+      }
+    },
+    "platform":{"type":"object"},
+    "checks":{"type":"array"},
+    "warnings":{"type":"array"},
+    "unknowns":{"type":"array"}
+  },
+  "additionalProperties": true
+}
