@@ -1,0 +1,18 @@
+label blackcat
+    menu label ^Black Cat - Start
+    menu default
+    linux @LINUX@
+    initrd @INITRD@
+    append @APPEND_LIVE@
+
+label blackcat-check
+    menu label Black Cat - ^System Check (no typing)
+    linux @LINUX@
+    initrd @INITRD@
+    append @APPEND_LIVE@ blackcat.check=1
+
+label blackcat-failsafe
+    menu label Black Cat - ^Fail-safe mode
+    linux @LINUX@
+    initrd @INITRD@
+    append @APPEND_LIVE_FAILSAFE@
