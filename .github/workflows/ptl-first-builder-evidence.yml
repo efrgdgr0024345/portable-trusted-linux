@@ -1,0 +1,45 @@
+name: PTL First Builder Evidence
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ptl-first-builder-evidence.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  first-builder-evidence:
+    name: First real builder evidence
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Confirm runner identity
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          echo "HOSTNAME=$(hostname)"
+          echo "USER=$(id -un)"
+          echo "UID=$(id -u)"
+          echo "ARCH=$(uname -m)"
+          echo "KERNEL=$(uname -sr)"
+          echo "WORKSPACE=$GITHUB_WORKSPACE"
+
+      - name: Run first real builder report
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bash build/05-first-run-report.sh
+
+      - name: Show generated evidence files
+        if: always()
+        shell: bash
+        run: |
+          echo "Generated host-check evidence:"
+          find artifacts/host-checks -maxdepth 1 -type f -printf '%f\n' 2>/dev/null || true
