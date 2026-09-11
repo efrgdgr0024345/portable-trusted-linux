@@ -18,6 +18,8 @@ jobs:
     name: Build and fingerprint Debian Live ISO
     runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 60
+    env:
+      PTL_BUILD_WORK_DIR: /tmp/ptl-live-build-${{ github.run_id }}-${{ github.run_attempt }}
 
     steps:
       - name: Checkout repository
@@ -32,6 +34,7 @@ jobs:
           echo "HOSTNAME=$(hostname)"
           echo "USER=$(id -un)"
           echo "ARCH=$(uname -m)"
+          echo "PTL_BUILD_WORK_DIR=$PTL_BUILD_WORK_DIR"
           bash build/00-host-check.sh
 
       - name: Build Debian Live artifact
