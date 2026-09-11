@@ -99,30 +99,35 @@ This file records durable project decisions. Changes should be made by new commi
 
 ## ADR-020 — Community Compute Commons is a separate future subsystem
 
-**Status:** Accepted  
-**Decision:** The volunteer LLM compute concept is named **Community Compute Commons (CCC)** and is maintained as a separate research and future implementation track. It must not weaken or delay the core Portable Trusted Linux Prototype 1 security acceptance path.
+**Status:** Accepted / Paused  
+**Decision:** The volunteer LLM compute concept is named Community Compute Commons (CCC). Its research documents are retained, but implementation is paused until the core Portable Trusted Linux Prototype 1 trust-chain acceptance gates pass.
 
 ## ADR-021 — Pre-OS is for consent and mode selection, not LLM execution
 
-**Status:** Accepted  
-**Decision:** The signed pre-OS/boot menu may offer Community Compute Commons as an explicit opt-in choice. Actual compute runs only after a separate signed minimal Linux worker environment has booted. GPU/NPU drivers, networking, model runtimes and remote scheduling are not added to the minimal firmware/pre-OS trusted computing base.
+**Status:** Accepted / Future  
+**Decision:** If CCC is resumed, the pre-OS/boot menu may offer it as an explicit opt-in choice. Actual compute runs only after a separate signed minimal Linux worker environment has booted.
 
 ## ADR-022 — Secure Inspection Mode and CCC require separate boot profiles
 
-**Status:** Accepted  
-**Decision:** Secure Inspection Mode and Community Compute Commons use separate signed UKIs/root policies. Because CCC enables networking and externally scheduled workloads, a running CCC environment may not transition into Secure Inspection Mode without a complete reboot into the independently authenticated inspection image.
+**Status:** Accepted / Future  
+**Decision:** If CCC is implemented, it uses a separate signed UKI/root policy and may not transition into Secure Inspection Mode without a complete reboot.
 
 ## ADR-023 — CCC initially targets high-throughput independent AI workloads
 
-**Status:** Accepted  
-**Decision:** The first CCC workloads should be jobs that tolerate heterogeneous, intermittent and high-latency workers: independent inference, embeddings, reranking, evaluation, synthetic-data generation and similar batch tasks. Internet-wide tightly synchronous frontier-model pretraining is not an initial target.
+**Status:** Accepted / Future  
+**Decision:** If resumed, CCC begins with inference, embeddings, reranking, evaluation, synthetic-data generation and similar loosely coupled jobs rather than Internet-wide synchronous frontier training.
 
 ## ADR-024 — Public/non-sensitive workloads and open-weight models first
 
-**Status:** Accepted  
-**Decision:** Arbitrary private prompts and confidential/proprietary model weights are not sent to untrusted volunteer nodes in the initial CCC design. The first system uses public or explicitly non-sensitive workloads, approved signed job manifests, sandboxed runtimes and open-weight models. Confidential volunteer inference requires a separately reviewed design.
+**Status:** Accepted / Future  
+**Decision:** If resumed, arbitrary private prompts and confidential/proprietary model weights are not sent to untrusted volunteer nodes in the initial CCC design.
 
 ## ADR-025 — Volunteer costs and social fairness must be explicit
 
+**Status:** Accepted / Future  
+**Decision:** If resumed, CCC must explicitly account for volunteer electricity, data, battery cycles, thermal load and hardware wear.
+
+## ADR-026 — Core Prototype 1 has exclusive active engineering priority
+
 **Status:** Accepted  
-**Decision:** CCC must not describe volunteered compute as literally cost-free. Electricity, data, battery cycles, thermal load and hardware wear belong to donors. The system therefore requires explicit opt-in, power/thermal/bandwidth controls, AC/unmetered defaults where practical, transparent accounting, and contribution credits based on accepted useful work rather than claimed uptime. Cryptocurrency is not required for accounting.
+**Decision:** From 2026-09-11, active implementation work focuses exclusively on the Portable Trusted Linux core trust chain until its initial acceptance gates have been exercised on real hardware/build infrastructure. CCC remains preserved as a paused research track and does not consume current implementation effort.
