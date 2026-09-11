@@ -3,7 +3,7 @@ set -Eeuo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-WORK_DIR="${ROOT_DIR}/work/live-build"
+WORK_DIR="${PTL_BUILD_WORK_DIR:-${ROOT_DIR}/work/live-build}"
 OUT_DIR="${ROOT_DIR}/out"
 
 mkdir -p "$OUT_DIR"
