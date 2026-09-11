@@ -60,9 +60,17 @@ The first real builder is a disposable DigitalOcean VM named `ptl-builder-01`, r
 
 The first remote evidence run completed successfully on 2026-09-11. It verified the expected Debian/x86-64 baseline and approximately 74 GiB free disk space. It also observed that the initial image lacks `git`, `jq` and the planned build-stage packages before `01-install-deps.sh` is run.
 
+The declared dependency set has now been installed and re-verified remotely. `git`, `jq`, `lb`, `xorriso`, `veritysetup`, `ukify`, `sbsign`, and the required TPM2 commands are all detected. The self-hosted runner starts with a reduced service `PATH`, so `00-host-check.sh` now uses a deterministic system PATH including `/usr/sbin`; this prevents installed administration tools such as `/usr/sbin/veritysetup` from being reported as missing.
+
 The DigitalOcean VM did **not** expose `/sys/firmware/efi` or `/dev/tpm*` during the first report. Therefore this VM is a build and artifact-generation host, not evidence that UEFI measured boot or TPM attestation works. Those gates require a later platform that actually exposes the relevant firmware and TPM interfaces.
 
-The first checkout used the GitHub REST archive fallback because `git` was not yet installed on the builder. Consequently the first report could not record local Git repository state. Installing the declared dependencies should restore normal Git checkout/provenance capture on subsequent runs.
+The first checkout used the GitHub REST archive fallback because `git` was not yet installed on the builder. After dependency installation, Actions uses the normal Git checkout path and the evidence report records the checked-out commit.
+
+## Privileged live-build boundary
+
+The Actions runner remains unprivileged by default. `lb config` and configuration-file preparation run as `github-runner`; the actual `lb build` stage requires root privileges because live-build creates and enters build environments that need privileged filesystem and package operations.
+
+Prototype 1 may temporarily grant the runner non-interactive permission for the single documented live-build command so remote builds can proceed. This is a **temporary weak-to-strong control**, not the final security design. Because live-build configuration can influence privileged build behavior, this permission is effectively a significant trust boundary and must later be replaced by a stronger isolated builder or root-owned build service with tighter input validation.
 
 ## Artifact identity
 
