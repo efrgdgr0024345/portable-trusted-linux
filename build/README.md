@@ -54,6 +54,16 @@ bash build/30-artifact-manifest.sh
 
 Every real run must preserve the command output and add any unexpected result to `docs/07-lessons-learned.md`.
 
+## Current remote builder
+
+The first real builder is a disposable DigitalOcean VM named `ptl-builder-01`, running Debian GNU/Linux 13.5 `trixie` on x86-64 with 2 vCPU, approximately 4 GiB RAM and an 80 GiB disk. A repository-scoped self-hosted GitHub Actions runner named `ptl-builder-01` executes as the unprivileged `github-runner` account.
+
+The first remote evidence run completed successfully on 2026-09-11. It verified the expected Debian/x86-64 baseline and approximately 74 GiB free disk space. It also observed that the initial image lacks `git`, `jq` and the planned build-stage packages before `01-install-deps.sh` is run.
+
+The DigitalOcean VM did **not** expose `/sys/firmware/efi` or `/dev/tpm*` during the first report. Therefore this VM is a build and artifact-generation host, not evidence that UEFI measured boot or TPM attestation works. Those gates require a later platform that actually exposes the relevant firmware and TPM interfaces.
+
+The first checkout used the GitHub REST archive fallback because `git` was not yet installed on the builder. Consequently the first report could not record local Git repository state. Installing the declared dependencies should restore normal Git checkout/provenance capture on subsequent runs.
+
 ## Artifact identity
 
 `30-artifact-manifest.sh` records:
