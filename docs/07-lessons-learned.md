@@ -170,3 +170,22 @@ CCC research is preserved in `docs/08` through `docs/10` and `research/`, but it
 
 ### Evidence classification
 **PROJECT PRIORITY DECISION.**
+
+---
+
+## 2026-09-11 — Real-machine evidence collection should be one simple user action
+
+### What was attempted
+Move from repository-only assumptions to measured results from a real Debian 13/trixie builder without requiring the operator to manually collect many separate diagnostics.
+
+### What happened
+`build/05-first-run-report.sh` was added. It records OS/build-host identity, Git state, static project checks, host preflight, storage, memory, CPU, UEFI exposure and TPM-device exposure into a timestamped text report under `artifacts/host-checks/`.
+
+### Why it matters
+Reducing manual steps makes the evidence more consistent, easier to reproduce and less likely to omit the exact information needed for the next engineering decision.
+
+### Decision / change
+The preferred first real-builder interaction is now a single evidence-collection script. The resulting report is reviewed before dependency installation/build behavior is changed.
+
+### Evidence classification
+**IMPLEMENTED TOOLING; NOT YET EXECUTED ON THE TARGET BUILDER.**
