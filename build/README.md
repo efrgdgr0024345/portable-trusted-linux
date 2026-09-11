@@ -66,11 +66,21 @@ The DigitalOcean VM did **not** expose `/sys/firmware/efi` or `/dev/tpm*` during
 
 The first checkout used the GitHub REST archive fallback because `git` was not yet installed on the builder. After dependency installation, Actions uses the normal Git checkout path and the evidence report records the checked-out commit.
 
+## First Debian Live build attempt
+
+GitHub Actions run `34572836941` reached the real privileged `lb build` stage and failed during package cleanup, after substantial live-image construction had already completed. The failure was traced to the **builder host's** `systemd-boot` integration package: its package trigger attempted host bootloader integration on a cloud VM that does not expose normal UEFI runtime.
+
+This is not evidence that the live image itself is invalid. It is a builder-host dependency problem. The dependency installer has therefore been changed to keep `systemd-boot-efi` for EFI binaries while no longer installing the host-integrating `systemd-boot` package.
+
+The failed run's evidence was preserved as GitHub Actions artifact `ptl-first-live-build-34572836941`, including the live-build log. The first successful reference ISO has **not** yet been produced, so milestone M13 remains current.
+
+The build scripts were also hardened after this attempt so privileged live-build scratch data can live in a unique `/tmp` workspace rather than creating root-owned build state inside the GitHub Actions checkout. This reduces cleanup failures and keeps repository ownership boundaries clearer.
+
 ## Privileged live-build boundary
 
 The Actions runner remains unprivileged by default. `lb config` and configuration-file preparation run as `github-runner`; the actual `lb build` stage requires root privileges because live-build creates and enters build environments that need privileged filesystem and package operations.
 
-Prototype 1 may temporarily grant the runner non-interactive permission for the single documented live-build command so remote builds can proceed. This is a **temporary weak-to-strong control**, not the final security design. Because live-build configuration can influence privileged build behavior, this permission is effectively a significant trust boundary and must later be replaced by a stronger isolated builder or root-owned build service with tighter input validation.
+Prototype 1 temporarily grants the runner non-interactive permission for the single `/usr/bin/lb build` command. The sudoers rule was syntax-checked with `visudo`. This is a **temporary weak-to-strong control**, not the final security design. Because live-build configuration can influence privileged build behavior, this permission is effectively a significant trust boundary and must later be replaced by a stronger isolated builder or root-owned build service with tighter input validation.
 
 ## Artifact identity
 
