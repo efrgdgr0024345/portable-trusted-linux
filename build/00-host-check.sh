@@ -77,6 +77,17 @@ if [[ "$missing_mandatory" -ne 0 ]]; then
   fail "Mandatory host-preflight commands are missing."
 fi
 
+# The full systemd-boot host-integration package registers dpkg triggers that
+# may try to update the builder's ESP during live-build's temporary GRUB/shim
+# package cleanup. A mere package removal can leave the package in
+# 'config-files' state with those triggers still active. Keep only
+# systemd-boot-efi on this disposable image builder and reject any residual
+# systemd-boot package state before spending a full build cycle.
+systemd_boot_state="$(dpkg-query -W -f='${db:Status-Status}' systemd-boot 2>/dev/null || true)"
+if [[ -n "$systemd_boot_state" && "$systemd_boot_state" != "not-installed" ]]; then
+  fail "Builder retains systemd-boot host integration state '${systemd_boot_state}'. Purge systemd-boot completely on this disposable builder before live-build; systemd-boot-efi may remain installed."
+fi
+
 printf '\nPackage/version evidence (when available):\n'
 for pkg in live-build systemd systemd-ukify linux-image-amd64 cryptsetup-bin tpm2-tools sbsigntool xorriso jq openssl; do
   if dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q 'install ok installed'; then
