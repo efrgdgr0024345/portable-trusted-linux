@@ -1,0 +1,70 @@
+name: PTL First Live Build
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.ci/live-build-trigger'
+      - 'build/**'
+      - 'config/**'
+      - '.github/workflows/ptl-live-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-build:
+    name: Build and fingerprint Debian Live ISO
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+
+      - name: Confirm builder state
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          echo "HOSTNAME=$(hostname)"
+          echo "USER=$(id -un)"
+          echo "ARCH=$(uname -m)"
+          bash build/00-host-check.sh
+
+      - name: Build Debian Live artifact
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bash build/20-build-live.sh
+
+      - name: Generate build manifest
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bash build/30-artifact-manifest.sh
+
+      - name: Show output identities
+        if: always()
+        shell: bash
+        run: |
+          echo '--- out directory ---'
+          ls -lah out 2>/dev/null || true
+          echo '--- SHA-256 files ---'
+          cat out/*.sha256 2>/dev/null || true
+          echo '--- build manifest ---'
+          cat out/build-manifest.json 2>/dev/null || true
+
+      - name: Preserve build evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: ptl-first-live-build-${{ github.run_id }}
+          path: |
+            out/**
+            artifacts/**/prepare.json
+          if-no-files-found: warn
+          compression-level: 0
+          retention-days: 7
