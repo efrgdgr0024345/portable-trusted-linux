@@ -1,0 +1,18 @@
+# Portable Trusted Linux Prototype 1 package seed
+# Keep this deliberately small. Exact installed versions are recorded per build.
+
+systemd
+systemd-boot
+systemd-ukify
+linux-image-amd64
+cryptsetup-bin
+tpm2-tools
+sbsigntool
+openssl
+jq
+ca-certificates
+curl
+pciutils
+usbutils
+util-linux
+kmod
