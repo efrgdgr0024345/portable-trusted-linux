@@ -17,7 +17,7 @@ ARTIFACT_DIR="${PTL_ARTIFACTS_DIR}/${BUILD_ID}"
 ensure_dir "$WORK_DIR"
 ensure_dir "$ARTIFACT_DIR"
 
-log "Preparing Debian Live configuration"
+log "Preparing Black Cat Debian Live configuration"
 log "Build ID: $BUILD_ID"
 log "Work dir: $WORK_DIR"
 
@@ -37,11 +37,37 @@ lb config \
   --bootappend-live "boot=live components quiet"
 
 mkdir -p config/package-lists
-cp "${PTL_CONFIG_DIR}/packages.list" "config/package-lists/ptl.list.chroot"
+cp "${PTL_CONFIG_DIR}/packages.list" "config/package-lists/blackcat.list.chroot"
+
+# Start from the exact bootloader templates supplied by the installed live-build
+# package, then overlay the small Black Cat customisations kept in this repo.
+# This avoids vendoring Debian's bootloader binaries/templates while still making
+# the menu deterministic relative to the recorded live-build package version.
+if [[ ! -d /usr/share/live/build/bootloaders ]]; then
+  echo "live-build bootloader templates are missing" >&2
+  exit 1
+fi
+mkdir -p config/bootloaders
+cp -a /usr/share/live/build/bootloaders/. config/bootloaders/
+
+if [[ -d "${PTL_CONFIG_DIR}/live-build" ]]; then
+  cp -a "${PTL_CONFIG_DIR}/live-build/." config/
+fi
+
+# GitHub's contents API stores new text files without executable mode metadata.
+# Apply runtime modes explicitly during preparation so the generated image does
+# not depend on repository file-mode transport.
+if [[ -f config/includes.chroot/usr/local/bin/blackcat-check ]]; then
+  chmod 0755 config/includes.chroot/usr/local/bin/blackcat-check
+fi
+if [[ -f config/includes.chroot/etc/profile.d/blackcat-auto-check.sh ]]; then
+  chmod 0644 config/includes.chroot/etc/profile.d/blackcat-auto-check.sh
+fi
 
 cat > "${ARTIFACT_DIR}/prepare.json" <<EOF
 {
   "build_id": "${BUILD_ID}",
+  "product": "Black Cat",
   "suite": "trixie",
   "architecture": "amd64",
   "work_dir": "${WORK_DIR}",
@@ -50,5 +76,5 @@ cat > "${ARTIFACT_DIR}/prepare.json" <<EOF
 }
 EOF
 
-log "Initial live-build configuration prepared."
-log "Next stage will build and inspect the base live filesystem before adding verity/UKI integration."
+log "Black Cat live-build configuration prepared."
+log "The image includes normal boot plus a no-typing System Check menu entry."
