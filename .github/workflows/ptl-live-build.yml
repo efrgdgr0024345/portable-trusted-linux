@@ -23,12 +23,18 @@ jobs:
       # mounts /tmp as nodev tmpfs on this builder, so use /var/tmp on the
       # root ext4 filesystem instead.
       PTL_BUILD_WORK_DIR: /var/tmp/ptl-live-build-${{ github.run_id }}-${{ github.run_attempt }}
+      # Record the source revision explicitly. Pull-request workflows otherwise
+      # default to a synthetic merge commit, which is useful for CI but
+      # ambiguous as release/build provenance.
+      PTL_SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+      PTL_SOURCE_REF: ${{ github.head_ref || github.ref_name }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Confirm builder state
         shell: bash
@@ -38,6 +44,9 @@ jobs:
           echo "USER=$(id -un)"
           echo "ARCH=$(uname -m)"
           echo "PTL_BUILD_WORK_DIR=$PTL_BUILD_WORK_DIR"
+          echo "PTL_SOURCE_COMMIT=$PTL_SOURCE_COMMIT"
+          echo "PTL_SOURCE_REF=$PTL_SOURCE_REF"
+          echo "CHECKED_OUT_COMMIT=$(git rev-parse HEAD)"
           bash build/00-host-check.sh
 
       - name: Build Debian Live artifact
