@@ -141,3 +141,13 @@ This file records durable project decisions. Changes should be made by new commi
 
 **Status:** Accepted / Transitional  
 **Decision:** During Prototype 1 engineering, GitHub Actions is the primary auditable command path into the disposable remote builder. The runner initially operates as the unprivileged `github-runner` account. Any later elevation needed for package installation or live-image build operations must be explicit, bounded and recorded under the progressive-hardening rule rather than silently granting permanent root-equivalent workflow access.
+
+## ADR-029 — Black Cat is the user-facing brand; PTL identifiers remain stable
+
+**Status:** Accepted  
+**Decision:** The project/product is presented to users as **Black Cat**. Existing repository names, `PTL_` environment variables, workflow names and evidence identifiers remain unchanged unless there is a later engineering reason to migrate them. Branding must not silently alter protocol meaning, trust claims or evidence semantics.
+
+## ADR-030 — Real-hardware diagnostics must support a no-typing boot path
+
+**Status:** Accepted  
+**Decision:** Real-hardware testing should not depend on operators transcribing long shell commands. The live image provides a dedicated **Black Cat - System Check** boot-menu entry that passes a simple kernel flag and automatically launches a modular diagnostic. Its initial output is classified as OBSERVED unless independently verified; it must not collapse observations into a universal safety claim.
