@@ -66,3 +66,23 @@ This file records durable project decisions. Changes should be made by new commi
 
 **Status:** Accepted  
 **Decision:** Human-readable documents, source files and the living `project_content.json` index are versioned in this private GitHub repository. Git history is the project-change record during development.
+
+## ADR-014 — Lessons learned are mandatory project output
+
+**Status:** Accepted  
+**Decision:** Every meaningful engineering session, test, research result, failure, architecture change or implementation surprise must be recorded in `docs/07-lessons-learned.md` before the session is considered complete. Relevant technical documents and decisions must also be updated, with `project_content.json` written last.
+
+## ADR-015 — Prototype 1 baseline is Debian 13 `trixie` on amd64
+
+**Status:** Accepted  
+**Decision:** The first working prototype targets Debian 13 `trixie` and x86-64/amd64. Build manifests must capture the exact Debian point release and package versions used so the moving meaning of labels such as `stable` cannot silently change the provenance of a build.
+
+## ADR-016 — Attestation report uses payload plus envelope
+
+**Status:** Accepted  
+**Decision:** Do not create a self-referential report hash. A deterministic evidence `payload` is canonicalised and hashed. An outer `envelope` contains the payload, payload digest, signatures and external-anchor receipts. Exact canonicalisation must be frozen and tested before cross-implementation signatures or history chains are considered stable.
+
+## ADR-017 — Prototype 1 stops before public anchoring and polished UI
+
+**Status:** Accepted  
+**Decision:** Prototype 1 succeeds when the local trust chain through independent attestation passes its defined positive and negative gates. Transparency-log/blockchain publication, broad multi-host automation and polished UI follow only after that core path is demonstrated.
