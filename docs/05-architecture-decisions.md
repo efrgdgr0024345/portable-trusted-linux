@@ -96,3 +96,33 @@ This file records durable project decisions. Changes should be made by new commi
 
 **Status:** Accepted  
 **Decision:** Prototype build tooling will not write raw images to a block device until explicit device-selection safety checks and negative tests exist. Ambiguous, internal, mounted or otherwise unsafe targets must be refused by default.
+
+## ADR-020 — Community Compute Commons is a separate future subsystem
+
+**Status:** Accepted  
+**Decision:** The volunteer LLM compute concept is named **Community Compute Commons (CCC)** and is maintained as a separate research and future implementation track. It must not weaken or delay the core Portable Trusted Linux Prototype 1 security acceptance path.
+
+## ADR-021 — Pre-OS is for consent and mode selection, not LLM execution
+
+**Status:** Accepted  
+**Decision:** The signed pre-OS/boot menu may offer Community Compute Commons as an explicit opt-in choice. Actual compute runs only after a separate signed minimal Linux worker environment has booted. GPU/NPU drivers, networking, model runtimes and remote scheduling are not added to the minimal firmware/pre-OS trusted computing base.
+
+## ADR-022 — Secure Inspection Mode and CCC require separate boot profiles
+
+**Status:** Accepted  
+**Decision:** Secure Inspection Mode and Community Compute Commons use separate signed UKIs/root policies. Because CCC enables networking and externally scheduled workloads, a running CCC environment may not transition into Secure Inspection Mode without a complete reboot into the independently authenticated inspection image.
+
+## ADR-023 — CCC initially targets high-throughput independent AI workloads
+
+**Status:** Accepted  
+**Decision:** The first CCC workloads should be jobs that tolerate heterogeneous, intermittent and high-latency workers: independent inference, embeddings, reranking, evaluation, synthetic-data generation and similar batch tasks. Internet-wide tightly synchronous frontier-model pretraining is not an initial target.
+
+## ADR-024 — Public/non-sensitive workloads and open-weight models first
+
+**Status:** Accepted  
+**Decision:** Arbitrary private prompts and confidential/proprietary model weights are not sent to untrusted volunteer nodes in the initial CCC design. The first system uses public or explicitly non-sensitive workloads, approved signed job manifests, sandboxed runtimes and open-weight models. Confidential volunteer inference requires a separately reviewed design.
+
+## ADR-025 — Volunteer costs and social fairness must be explicit
+
+**Status:** Accepted  
+**Decision:** CCC must not describe volunteered compute as literally cost-free. Electricity, data, battery cycles, thermal load and hardware wear belong to donors. The system therefore requires explicit opt-in, power/thermal/bandwidth controls, AC/unmetered defaults where practical, transparent accounting, and contribution credits based on accepted useful work rather than claimed uptime. Cryptocurrency is not required for accounting.
