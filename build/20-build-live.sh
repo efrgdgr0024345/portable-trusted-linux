@@ -19,7 +19,20 @@ bash "${SCRIPT_DIR}/10-prepare-live-build.sh"
 cd "$WORK_DIR"
 
 printf 'Starting Debian Live build in %s\n' "$WORK_DIR"
-sudo lb build 2>&1 | tee "${OUT_DIR}/live-build.log"
+if [[ ${EUID} -eq 0 ]]; then
+  lb build 2>&1 | tee "${OUT_DIR}/live-build.log"
+else
+  command -v sudo >/dev/null 2>&1 || {
+    echo "sudo is required for the privileged live-build stage." >&2
+    exit 1
+  }
+  if ! sudo -n true 2>/dev/null; then
+    echo "The runner does not currently have non-interactive sudo permission for the live-build stage." >&2
+    echo "Grant only the documented temporary build privilege before retrying." >&2
+    exit 1
+  fi
+  sudo -n lb build 2>&1 | tee "${OUT_DIR}/live-build.log"
+fi
 
 image="$(find . -maxdepth 1 -type f \( -name '*.iso' -o -name '*.img' \) | sort | head -n 1 || true)"
 
