@@ -21,6 +21,7 @@ for path in \
   docs/06-prototype-build-specification-v0.1.md \
   docs/07-lessons-learned.md \
   docs/11-automation-manifesto.md \
+  assets/blackcat-boot-320x240.png.b64 \
   build/00-host-check.sh \
   build/01-install-deps.sh \
   build/10-prepare-live-build.sh \
@@ -85,6 +86,40 @@ if ! grep -Fq 'If no genuine human-gate condition applies' "${ROOT_DIR}/docs/11-
   failures=1
 else
   printf '[OK]      Automation Manifesto forbids routine permission pauses\n'
+fi
+
+splash_b64="${ROOT_DIR}/assets/blackcat-boot-320x240.png.b64"
+if command -v base64 >/dev/null 2>&1 && command -v sha256sum >/dev/null 2>&1; then
+  splash_tmp="$(mktemp)"
+  trap 'rm -f "$splash_tmp"' EXIT
+  if base64 --decode "$splash_b64" > "$splash_tmp" 2>/dev/null; then
+    splash_sha="$(sha256sum "$splash_tmp" | awk '{print $1}')"
+    if [[ "$splash_sha" == "894cc95e62b31028baa59235b1b3ddc6ea5bd706e0ac2ac5feccfd5a1198ee59" ]]; then
+      printf '[OK]      Black Cat boot splash decodes to expected SHA-256\n'
+    else
+      printf '[FAILED]  Black Cat boot splash SHA-256 mismatch: %s\n' "$splash_sha"
+      failures=1
+    fi
+  else
+    printf '[FAILED]  Black Cat boot splash base64 does not decode\n'
+    failures=1
+  fi
+else
+  printf '[SKIP]    base64/sha256sum unavailable; boot splash decode check skipped\n'
+fi
+
+if grep -Fq 'background_image /boot/grub/blackcat.png' "${ROOT_DIR}/config/live-build/bootloaders/grub-pc/grub.cfg"; then
+  printf '[OK]      GRUB menu references Black Cat boot splash\n'
+else
+  printf '[FAILED]  GRUB menu does not reference Black Cat boot splash\n'
+  failures=1
+fi
+
+if grep -Fq 'menu background splash.png' "${ROOT_DIR}/config/live-build/bootloaders/syslinux_common/live.cfg.in"; then
+  printf '[OK]      Syslinux menu references Black Cat boot splash\n'
+else
+  printf '[FAILED]  Syslinux menu does not reference Black Cat boot splash\n'
+  failures=1
 fi
 
 if [[ "$failures" -ne 0 ]]; then
