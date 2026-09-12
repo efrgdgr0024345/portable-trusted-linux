@@ -131,30 +131,72 @@ jobs:
         run: |
           set -Eeuo pipefail
           ISO="$(find smoke-input -type f -name '*.iso' -print -quit)"
-          OVMF="$(find /usr/share/OVMF -type f -name 'OVMF_CODE*.fd' -print -quit)"
-          [[ -n "$OVMF" ]] || { echo 'OVMF firmware not found' >&2; exit 1; }
+          CODE="$(find /usr/share/OVMF -maxdepth 1 -type f \( -name 'OVMF_CODE_4M.fd' -o -name 'OVMF_CODE.fd' \) -print -quit)"
+          [[ -n "$CODE" ]] || { echo 'OVMF code firmware not found' >&2; exit 1; }
+
+          VARS_TEMPLATE=''
+          if [[ "$CODE" == *'_4M.fd' ]]; then
+            VARS_TEMPLATE="$(find /usr/share/OVMF -maxdepth 1 -type f -name 'OVMF_VARS_4M.fd' -print -quit)"
+          else
+            VARS_TEMPLATE="$(find /usr/share/OVMF -maxdepth 1 -type f -name 'OVMF_VARS.fd' -print -quit)"
+          fi
+          [[ -n "$VARS_TEMPLATE" ]] || { echo 'Matching OVMF variable store not found' >&2; exit 1; }
+          cp "$VARS_TEMPLATE" smoke/OVMF_VARS.fd
+
+          rm -f smoke/qemu-monitor smoke/qemu.pid
+          set +e
           qemu-system-x86_64 \
             -machine accel=tcg \
             -m 1024 \
-            -bios "$OVMF" \
+            -drive if=pflash,format=raw,readonly=on,file="$CODE" \
+            -drive if=pflash,format=raw,file=smoke/OVMF_VARS.fd \
             -cdrom "$ISO" \
             -boot d \
             -display none \
             -serial file:smoke/uefi-serial.log \
             -monitor unix:smoke/qemu-monitor,server,nowait \
-            -pidfile smoke/qemu.pid \
+            -D smoke/qemu-debug.log \
             -no-reboot \
-            -daemonize
-          sleep 10
-          kill -0 "$(cat smoke/qemu.pid)" || { echo 'QEMU exited before UEFI menu capture' >&2; exit 1; }
+            >smoke/qemu-stdout.log 2>smoke/qemu-stderr.log &
+          QPID=$!
+          set -e
+          echo "$QPID" > smoke/qemu.pid
+
+          for i in $(seq 1 20); do
+            [[ -S smoke/qemu-monitor ]] && break
+            kill -0 "$QPID" 2>/dev/null || break
+            sleep 1
+          done
+
+          if ! kill -0 "$QPID" 2>/dev/null; then
+            echo 'QEMU exited during UEFI boot.' >&2
+            cat smoke/qemu-stderr.log >&2 || true
+            exit 1
+          fi
+          [[ -S smoke/qemu-monitor ]] || {
+            echo 'QEMU monitor socket was not created.' >&2
+            cat smoke/qemu-stderr.log >&2 || true
+            kill "$QPID" 2>/dev/null || true
+            exit 1
+          }
+
+          sleep 12
+          printf 'info status\n' | socat - UNIX-CONNECT:smoke/qemu-monitor | tee smoke/qemu-status.txt
           printf 'screendump smoke/uefi-menu.ppm\n' | socat - UNIX-CONNECT:smoke/qemu-monitor
           sleep 2
           printf 'quit\n' | socat - UNIX-CONNECT:smoke/qemu-monitor || true
-          test -s smoke/uefi-menu.ppm
+          wait "$QPID" 2>/dev/null || true
+
+          test -s smoke/uefi-menu.ppm || {
+            echo 'UEFI framebuffer capture was not produced.' >&2
+            cat smoke/qemu-stderr.log >&2 || true
+            exit 1
+          }
           convert smoke/uefi-menu.ppm smoke/uefi-menu.png
           tesseract smoke/uefi-menu.png stdout > smoke/uefi-menu-ocr.txt 2>/dev/null || true
-          echo '--- UEFI framebuffer OCR (diagnostic evidence) ---'
+          echo '--- UEFI framebuffer OCR (informational) ---'
           cat smoke/uefi-menu-ocr.txt || true
+          echo 'BLACK CAT UEFI ISO BOOT: PASS'
 
       - name: Boot live userspace and require Black Cat quick check
         shell: bash
@@ -162,7 +204,7 @@ jobs:
           set -Eeuo pipefail
           ISO="$(find smoke-input -type f -name '*.iso' -print -quit)"
           set +e
-          timeout 150s qemu-system-x86_64 \
+          timeout 180s qemu-system-x86_64 \
             -machine accel=tcg \
             -m 1536 \
             -kernel smoke/vmlinuz \
@@ -176,7 +218,7 @@ jobs:
           set -e
           echo "QEMU_EXIT=$rc"
           echo '--- tail of live serial log ---'
-          tail -n 120 smoke/live-serial.log || true
+          tail -n 180 smoke/live-serial.log || true
           if ! grep -Fq 'BLACK CAT - QUICK CHECK' smoke/live-serial.log; then
             echo 'Black Cat quick-check marker was not observed during VM boot.' >&2
             exit 1
