@@ -1,12 +1,12 @@
-# Black Cat High-Security Controller Architecture
+# Black Cat High-Security Automation Architecture
 
 ## Status
 
-**Accepted design direction — implementation staged progressively.**
+**Superseded before deployment — zero-new-inbound-surface policy is now the default.**
 
-This document defines the highest-security automation architecture selected for Black Cat. Its purpose is to let routine engineering advance without operator polling while preserving explicit human control over physical, destructive, credential, trust-ownership, release and other high-impact boundaries.
+The earlier controller proposal in this file explored a cPanel-hosted GitHub webhook receiver and optional OpenAI API reasoning worker. That design was never deployed. After security review, the project rejected adding a new public listener merely to reduce operator polling.
 
-## Priority order
+## Current priority order
 
 When design goals conflict, use this order:
 
@@ -22,121 +22,56 @@ When design goals conflict, use this order:
 
 Autonomy must never outrank containment or evidence quality.
 
-## Chosen architecture
+## Current architecture direction
 
-Black Cat uses a **hybrid event-driven controller**:
+Black Cat must not create a network service merely to improve automation convenience.
+
+The default automation path is:
 
 ```text
-GitHub Actions / repository events
+GitHub repository + GitHub Actions
             |
             v
-  signed GitHub webhook
+ exact workflow / commit / artifact evidence
             |
             v
-  Black Cat Controller on cPanel
+ deterministic project rules and state interpretation
             |
-            +--> deterministic state machine
+            +--> safe repository engineering while an authorised agent is active
             |
-            +--> append-only event/evidence log
-            |
-            +--> read-only project/GitHub inspection
-            |
-            +--> bounded OpenAI API reasoning job when needed
-            |
-            +--> human-gate notification when required
+            +--> explicit human gate only when required
             v
-      Black Cat Portal
+      existing project viewer
 ```
 
-A low-frequency watchdog poll may exist only as recovery for missed/stuck webhook delivery. Polling is not the primary trigger.
+No new inbound webhook, public controller endpoint, browser automation of ChatGPT, or OpenAI API credential is part of the current implementation.
 
-## Why this design wins
+If unattended reconciliation becomes genuinely necessary, the preferred next step is an **outbound-only watchdog** running outside `public_html`. It may periodically query GitHub for exact workflow/commit state. It must not listen for inbound network requests and must not expose another public service.
 
-### Not browser automation of ChatGPT
+## Security rule
 
-The project does not automate or scrape the consumer ChatGPT website. UI automation would depend on changing HTML, login/session behavior and browser state and would require another high-value authenticated session. That creates an unnecessary trust boundary and poor reproducibility.
+**Automation must reduce human friction without increasing externally reachable attack surface unless a demonstrated security benefit outweighs the new exposure.**
 
-### Not continuous 30-second polling
+Every proposed listener, writable endpoint, credential, API integration or privileged service must therefore answer:
 
-GitHub already emits workflow/repository events. Webhooks are lower-latency, lower-load and easier to correlate with exact delivery IDs. A watchdog can periodically reconcile state, but event delivery is authoritative for normal operation.
+- what security or reliability benefit it provides;
+- what new attack surface it creates;
+- why existing GitHub Actions or an outbound-only mechanism cannot provide the same result;
+- how privilege is bounded;
+- how failure is detected and contained;
+- how the component is removed or disabled safely.
 
-### Not an unconstrained autonomous AI loop
+If those questions do not produce a compelling answer, do not deploy the component.
 
-AI is not the primary scheduler and does not decide its own endless work loop. The deterministic controller owns state transitions. AI receives one bounded job when reasoning is genuinely needed and returns evidence/changes to the normal GitHub review/test path.
+## GitHub remains durable project memory
 
-### GitHub remains durable project memory
+The private repository remains canonical for project rules, source, lessons, architecture decisions, tests, candidate identities and evidence. A chat session, local cache or controller database must never be the only authoritative copy.
 
-The repository remains the canonical source for rules, source, lessons, architecture decisions, tests, candidate identities and evidence. A model conversation is never the only copy of project knowledge.
+## Deterministic state model may remain conceptual
 
-## Security boundaries
+The existing `controller/state-machine.json` is retained as a **non-networked conceptual state model**. Keeping a deterministic vocabulary for states and human gates does not require deploying a controller service.
 
-### Boundary A — Public webhook endpoint
-
-The webhook endpoint is public but accepts no unauthenticated action.
-
-Required controls:
-
-- HTTPS only;
-- GitHub webhook secret stored outside the public web root;
-- validate the original request bytes against `X-Hub-Signature-256` using HMAC-SHA256;
-- compare signatures using constant-time comparison;
-- require expected repository identity;
-- require expected event types;
-- use `X-GitHub-Delivery` as an idempotency key;
-- reject malformed, replayed or oversized payloads;
-- log rejection without leaking secrets;
-- subscribe only to events actually required.
-
-GitHub documents `X-Hub-Signature-256` as the SHA-256 HMAC signature for webhook deliveries and recommends it over the legacy SHA-1 header.
-
-### Boundary B — cPanel secrets
-
-Secrets live outside `public_html`, under the existing protected Black Cat home location or a stricter successor.
-
-Separate secrets by function:
-
-- GitHub webhook secret;
-- GitHub read credential;
-- future GitHub write credential;
-- OpenAI API credential;
-- portal authentication/session keys.
-
-Never reuse one credential as another trust root.
-
-### Boundary C — AI context
-
-Do not send secrets to the model.
-
-The agent receives only the minimum context needed for its bounded task: project rules, relevant source, exact GitHub event/log evidence and current state. Secret-bearing files, raw tokens and unrelated account data are excluded.
-
-### Boundary D — GitHub write authority
-
-Start read-only.
-
-When write authority is eventually introduced:
-
-- use a separate credential from the read-only viewer/controller token;
-- restrict it to this repository;
-- restrict permissions to the minimum endpoints needed;
-- write only to a dedicated automation branch;
-- never push directly to `main`;
-- require normal CI/status gates before any merge;
-- do not grant repository administration, secrets-management or workflow-secret access;
-- release approval remains a human/security gate.
-
-The preferred long-term direction is a narrowly scoped GitHub App or equivalent service identity rather than a broadly capable personal token.
-
-### Boundary E — OpenAI API
-
-Use a dedicated API project/service identity for Black Cat rather than a personal general-purpose key. Apply restricted endpoint permissions where available and project budgets/rate limits. OpenAI currently supports project-scoped service accounts, project usage controls and API-key permission levels including Restricted and Read Only.
-
-The API agent is a reasoning component, not a security authority. A model output cannot by itself promote a release, authenticate an artifact, modify platform ownership state or redefine project rules.
-
-## Deterministic state machine
-
-The controller tracks one explicit engineering state and one explicit human gate.
-
-### Engineering states
+It may be used to describe states such as:
 
 - `DEVELOPING`
 - `AUTOMATED_TESTING`
@@ -149,150 +84,46 @@ The controller tracks one explicit engineering state and one explicit human gate
 - `RELEASE_ENGINEERING`
 - `PAUSED_SECURITY`
 
-### Human gates
+Human gates remain explicit, including physical USB writing, physical boot tests, firmware or TPM ownership changes, credentials, destructive operations, material security-policy choices and release approval.
 
-- `NONE`
-- `PHYSICAL_USB_WRITE`
-- `PHYSICAL_BOOT_TEST`
-- `FIRMWARE_CHANGE`
-- `TPM_OWNERSHIP_CHANGE`
-- `CREDENTIAL_REQUIRED`
-- `SECURITY_POLICY_DECISION`
-- `RELEASE_APPROVAL`
-- `DESTRUCTIVE_ACTION`
-- `FINANCIAL_OR_LEGAL_COMMITMENT`
+## Current implementation boundaries
 
-The controller must never represent a state as merely "waiting for user". It records the exact gate and why automation cannot cross it.
+### Existing GitHub Actions
 
-## Controller decision sequence
+Continue using the existing repository-scoped Actions workflows and self-hosted builder. They already provide an auditable control path without adding another Internet-facing application.
 
-For every accepted event:
+### Existing cPanel viewer
 
-1. Authenticate and deduplicate the event.
-2. Confirm repository, branch/commit and workflow identity.
-3. Load current controller state.
-4. Apply deterministic transition logic first.
-5. If no reasoning is required, update state without AI.
-6. If bounded diagnosis/reasoning is required, create one agent job.
-7. Validate the agent result against policy and available tools.
-8. Route source changes through GitHub and CI.
-9. If a human gate is reached, stop automation and expose exactly one required operator action.
-10. Persist evidence and event identity.
+The project viewer is read-only. It accepts one repository-read credential from `/home/learning/.blackcat/github_token`, outside the web root, and fails closed if the credential or GitHub data is unavailable. It must not become an automation command endpoint.
 
-## AI invocation policy
+### Outbound-only watchdog — optional future step
 
-Examples that should **not** call AI:
+If future unattended monitoring is justified, it should:
 
-- workflow success/failure flag storage;
-- checking whether all required gates passed;
-- comparing an exact commit SHA;
-- candidate size/hash format validation;
-- rejecting a replayed webhook;
-- setting `AWAITING_PHYSICAL_TEST` after all predetermined gates pass.
+- run as a scheduled local process outside `public_html`;
+- make outbound HTTPS requests to GitHub only;
+- use read-only repository permissions unless a separately reviewed change requires more;
+- track exact commit/run/artifact identities rather than ambiguous "latest" state;
+- perform deterministic checks first;
+- avoid storing signing keys or trust roots;
+- notify rather than silently crossing human gates.
 
-Examples that may justify a bounded AI job:
+### AI API integration — not currently approved
 
-- explaining a novel build failure from logs;
-- identifying a source-level root cause;
-- proposing a bounded patch plus regression test;
-- assessing whether an unexpected observation changes an architecture assumption;
-- updating affected documentation after an engineering conclusion.
+Introducing an OpenAI API credential adds another credential and trust boundary. It is therefore not part of the current automation baseline. If reconsidered later, it requires a separate security decision and least-privilege review.
 
-## Write-access progression
+### Browser automation — rejected
 
-### Stage 0 — current manual/ChatGPT-assisted development
-
-GitHub Actions and project rules are already active. Human/ChatGPT interaction drives repository changes.
-
-### Stage 1 — secure observer
-
-Controller receives signed webhooks, maintains state, reconciles exact workflow results and renders the portal. **No OpenAI API and no GitHub write authority.**
-
-### Stage 2 — read-only reasoning agent
-
-Add a dedicated OpenAI API project credential. The agent can inspect provided evidence and propose a diagnosis/action, but cannot modify GitHub.
-
-### Stage 3 — branch-only engineering agent
-
-Introduce a separate least-privilege GitHub write identity. The agent may create/update files only on a dedicated automation branch and must rely on CI for evidence. No direct `main` writes and no release promotion.
-
-### Stage 4 — constrained autonomous repair
-
-Allow automatically selected low-risk defect repairs after negative testing of controller policy, replay handling, branch enforcement and credential boundaries. High-impact classes remain human-gated.
-
-### Stage 5 — mature controller
-
-Only after adversarial testing may broader routine project operations be delegated. Physical actions, release approval, trust-root changes and destructive operations remain human-gated.
-
-## Portal security model
-
-The portal is primarily an observability/control surface, not the source of truth.
-
-Recommended behavior:
-
-- read-only status available only to authenticated operator;
-- CSRF protection on state-changing actions;
-- secure, HttpOnly, SameSite cookies;
-- session rotation after authentication;
-- rate limiting;
-- explicit `PAUSE AUTOMATION` control;
-- privileged actions require recent/step-up authentication;
-- display exact commit/run/artifact identifiers;
-- display the Automation Manifesto pre-pause result;
-- never display secret values.
-
-## Event log and tamper evidence
-
-Maintain an append-only controller event log containing at minimum:
-
-- receive timestamp;
-- GitHub delivery ID;
-- event type/action;
-- repository;
-- branch/ref;
-- commit SHA;
-- workflow/run/job IDs when applicable;
-- previous state;
-- new state;
-- human gate;
-- deterministic/AI decision class;
-- related GitHub commit/artifact identifiers.
-
-Each local log record should eventually include a `previous_record_hash` and `record_hash` so silent history editing becomes detectable. This local hash chain is evidence continuity, not external authenticity; later external anchoring remains a separate architecture layer.
-
-## Watchdog / reconciliation
-
-A cron job may run every 5 minutes to reconcile controller state against GitHub. It should only repair missed/stuck event processing. It must not create duplicate agent jobs or substitute ambiguous "latest build" selection for exact commit/run identity.
-
-Thirty-second polling is intentionally rejected as the normal mechanism because it adds load and still lacks the exact delivery identity/idempotency advantages of webhooks.
+Do not automate or scrape the consumer ChatGPT web session. It would create a fragile high-value authenticated-session dependency and is not an acceptable project control plane.
 
 ## Failure behavior
 
-Fail closed on:
+Fail closed on ambiguous artifact identity, unavailable project rules, unavailable authoritative GitHub data, credential-permission ambiguity, or inability to prove which commit/run/artifact is being acted upon.
 
-- invalid webhook signature;
-- unknown repository;
-- unknown workflow;
-- commit mismatch;
-- duplicate/replayed event;
-- missing authoritative candidate metadata;
-- unavailable project rules;
-- credential permission ambiguity;
-- model output requesting a prohibited action;
-- inability to prove which artifact/commit is being acted upon.
+Do not silently substitute stale cache data for live authoritative candidate/release state.
 
-A failure must not silently fall back to stale state or a more powerful credential.
+## Historical proposal retained for auditability
 
-## Immediate implementation target
+The superseded proposal would have used signed GitHub webhooks into a cPanel controller, deterministic state transitions, an append-only event log, an optional bounded OpenAI API worker, and a portal. The design included HMAC verification and replay controls, but it was intentionally stopped before deployment because the additional public listener and credentials increased attack surface without a demonstrated security benefit at the current project stage.
 
-Build Stage 1 first:
-
-1. `controller/webhook.php` — HMAC-verified GitHub webhook receiver;
-2. `controller/lib/` — deterministic state-machine logic;
-3. protected runtime state outside public web root;
-4. append-only event log;
-5. portal status panel;
-6. 5-minute reconciliation watchdog;
-7. replay/signature/unknown-repository negative tests.
-
-Only after Stage 1 passes should the OpenAI API credential be introduced.
+No webhook endpoint, public controller, OpenAI API key, or autonomous GitHub-writing service was deployed as part of that proposal.
