@@ -12,11 +12,13 @@ Internal repository names, `PTL_` environment variables, workflow names and evid
 - First Debian Live hybrid ISO built successfully on the remote builder.
 - The first ISO was written to USB in raw/DD mode and **physically booted successfully on real hardware**.
 - That physical boot is currently classified as **OBSERVED bootability**, not proof of Secure Boot, TPM attestation, dm-verity or release authenticity.
-- The next Black Cat ISO adds a no-typing **System Check** boot-menu entry.
+- The no-typing **System Check** boot path has now passed the integrated build + UEFI/QEMU smoke gate in GitHub Actions run `34669451222`.
+- One exact M13B physical-test candidate is frozen for operator testing: `live-image-amd64.hybrid.iso`, 376,438,784 bytes, SHA-256 `34903e52268bf995207cc51e86de9d1950406690445fca7cedfe5a98371f7b32`, source commit `c65c1cf27fc8bf21bbbb95d5bca989bed54e34df`.
+- This is a **TEST CANDIDATE — NOT AN APPROVED RELEASE**. Physical no-typing menu/persistence validation remains pending.
 
 ## No-typing diagnostic path
 
-The next image presents a boot choice similar to:
+The candidate image presents a boot choice similar to:
 
 ```text
 Black Cat - Start
@@ -32,7 +34,7 @@ The quick-check output is deliberately classified as **OBSERVED** unless a later
 
 Public viewer: https://easyai.com.au/USB/project.php
 
-The public PHP viewer reads `project_content.json` from this private repository using a server-side, read-only GitHub token.
+The public PHP viewer reads `project_content.json` from this private repository using a server-side, read-only GitHub token. Development distribution and release distribution are deliberately separate: the viewer may show one exact **Current Test Candidate** for operator testing while the **Approved Black Cat ISO** remains disabled until explicit release promotion requirements are met.
 
 ## Repository structure
 
