@@ -83,3 +83,112 @@ jobs:
           if-no-files-found: warn
           compression-level: 0
           retention-days: 7
+
+  boot-smoke:
+    name: Boot Black Cat ISO in QEMU
+    needs: live-build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Download built ISO
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: ptl-first-live-build-${{ github.run_id }}
+          path: smoke-input
+
+      - name: Install disposable VM test tools
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            qemu-system-x86 ovmf xorriso socat imagemagick tesseract-ocr
+
+      - name: Verify boot menu is embedded in ISO
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ISO="$(find smoke-input -type f -name '*.iso' -print -quit)"
+          [[ -n "$ISO" ]] || { echo 'No ISO found in downloaded build artifact' >&2; exit 1; }
+          echo "ISO=$ISO"
+          mkdir -p smoke/mnt
+          sudo mount -o loop,ro "$ISO" smoke/mnt
+          trap 'sudo umount smoke/mnt 2>/dev/null || true' EXIT
+          echo '--- Black Cat menu strings inside ISO ---'
+          grep -RIna --include='*.cfg' 'Black Cat' smoke/mnt | tee smoke/menu-strings.txt
+          grep -Riq --include='*.cfg' 'Black Cat - System Check' smoke/mnt
+          KERNEL="$(find smoke/mnt/live -maxdepth 1 -type f -name 'vmlinuz*' -print -quit)"
+          INITRD="$(find smoke/mnt/live -maxdepth 1 -type f \( -name 'initrd*' -o -name 'initrd.img*' \) -print -quit)"
+          [[ -n "$KERNEL" && -n "$INITRD" ]] || { echo 'Kernel/initrd missing from live ISO' >&2; exit 1; }
+          cp "$KERNEL" smoke/vmlinuz
+          cp "$INITRD" smoke/initrd.img
+          sudo umount smoke/mnt
+          trap - EXIT
+
+      - name: UEFI boot ISO and capture menu framebuffer
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ISO="$(find smoke-input -type f -name '*.iso' -print -quit)"
+          OVMF="$(find /usr/share/OVMF -type f -name 'OVMF_CODE*.fd' -print -quit)"
+          [[ -n "$OVMF" ]] || { echo 'OVMF firmware not found' >&2; exit 1; }
+          qemu-system-x86_64 \
+            -machine accel=tcg \
+            -m 1024 \
+            -bios "$OVMF" \
+            -cdrom "$ISO" \
+            -boot d \
+            -display none \
+            -serial file:smoke/uefi-serial.log \
+            -monitor unix:smoke/qemu-monitor,server,nowait \
+            -pidfile smoke/qemu.pid \
+            -no-reboot \
+            -daemonize
+          sleep 10
+          kill -0 "$(cat smoke/qemu.pid)" || { echo 'QEMU exited before UEFI menu capture' >&2; exit 1; }
+          printf 'screendump smoke/uefi-menu.ppm\n' | socat - UNIX-CONNECT:smoke/qemu-monitor
+          sleep 2
+          printf 'quit\n' | socat - UNIX-CONNECT:smoke/qemu-monitor || true
+          test -s smoke/uefi-menu.ppm
+          convert smoke/uefi-menu.ppm smoke/uefi-menu.png
+          tesseract smoke/uefi-menu.png stdout > smoke/uefi-menu-ocr.txt 2>/dev/null || true
+          echo '--- UEFI framebuffer OCR (diagnostic evidence) ---'
+          cat smoke/uefi-menu-ocr.txt || true
+
+      - name: Boot live userspace and require Black Cat quick check
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ISO="$(find smoke-input -type f -name '*.iso' -print -quit)"
+          set +e
+          timeout 150s qemu-system-x86_64 \
+            -machine accel=tcg \
+            -m 1536 \
+            -kernel smoke/vmlinuz \
+            -initrd smoke/initrd.img \
+            -cdrom "$ISO" \
+            -append 'boot=live components blackcat.check=1 console=ttyS0,115200' \
+            -nographic \
+            -no-reboot \
+            > smoke/live-serial.log 2>&1
+          rc=$?
+          set -e
+          echo "QEMU_EXIT=$rc"
+          echo '--- tail of live serial log ---'
+          tail -n 120 smoke/live-serial.log || true
+          if ! grep -Fq 'BLACK CAT - QUICK CHECK' smoke/live-serial.log; then
+            echo 'Black Cat quick-check marker was not observed during VM boot.' >&2
+            exit 1
+          fi
+          echo 'BLACK CAT VM BOOT SMOKE TEST: PASS'
+
+      - name: Preserve boot smoke evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: blackcat-boot-smoke-${{ github.run_id }}
+          path: smoke/**
+          if-no-files-found: warn
+          compression-level: 0
+          retention-days: 7
