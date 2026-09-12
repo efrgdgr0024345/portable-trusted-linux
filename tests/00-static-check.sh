@@ -18,9 +18,12 @@ check_file() {
 for path in \
   PROJECT_RULES.md \
   project_content.json \
+  web/project.php \
+  docs/05-architecture-decisions.md \
   docs/06-prototype-build-specification-v0.1.md \
   docs/07-lessons-learned.md \
   docs/11-automation-manifesto.md \
+  docs/12-high-security-controller-architecture.md \
   assets/blackcat-boot-160x120.png.b64 \
   build/00-host-check.sh \
   build/01-install-deps.sh \
@@ -41,8 +44,39 @@ if command -v jq >/dev/null 2>&1; then
     printf '[FAILED]  project_content.json is invalid JSON\n'
     failures=1
   fi
+
+  if jq -e '
+      if .candidate.status == "test" then
+        (.candidate.filename | type == "string" and length > 0) and
+        (.candidate.size_bytes | type == "number" and . > 0) and
+        (.candidate.sha256 | type == "string" and test("^[a-f0-9]{64}$")) and
+        (.candidate.source_commit | type == "string" and test("^[A-Fa-f0-9]{40}$")) and
+        (.candidate.build_run | tostring | test("^[0-9]+$")) and
+        (.candidate.artifact_id | tostring | test("^[0-9]+$")) and
+        (.candidate.artifact_name | type == "string" and length > 0) and
+        (.candidate.smoke_test == "passed") and
+        (.candidate.download_url | type == "string" and startswith("https://"))
+      else
+        true
+      end
+    ' "${ROOT_DIR}/project_content.json" >/dev/null; then
+    printf '[OK]      Current Test Candidate metadata is complete when enabled\n'
+  else
+    printf '[FAILED]  enabled Current Test Candidate metadata is incomplete\n'
+    failures=1
+  fi
+
+  if jq -e '
+      ([.milestones[] | select(.id == "M13B" and .status == "current")] | length) == 0 or
+      (.candidate.status == "test" or .candidate.status == "superseded")
+    ' "${ROOT_DIR}/project_content.json" >/dev/null; then
+    printf '[OK]      M13B cannot silently lose its candidate record\n'
+  else
+    printf '[FAILED]  M13B is current but the candidate record was removed\n'
+    failures=1
+  fi
 else
-  printf '[SKIP]    jq unavailable; JSON parse check skipped\n'
+  printf '[SKIP]    jq unavailable; JSON/candidate checks skipped\n'
 fi
 
 for script in \
@@ -86,6 +120,37 @@ if ! grep -Fq 'If no genuine human-gate condition applies' "${ROOT_DIR}/docs/11-
   failures=1
 else
   printf '[OK]      Automation Manifesto forbids routine permission pauses\n'
+fi
+
+viewer="${ROOT_DIR}/web/project.php"
+if grep -Fq "const TOKEN_FILE = '/home/learning/.blackcat/github_token';" "$viewer"; then
+  printf '[OK]      viewer uses the protected token-file source\n'
+else
+  printf '[FAILED]  viewer is not pinned to the protected token-file source\n'
+  failures=1
+fi
+
+for forbidden in 'PTL_GITHUB_TOKEN' 'GITHUB_TOKEN_FALLBACK' 'offline-cache'; do
+  if grep -Fq "$forbidden" "$viewer"; then
+    printf '[FAILED]  viewer contains forbidden fallback/cache token: %s\n' "$forbidden"
+    failures=1
+  else
+    printf '[OK]      viewer excludes %s fallback/cache behavior\n' "$forbidden"
+  fi
+done
+
+if grep -Fq 'Current Test Candidate' "$viewer" && grep -Fq 'TEST CANDIDATE — NOT AN APPROVED RELEASE' "$viewer"; then
+  printf '[OK]      viewer retains the separate Current Test Candidate panel\n'
+else
+  printf '[FAILED]  viewer lost the Current Test Candidate panel or warning label\n'
+  failures=1
+fi
+
+if grep -Fq "const GITHUB_BRANCH = 'codex/remove-chroot-systemd-boot';" "$viewer"; then
+  printf '[OK]      viewer is temporarily pinned to the authoritative M13B branch\n'
+else
+  printf '[FAILED]  viewer is not pinned to the current authoritative M13B branch\n'
+  failures=1
 fi
 
 splash_b64="${ROOT_DIR}/assets/blackcat-boot-160x120.png.b64"
