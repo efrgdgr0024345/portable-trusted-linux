@@ -479,3 +479,22 @@ All three PR workflows now use per-workflow/per-PR concurrency. Disposable hoste
 
 ### Evidence classification
 **OBSERVED CI QUEUE BEHAVIOR / SOURCE FIX IMPLEMENTED.** The concurrency policy reduces redundant CI without changing the Black Cat ISO contents or relaxing any release gate.
+
+---
+
+## 2026-09-12 — Test-candidate retrieval and approved-release distribution are different operator states
+
+### What was attempted
+Restore the original development convenience of obtaining the exact ISO selected for physical testing from the living project page without weakening the deliberately strict Approved Black Cat ISO gate.
+
+### What happened
+The integrated live-build and UEFI/QEMU smoke workflow run `34669451222` completed successfully. Its preserved build artifact `10290629064` contains `live-image-amd64.hybrid.iso`; the archived build manifest and an independent SHA-256 calculation agree on exact size `376438784` bytes and ISO digest `34903e52268bf995207cc51e86de9d1950406690445fca7cedfe5a98371f7b32`, sourced from commit `c65c1cf27fc8bf21bbbb95d5bca989bed54e34df`. The viewer had previously hidden all CI candidates, which prevented the operator from retrieving the deliberately selected physical-test image through the project page.
+
+### Why it matters
+A development operator needs an easy route to one exact candidate while the project still needs a separate, stronger meaning for an approved release. Treating these as the same state either creates unnecessary friction during testing or weakens release semantics.
+
+### Decision / change
+The living viewer now supports a separate **Current Test Candidate** panel. It is enabled only when candidate metadata includes an exact filename, byte size, SHA-256, source commit, workflow run, artifact identity, HTTPS GitHub artifact link and `smoke_test=passed`. It is prominently labelled **TEST CANDIDATE — NOT AN APPROVED RELEASE**. The Approved Black Cat ISO panel and its promotion requirements remain independent and unchanged. GitHub Actions artifact distribution is temporary development infrastructure; authenticated release signing remains a later gate.
+
+### Evidence classification
+**VERIFIED BUILD IDENTITY / IMPLEMENTED DISTRIBUTION-SEPARATION DESIGN.** Automated CI boot evidence has passed for this candidate; physical no-typing menu and persistence validation remain pending.
