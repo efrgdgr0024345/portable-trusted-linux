@@ -63,6 +63,12 @@ fi
 if [[ -f config/includes.chroot/etc/profile.d/blackcat-auto-check.sh ]]; then
   chmod 0644 config/includes.chroot/etc/profile.d/blackcat-auto-check.sh
 fi
+if [[ -f config/includes.chroot/etc/systemd/system/blackcat-check.service ]]; then
+  chmod 0644 config/includes.chroot/etc/systemd/system/blackcat-check.service
+  mkdir -p config/includes.chroot/etc/systemd/system/multi-user.target.wants
+  ln -sfn ../blackcat-check.service \
+    config/includes.chroot/etc/systemd/system/multi-user.target.wants/blackcat-check.service
+fi
 
 cat > "${ARTIFACT_DIR}/prepare.json" <<EOF
 {
