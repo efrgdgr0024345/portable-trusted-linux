@@ -20,6 +20,7 @@ for path in \
   project_content.json \
   docs/06-prototype-build-specification-v0.1.md \
   docs/07-lessons-learned.md \
+  docs/11-automation-manifesto.md \
   build/00-host-check.sh \
   build/01-install-deps.sh \
   build/10-prepare-live-build.sh \
@@ -70,6 +71,20 @@ if ! grep -Fq '/run/blackcat/quick-check.txt' "$profile_hook"; then
   failures=1
 else
   printf '[OK]      login hook displays the root-owned text report\n'
+fi
+
+if ! grep -Fq 'Automation Manifesto and mandatory pre-pause check' "${ROOT_DIR}/PROJECT_RULES.md"; then
+  printf '[FAILED]  PROJECT_RULES.md is missing the mandatory Automation Manifesto pre-pause rule\n'
+  failures=1
+else
+  printf '[OK]      Automation Manifesto pre-pause rule is mandatory\n'
+fi
+
+if ! grep -Fq 'If no genuine human-gate condition applies' "${ROOT_DIR}/docs/11-automation-manifesto.md"; then
+  printf '[FAILED]  Automation Manifesto is missing its no-routine-pause rule\n'
+  failures=1
+else
+  printf '[OK]      Automation Manifesto forbids routine permission pauses\n'
 fi
 
 if [[ "$failures" -ne 0 ]]; then
