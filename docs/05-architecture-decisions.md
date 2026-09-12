@@ -151,3 +151,8 @@ This file records durable project decisions. Changes should be made by new commi
 
 **Status:** Accepted  
 **Decision:** Real-hardware testing should not depend on operators transcribing long shell commands. The live image provides a dedicated **Black Cat - System Check** boot-menu entry that passes a simple kernel flag and automatically launches a modular diagnostic. Its initial output is classified as OBSERVED unless independently verified; it must not collapse observations into a universal safety claim.
+
+## ADR-031 — Test-candidate distribution is separate from approved-release distribution
+
+**Status:** Accepted / Transitional  
+**Decision:** The living project viewer may expose one explicitly frozen **Current Test Candidate** from the private GitHub repository so the operator can retrieve the exact ISO selected for physical testing. A candidate link must identify the workflow run/artifact, ISO filename, exact byte size, ISO SHA-256, source commit and automated smoke-test state, and it must be labelled **TEST CANDIDATE — NOT AN APPROVED RELEASE**. The separate **Approved Black Cat ISO** gate remains disabled until explicit release promotion requirements are met. GitHub Actions artifact links are temporary development distribution and may require the repository owner to be logged in; a later approved release uses the release channel and future signing controls rather than treating a CI artifact as release authenticity.
