@@ -415,7 +415,48 @@ The viewer previously supported fallback credential sources and could retain cac
 Black Cat is explicitly being developed under the assumption that the Windows workstation may already be compromised. Security-sensitive distribution metadata should therefore prefer loss of availability over silently falling back to another credential source or stale release authority.
 
 ### Decision / change
-`web/project.php` now accepts the GitHub credential **only** from the server environment variable `PTL_GITHUB_TOKEN`. There is no hard-coded fallback constant, no token-file fallback and no offline/cached project authority. If the environment variable is absent, GitHub cannot be reached, TLS/API validation fails, or project JSON is invalid, the viewer fails closed and offers no ISO download. An approved download additionally requires exact size, SHA-256, a 40-character source commit and `smoke_test=passed`.
+`web/project.php` initially hardened to accept the GitHub credential only from `PTL_GITHUB_TOKEN`, with no hard-coded fallback and no offline/cached project authority. An approved download additionally requires exact size, SHA-256, a 40-character source commit and `smoke_test=passed`. The credential-source choice in this paragraph was subsequently superseded by the single protected token-file decision below; the fail-closed/no-cache principle remains unchanged.
 
 ### Evidence classification
-**IMPLEMENTED SECURITY HARDENING.** This improves the public distribution control path but does not itself authenticate the ISO cryptographically; release signing remains a later trust gate.
+**IMPLEMENTED SECURITY HARDENING / CREDENTIAL SOURCE SUPERSEDED.** This improves the public distribution control path but does not itself authenticate the ISO cryptographically; release signing remains a later trust gate.
+
+---
+
+## 2026-09-12 — QEMU firmware selection is test-harness evidence, not ISO evidence
+
+### What was attempted
+Require the `PTL First Live Build` workflow to boot the freshly built Black Cat ISO under UEFI/QEMU before treating the CI candidate as suitable for physical testing.
+
+### What happened
+GitHub Actions run `34665210673` successfully built the ISO and preserved the build output, but its separate `boot-smoke` job failed before meaningful ISO boot evidence because the workflow selected the first `OVMF_CODE*.fd` file and supplied it through QEMU's `-bios` shortcut. On the hosted runner that selection could be `OVMF_CODE_4M.secboot.fd`, which requires a matching variable-store/pflash arrangement rather than the old shortcut. In parallel, the standalone Black Cat smoke workflow run `34665210671` passed using an explicit non-secboot OVMF code image plus matching writable `OVMF_VARS` pflash drive.
+
+### Why it matters
+A VM harness can fail independently of the artifact being tested. Classifying a firmware-launch error as an ISO boot failure would incorrectly lower confidence in an image whose construction stage actually succeeded, and could lead to unnecessary boot-image changes.
+
+### Decision / change
+The live-build workflow now uses the same proven OVMF model as the standalone smoke workflow: select `OVMF_CODE_4M.fd` or `OVMF_CODE.fd`, pair it with the matching VARS template, use pflash drives, capture QEMU diagnostics/framebuffer evidence, and use the same 180-second direct-kernel userspace smoke window. The ISO build recipe itself was not changed by this fix.
+
+### Evidence classification
+**OBSERVED HARNESS FAILURE / SOURCE FIX IMPLEMENTED.** Commit `b7bdd8ef092934bf30148b135370690923b69062` contains the harness correction. The replacement workflow execution is the evidence gate for the fix; physical Black Cat menu testing remains separate.
+
+---
+
+## 2026-09-12 — The public viewer should have one operational credential source, not a fallback chain
+
+### What was attempted
+Deploy the fail-closed Black Cat project viewer on the existing cPanel/LiteSpeed account without embedding a GitHub token in public PHP and without turning credential setup into a blocker for the core project.
+
+### What happened
+Neither shell PHP nor web PHP exposed `PTL_GITHUB_TOKEN` because that environment variable had not been configured for the hosting processes. The operator created `/home/learning/.blackcat/` with private directory permissions and stored a newly scoped read-only GitHub token at `/home/learning/.blackcat/github_token` with mode `600`. The production project viewer then successfully fetched the private repository. No token value is stored in `project.php` or in the public web root.
+
+### Why it matters
+A single explicit external credential source is easier to reason about than a chain of environment/file/hard-coded fallbacks. It also fits the current threat model better: the possibly compromised Windows workstation does not become the long-term credential authority, and accidental publication of the PHP source does not reveal the token.
+
+### Decision / change
+For this cPanel-hosted prototype viewer, `/home/learning/.blackcat/github_token` is the **only** accepted GitHub credential source. The enclosing directory and token file must have no group/world permission bits; missing, empty, unreadable or over-permissive state causes a fail-closed response. `web/project.php` was synchronized to this production model. The token must remain fine-grained, read-only and restricted to the project repository; this mechanism is not suitable for release-signing keys or other high-value trust roots.
+
+### Progressive-hardening note
+Current assumption: the cPanel account and its private home directory are sufficiently controlled for a low-privilege repository-read token. Compromise of that hosting account could expose the token, although its read-only/repository-specific scope bounds the impact. A stronger later replacement may use hosting-native secret injection or a purpose-built service identity, but no future change should reintroduce a public-webroot or hard-coded secret fallback.
+
+### Evidence classification
+**OBSERVED DEPLOYMENT / IMPLEMENTED REPOSITORY HARDENING.** The operator confirmed the production page works with the protected token file. Canonical source synchronization is recorded in commit `d3bdc15823b65ce15918ad27945c895927579cde`.
