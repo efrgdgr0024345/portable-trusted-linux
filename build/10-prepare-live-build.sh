@@ -43,8 +43,6 @@ cp "${PTL_CONFIG_DIR}/packages.list" "config/package-lists/blackcat.list.chroot"
 
 # Start from the exact bootloader templates supplied by the installed live-build
 # package, then overlay the small Black Cat customisations kept in this repo.
-# This avoids vendoring Debian's bootloader binaries/templates while still making
-# the menu deterministic relative to the recorded live-build package version.
 if [[ ! -d /usr/share/live/build/bootloaders ]]; then
   echo "live-build bootloader templates are missing" >&2
   exit 1
@@ -57,20 +55,22 @@ if [[ -d "${PTL_CONFIG_DIR}/live-build" ]]; then
 fi
 
 # Branding asset policy:
-# - source is a compact, repository-tracked base64 representation so the build
-#   never depends on a network fetch;
+# - source is a compact repository-tracked base64 representation, so no network
+#   fetch is needed during the build;
 # - exact decoded SHA-256 is checked before use;
-# - the artwork is cosmetic only: GRUB/Syslinux configurations keep ordinary
-#   menu entries, so a firmware that cannot render the PNG can still boot.
-BOOT_SPLASH_B64="${PTL_ROOT}/assets/blackcat-boot-320x240.png.b64"
-BOOT_SPLASH_SHA256="894cc95e62b31028baa59235b1b3ddc6ea5bd706e0ac2ac5feccfd5a1198ee59"
+# - branding is cosmetic only: ordinary menu entries remain the boot authority.
+BOOT_SPLASH_B64="${PTL_ROOT}/assets/blackcat-boot-160x120.png.b64"
+BOOT_SPLASH_SHA256="24d03a442c3f7f04a060d30fbf8710f8b8cd2b5495caffdeea7cc47fcbc546ea"
 if [[ ! -f "$BOOT_SPLASH_B64" ]]; then
   echo "Black Cat boot splash source is missing: $BOOT_SPLASH_B64" >&2
   exit 1
 fi
 
 mkdir -p config/bootloaders/grub-pc config/bootloaders/syslinux_common
-base64 --decode "$BOOT_SPLASH_B64" > config/bootloaders/grub-pc/blackcat.png
+if ! base64 --decode "$BOOT_SPLASH_B64" > config/bootloaders/grub-pc/blackcat.png; then
+  echo "Black Cat boot splash source is not valid base64" >&2
+  exit 1
+fi
 cp config/bootloaders/grub-pc/blackcat.png config/bootloaders/syslinux_common/splash.png
 
 splash_sha="$(sha256sum config/bootloaders/grub-pc/blackcat.png | awk '{print $1}')"
