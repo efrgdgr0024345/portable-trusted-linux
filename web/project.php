@@ -5,16 +5,12 @@ declare(strict_types=1);
  * Black Cat / Portable Trusted Linux — Living Project Viewer
  * Canonical production source for https://easyai.com.au/USB/project.php
  *
- * FAIL-CLOSED CREDENTIAL / DATA MODEL
- * -----------------------------------
- * - Private GitHub is the live project-data authority.
- * - There is exactly one credential source:
- *     /home/learning/.blackcat/github_token
- * - The credential lives outside the public web root.
- * - There is no environment-variable, hard-coded-token, cache or offline fallback.
- * - Missing/empty/unreadable/over-permissive credential state fails closed.
- * - GitHub/TLS/API/JSON failure fails closed.
- * - No ISO download is enabled unless all explicit release gates pass.
+ * Security model:
+ * - private GitHub is authoritative;
+ * - exactly one token source outside public web root;
+ * - no cache/offline/hard-coded token fallback;
+ * - project-data failure fails closed;
+ * - test-candidate distribution is visibly separate from approved releases.
  */
 
 const GITHUB_OWNER = 'efrgdgr0024345';
@@ -45,27 +41,21 @@ function privateModeIsSafe(string $path): bool
 function githubToken(): string
 {
     $directory = dirname(TOKEN_FILE);
-
     if (!is_dir($directory) || !privateModeIsSafe($directory)) {
         return '';
     }
-
     if (!is_file(TOKEN_FILE) || !is_readable(TOKEN_FILE) || !privateModeIsSafe(TOKEN_FILE)) {
         return '';
     }
-
     $raw = @file_get_contents(TOKEN_FILE);
-    if (!is_string($raw)) {
-        return '';
-    }
-
-    return trim($raw);
+    return is_string($raw) ? trim($raw) : '';
 }
 
 function githubApiUrl(): string
 {
     $parts = array_map('rawurlencode', explode('/', CONTENT_FILE));
-    return 'https://api.github.com/repos/' . rawurlencode(GITHUB_OWNER) . '/' . rawurlencode(GITHUB_REPO) . '/contents/' . implode('/', $parts) . '?ref=' . rawurlencode(GITHUB_BRANCH);
+    return 'https://api.github.com/repos/' . rawurlencode(GITHUB_OWNER) . '/' . rawurlencode(GITHUB_REPO)
+        . '/contents/' . implode('/', $parts) . '?ref=' . rawurlencode(GITHUB_BRANCH);
 }
 
 function safeHttpsUrl(string $url): string
@@ -82,7 +72,6 @@ function formatBytes(int $bytes): string
     if ($bytes <= 0) {
         return '—';
     }
-
     $units = ['B', 'KB', 'MB', 'GB', 'TB'];
     $value = (float)$bytes;
     $unit = 0;
@@ -90,8 +79,8 @@ function formatBytes(int $bytes): string
         $value /= 1024;
         $unit++;
     }
-
-    return number_format($value, $unit === 0 ? 0 : 2) . ' ' . $units[$unit] . ' (' . number_format($bytes) . ' bytes)';
+    return number_format($value, $unit === 0 ? 0 : 2) . ' ' . $units[$unit]
+        . ' (' . number_format($bytes) . ' bytes)';
 }
 
 function fetchProject(): array
@@ -100,7 +89,6 @@ function fetchProject(): array
     if ($token === '') {
         return ['ok' => false, 'error' => 'Protected Black Cat credential is unavailable or unsafe. Failing closed.'];
     }
-
     if (!function_exists('curl_init')) {
         return ['ok' => false, 'error' => 'PHP cURL is unavailable. Failing closed.'];
     }
@@ -121,7 +109,7 @@ function fetchProject(): array
             'Accept: application/vnd.github+json',
             'Authorization: Bearer ' . $token,
             'X-GitHub-Api-Version: 2022-11-28',
-            'User-Agent: Black-Cat-PTL-Viewer/5.1'
+            'User-Agent: Black-Cat-PTL-Viewer/5.2'
         ]
     ]);
 
@@ -133,7 +121,6 @@ function fetchProject(): array
     if ($response === false) {
         return ['ok' => false, 'error' => 'GitHub connection failed: ' . $curlError . '. Failing closed.'];
     }
-
     if ($status !== 200) {
         return ['ok' => false, 'error' => 'GitHub returned HTTP ' . $status . '. Failing closed.'];
     }
@@ -153,18 +140,13 @@ function fetchProject(): array
         return ['ok' => false, 'error' => 'project_content.json is invalid. Failing closed.'];
     }
 
-    return [
-        'ok' => true,
-        'project' => $project,
-        'sha' => isset($api['sha']) ? (string)$api['sha'] : ''
-    ];
+    return ['ok' => true, 'project' => $project, 'sha' => isset($api['sha']) ? (string)$api['sha'] : ''];
 }
 
 $result = fetchProject();
 $project = (($result['ok'] ?? false) === true && is_array($result['project'] ?? null)) ? $result['project'] : null;
 $error = $project === null ? (string)($result['error'] ?? 'Project data unavailable. Failing closed.') : '';
 $githubSha = $project !== null ? (string)($result['sha'] ?? '') : '';
-
 if ($project === null) {
     http_response_code(503);
 }
@@ -180,8 +162,34 @@ $documents = is_array($project['documents'] ?? null) ? $project['documents'] : [
 $milestones = is_array($project['milestones'] ?? null) ? $project['milestones'] : [];
 $decisions = is_array($project['decisions'] ?? null) ? $project['decisions'] : [];
 $changelog = is_array($project['changelog'] ?? null) ? $project['changelog'] : [];
-$release = is_array($project['release'] ?? null) ? $project['release'] : [];
 
+$candidate = is_array($project['candidate'] ?? null) ? $project['candidate'] : [];
+$candidateStatus = strtolower(trim((string)($candidate['status'] ?? 'none')));
+$candidateFilename = trim((string)($candidate['filename'] ?? ''));
+$candidateBytes = max(0, (int)($candidate['size_bytes'] ?? 0));
+$candidateHash = strtolower(trim((string)($candidate['sha256'] ?? '')));
+$candidateSourceCommit = trim((string)($candidate['source_commit'] ?? ''));
+$candidateBuildRun = trim((string)($candidate['build_run'] ?? ''));
+$candidateArtifactId = trim((string)($candidate['artifact_id'] ?? ''));
+$candidateArtifactName = trim((string)($candidate['artifact_name'] ?? ''));
+$candidateSmokeTest = strtolower(trim((string)($candidate['smoke_test'] ?? 'pending')));
+$candidateDownload = safeHttpsUrl((string)($candidate['download_url'] ?? ''));
+$candidateNote = trim((string)($candidate['note'] ?? ''));
+
+$candidateEnabled =
+    $project !== null &&
+    $candidateStatus === 'test' &&
+    $candidateFilename !== '' &&
+    $candidateBytes > 0 &&
+    preg_match('/^[a-f0-9]{64}$/', $candidateHash) === 1 &&
+    preg_match('/^[a-f0-9]{40}$/i', $candidateSourceCommit) === 1 &&
+    preg_match('/^[0-9]+$/', $candidateBuildRun) === 1 &&
+    preg_match('/^[0-9]+$/', $candidateArtifactId) === 1 &&
+    $candidateArtifactName !== '' &&
+    $candidateSmokeTest === 'passed' &&
+    $candidateDownload !== '';
+
+$release = is_array($project['release'] ?? null) ? $project['release'] : [];
 $releaseStatus = strtolower(trim((string)($release['status'] ?? 'none')));
 $releaseDownload = safeHttpsUrl((string)($release['download_url'] ?? ''));
 $releasePage = safeHttpsUrl((string)($release['release_page_url'] ?? ''));
@@ -211,18 +219,31 @@ $downloadEnabled =
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title><?= h($title) ?></title>
 <style>
-:root{--bg:#050706;--panel:#0d120f;--text:#f4f7f5;--muted:#a7b3ab;--muted2:#758078;--green:#67f58e;--greenB:rgba(103,245,142,.22);--border:rgba(255,255,255,.075);--yellow:#f0cc70;--red:#ff8080;--max:1180px}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 50% -10%,rgba(70,255,125,.09),transparent 35%),linear-gradient(180deg,#070a08,#040504 45%,#070907);color:var(--text);line-height:1.65}.wrap{width:min(var(--max),calc(100% - 40px));margin:auto}nav{position:sticky;top:0;z-index:30;background:rgba(5,7,6,.92);border-bottom:1px solid var(--border)}.nav{min-height:68px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{font-weight:850;display:flex;align-items:center;gap:11px}.logo{width:34px;height:34px;border:1px solid var(--greenB);border-radius:10px;display:grid;place-items:center;color:var(--green);font-size:12px}.navlinks{display:flex;gap:16px;align-items:center}.navlinks a,.navlinks button{color:var(--muted);font:inherit;font-size:12px;text-decoration:none;background:none;border:0;cursor:pointer}.hero{padding:82px 0 58px}.kicker{color:var(--green);font-size:11px;font-weight:900;letter-spacing:.15em;text-transform:uppercase}.hero h1,h2{letter-spacing:-.045em;line-height:1.05}.hero h1{font-size:clamp(48px,7vw,86px);margin:12px 0 0}.summary{font-size:19px;color:#bec8c1;max-width:850px;margin-top:26px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:36px}.card,.releasebox,.doc,.mile,.system,.errorbox{border:1px solid var(--border);background:var(--panel);border-radius:14px}.card{padding:18px}.label{color:var(--muted2);font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:900}.value{font-weight:800;font-size:18px;margin-top:5px}.bar{height:8px;border:1px solid var(--border);background:#111713;border-radius:99px;overflow:hidden;margin-top:17px}.bar>div{height:100%;background:linear-gradient(90deg,#2ec75e,var(--green));width:<?= $progress ?>%}.release,.docs,.section{padding:62px 0;border-top:1px solid var(--border)}h2{font-size:clamp(31px,4vw,50px);margin:7px 0 20px}.releasebox{padding:25px;border-color:var(--greenB)}.releasehead{display:flex;justify-content:space-between;gap:20px}.release-status{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:7px 10px;border-radius:99px;height:max-content}.approved{color:var(--green);background:rgba(103,245,142,.09)}.pending{color:var(--yellow);background:rgba(240,204,112,.09)}.releasegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 22px}.releasefield{padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05)}.releasefield strong{display:block;color:var(--muted2);font-size:10px;text-transform:uppercase;letter-spacing:.09em}.releasefield span,.releasefield code{display:block;margin-top:4px;overflow-wrap:anywhere}.releaseactions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}.downloadbtn,.secondarybtn{display:inline-flex;padding:12px 16px;border-radius:11px;font-weight:850;text-decoration:none}.downloadbtn{background:var(--green);color:#041006}.downloadbtn.disabled{background:#182019;color:#657068;pointer-events:none}.secondarybtn{border:1px solid var(--border);color:var(--muted)}.release-note{color:var(--muted);font-size:13px;margin-top:15px}.docgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.doc{display:flex;flex-direction:column;padding:21px;min-height:210px;text-decoration:none}.doctype,.date{color:var(--muted2);font-size:10px;text-transform:uppercase;letter-spacing:.1em}.doctype{color:var(--green);font-weight:900}.doc h3{margin:8px 0}.doc p,.prose,.event p{color:var(--muted)}.doclink{margin-top:auto;color:var(--green);font-weight:800}.sectiongrid{display:grid;grid-template-columns:210px 1fr;gap:45px}.index{color:var(--green);font-size:10px;text-transform:uppercase;letter-spacing:.12em;font-weight:900}.prose{font-size:17px;max-width:900px}.milestones{display:grid;gap:9px}.mile{display:grid;grid-template-columns:65px 1fr auto;gap:15px;align-items:center;padding:14px 17px}.status{padding:5px 8px;border-radius:99px;font-size:9px;text-transform:uppercase;font-weight:900}.complete{color:var(--green)}.current{color:var(--yellow)}.planned{color:var(--muted)}.timeline{border-left:1px solid var(--greenB);padding-left:24px}.event{margin-bottom:28px}.event h3{margin:3px 0}.system{padding:16px;font:11px ui-monospace,monospace;color:var(--muted2);margin-top:30px}.errorbox{max-width:760px;margin:90px auto;padding:34px;border-color:rgba(255,128,128,.25)}.fail{color:var(--red);font-weight:850}footer{padding:38px 0 55px;border-top:1px solid var(--border);color:var(--muted2);font-size:12px}@media(max-width:900px){.cards,.docgrid,.releasegrid{grid-template-columns:1fr 1fr}.sectiongrid{grid-template-columns:1fr}}@media(max-width:620px){.wrap{width:calc(100% - 26px)}.cards,.docgrid,.releasegrid{grid-template-columns:1fr}.navlinks a{display:none}.mile{grid-template-columns:52px 1fr}.mile .status{grid-column:2}.releasehead{display:block}}@media print{nav,.downloadbtn,.secondarybtn{display:none}body{background:white;color:#111}}
+:root{--bg:#050706;--panel:#0d120f;--text:#f4f7f5;--muted:#a7b3ab;--muted2:#758078;--green:#67f58e;--greenB:rgba(103,245,142,.22);--border:rgba(255,255,255,.075);--yellow:#f0cc70;--red:#ff8080;--max:1180px}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 50% -10%,rgba(70,255,125,.09),transparent 35%),linear-gradient(180deg,#070a08,#040504 45%,#070907);color:var(--text);line-height:1.65}.wrap{width:min(var(--max),calc(100% - 40px));margin:auto}nav{position:sticky;top:0;z-index:30;background:rgba(5,7,6,.92);border-bottom:1px solid var(--border)}.nav{min-height:68px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{font-weight:850;display:flex;align-items:center;gap:11px}.logo{width:34px;height:34px;border:1px solid var(--greenB);border-radius:10px;display:grid;place-items:center;color:var(--green);font-size:12px}.navlinks{display:flex;gap:16px;align-items:center}.navlinks a,.navlinks button{color:var(--muted);font:inherit;font-size:12px;text-decoration:none;background:none;border:0;cursor:pointer}.hero{padding:82px 0 58px}.kicker{color:var(--green);font-size:11px;font-weight:900;letter-spacing:.15em;text-transform:uppercase}.hero h1,h2{letter-spacing:-.045em;line-height:1.05}.hero h1{font-size:clamp(48px,7vw,86px);margin:12px 0 0}.summary{font-size:19px;color:#bec8c1;max-width:850px;margin-top:26px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:36px}.card,.releasebox,.doc,.mile,.system,.errorbox{border:1px solid var(--border);background:var(--panel);border-radius:14px}.card{padding:18px}.label{color:var(--muted2);font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:900}.value{font-weight:800;font-size:18px;margin-top:5px}.bar{height:8px;border:1px solid var(--border);background:#111713;border-radius:99px;overflow:hidden;margin-top:17px}.bar>div{height:100%;background:linear-gradient(90deg,#2ec75e,var(--green));width:<?= $progress ?>%}.release,.docs,.section{padding:62px 0;border-top:1px solid var(--border)}h2{font-size:clamp(31px,4vw,50px);margin:7px 0 20px}.releasebox{padding:25px;border-color:var(--greenB);margin-bottom:18px}.candidatebox{border-color:rgba(240,204,112,.32)}.releasehead{display:flex;justify-content:space-between;gap:20px}.release-status{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:7px 10px;border-radius:99px;height:max-content}.approved{color:var(--green);background:rgba(103,245,142,.09)}.pending{color:var(--yellow);background:rgba(240,204,112,.09)}.releasegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 22px}.releasefield{padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05)}.releasefield strong{display:block;color:var(--muted2);font-size:10px;text-transform:uppercase;letter-spacing:.09em}.releasefield span,.releasefield code{display:block;margin-top:4px;overflow-wrap:anywhere}.releaseactions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}.downloadbtn,.secondarybtn{display:inline-flex;padding:12px 16px;border-radius:11px;font-weight:850;text-decoration:none}.downloadbtn{background:var(--green);color:#041006}.candidatebtn{background:var(--yellow);color:#171005}.downloadbtn.disabled{background:#182019;color:#657068;pointer-events:none}.secondarybtn{border:1px solid var(--border);color:var(--muted)}.release-note{color:var(--muted);font-size:13px;margin-top:15px}.warning{color:var(--yellow);font-weight:850}.docgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.doc{display:flex;flex-direction:column;padding:21px;min-height:210px;text-decoration:none;color:inherit}.doctype,.date{color:var(--muted2);font-size:10px;text-transform:uppercase;letter-spacing:.1em}.doctype{color:var(--green);font-weight:900}.doc h3{margin:8px 0}.doc p,.prose,.event p{color:var(--muted)}.doclink{margin-top:auto;color:var(--green);font-weight:800}.sectiongrid{display:grid;grid-template-columns:210px 1fr;gap:45px}.index{color:var(--green);font-size:10px;text-transform:uppercase;letter-spacing:.12em;font-weight:900}.prose{font-size:17px;max-width:900px}.milestones{display:grid;gap:9px}.mile{display:grid;grid-template-columns:65px 1fr auto;gap:15px;align-items:center;padding:14px 17px}.status{padding:5px 8px;border-radius:99px;font-size:9px;text-transform:uppercase;font-weight:900}.complete{color:var(--green)}.current{color:var(--yellow)}.planned{color:var(--muted)}.timeline{border-left:1px solid var(--greenB);padding-left:24px}.event{margin-bottom:28px}.event h3{margin:3px 0}.system{padding:16px;font:11px ui-monospace,monospace;color:var(--muted2);margin-top:30px}.errorbox{max-width:760px;margin:90px auto;padding:34px;border-color:rgba(255,128,128,.25)}.fail{color:var(--red);font-weight:850}footer{padding:38px 0 55px;border-top:1px solid var(--border);color:var(--muted2);font-size:12px}@media(max-width:900px){.cards,.docgrid,.releasegrid{grid-template-columns:1fr 1fr}.sectiongrid{grid-template-columns:1fr}}@media(max-width:620px){.wrap{width:calc(100% - 26px)}.cards,.docgrid,.releasegrid{grid-template-columns:1fr}.navlinks a{display:none}.mile{grid-template-columns:52px 1fr}.mile .status{grid-column:2}.releasehead{display:block}}@media print{nav,.downloadbtn,.secondarybtn{display:none}body{background:white;color:#111}}
 </style>
 </head>
 <body>
-<nav><div class="wrap nav"><div class="brand"><span class="logo">BC</span>Black Cat <span style="color:var(--muted2)">/ PTL</span></div><div class="navlinks"><a href="#release">Download</a><a href="#documents">Documents</a><a href="#progress">Progress</a><a href="#decisions">Decisions</a><button type="button" onclick="window.print()">Print / PDF</button></div></div></nav>
+<nav><div class="wrap nav"><div class="brand"><span class="logo">BC</span>Black Cat <span style="color:var(--muted2)">/ PTL</span></div><div class="navlinks"><a href="#candidate">Test ISO</a><a href="#release">Approved ISO</a><a href="#documents">Documents</a><a href="#progress">Progress</a><button type="button" onclick="window.print()">Print / PDF</button></div></div></nav>
 
 <?php if ($project === null): ?>
 <main class="wrap"><div class="errorbox"><div class="kicker">Fail-closed project connection</div><h1>Black Cat project data unavailable.</h1><p class="fail">No cached or fallback data is being served.</p><p><?= h($error) ?></p><p>The credential value is never displayed by this page.</p></div></main>
 <?php else: ?>
-<header class="hero"><div class="wrap"><div class="kicker">Portable Trusted Linux engineering project</div><h1><?= h($title) ?></h1><div class="summary"><?= nl2br(h($summary)) ?></div><div class="cards"><div class="card"><div class="label">Version</div><div class="value"><?= h($version) ?></div></div><div class="card"><div class="label">Phase</div><div class="value"><?= h($phase) ?></div></div><div class="card"><div class="label">Progress</div><div class="value"><?= $progress ?>%</div></div><div class="card"><div class="label">Updated</div><div class="value"><?= h($updated) ?></div></div></div><div class="bar"><div></div></div></div></header>
+<header class="hero"><div class="wrap"><div class="kicker">Portable Trusted Linux engineering project</div><h1><?= h($title) ?></h1><div class="summary"><?= nl2br(h($summary)) ?></div><div class="cards"><div class="card"><div class="label">Version</div><div class="value"><?= h($version) ?></div></div><div class="card"><div class="label">Phase</div><div class="value"><?= h($phase) ?></div></div><div class="card"><div class="label">Progress</div><div class="value"><?= $progress ?>%</div></div><div class="card"><div class="label">Updated</div><div class="value"><?= h($updated) ?></div></div></div><div class="bar"><div></div></div></header>
 
-<section class="release" id="release"><div class="wrap"><div class="releasebox"><div class="releasehead"><div><div class="kicker">Controlled distribution</div><h2>Approved Black Cat ISO</h2></div><div class="release-status <?= $downloadEnabled ? 'approved' : 'pending' ?>"><?= $downloadEnabled ? 'Approved download' : 'No approved ISO' ?></div></div><div class="releasegrid"><div class="releasefield"><strong>Filename</strong><span><?= h($releaseFilename !== '' ? $releaseFilename : 'Not published') ?></span></div><div class="releasefield"><strong>Exact size</strong><span><?= h(formatBytes($releaseBytes)) ?></span></div><div class="releasefield"><strong>SHA-256</strong><code><?= h($releaseHash !== '' ? $releaseHash : 'Not published') ?></code></div><div class="releasefield"><strong>Source commit</strong><code><?= h($releaseSourceCommit !== '' ? $releaseSourceCommit : 'Not published') ?></code></div><div class="releasefield"><strong>Build run</strong><span><?= h($releaseBuildRun !== '' ? $releaseBuildRun : 'Not published') ?></span></div><div class="releasefield"><strong>Automated boot smoke test</strong><span><?= h($releaseSmokeTest !== '' ? $releaseSmokeTest : 'pending') ?></span></div></div><div class="releaseactions"><?php if ($downloadEnabled): ?><a class="downloadbtn" href="<?= h($releaseDownload) ?>">Download approved ISO ↓</a><?php else: ?><span class="downloadbtn disabled" aria-disabled="true">Download unavailable</span><?php endif; ?><?php if ($releasePage !== ''): ?><a class="secondarybtn" href="<?= h($releasePage) ?>" target="_blank" rel="noopener noreferrer">View GitHub release →</a><?php endif; ?></div><div class="release-note"><?= h($releaseNote !== '' ? $releaseNote : 'Candidate CI artifacts are not offered here. An ISO appears only after explicit promotion with exact identity and a passed smoke test.') ?></div></div></div></section>
+<section class="release" id="candidate"><div class="wrap">
+<div class="releasebox candidatebox"><div class="releasehead"><div><div class="kicker">Development distribution</div><h2>Current Test Candidate</h2></div><div class="release-status pending"><?= $candidateEnabled ? 'Ready for physical testing' : 'No test candidate' ?></div></div>
+<?php if ($candidateEnabled): ?>
+<p class="warning">TEST CANDIDATE — NOT AN APPROVED RELEASE</p>
+<div class="releasegrid"><div class="releasefield"><strong>Filename</strong><span><?= h($candidateFilename) ?></span></div><div class="releasefield"><strong>Exact size</strong><span><?= h(formatBytes($candidateBytes)) ?></span></div><div class="releasefield"><strong>SHA-256</strong><code><?= h($candidateHash) ?></code></div><div class="releasefield"><strong>Source commit</strong><code><?= h($candidateSourceCommit) ?></code></div><div class="releasefield"><strong>Build run</strong><span><?= h($candidateBuildRun) ?></span></div><div class="releasefield"><strong>Artifact</strong><span><?= h($candidateArtifactName . ' (#' . $candidateArtifactId . ')') ?></span></div><div class="releasefield"><strong>Automated boot smoke test</strong><span><?= h($candidateSmokeTest) ?></span></div><div class="releasefield"><strong>Physical hardware validation</strong><span>pending</span></div></div>
+<div class="releaseactions"><a class="downloadbtn candidatebtn" href="<?= h($candidateDownload) ?>" target="_blank" rel="noopener noreferrer">Download current test candidate ↓</a></div>
+<div class="release-note"><?= h($candidateNote !== '' ? $candidateNote : 'This link targets one frozen GitHub Actions artifact. GitHub sign-in and repository read access are required. The downloaded artifact is a ZIP containing the ISO and its build evidence.') ?></div>
+<?php else: ?>
+<div class="releaseactions"><span class="downloadbtn disabled" aria-disabled="true">Test candidate unavailable</span></div><div class="release-note">A candidate appears only when one exact build has a filename, byte size, SHA-256, source commit, run/artifact identity, HTTPS artifact link and passed automated smoke test.</div>
+<?php endif; ?>
+</div>
+</div></section>
+
+<section class="release" id="release"><div class="wrap"><div class="releasebox"><div class="releasehead"><div><div class="kicker">Controlled release distribution</div><h2>Approved Black Cat ISO</h2></div><div class="release-status <?= $downloadEnabled ? 'approved' : 'pending' ?>"><?= $downloadEnabled ? 'Approved download' : 'No approved ISO' ?></div></div><div class="releasegrid"><div class="releasefield"><strong>Filename</strong><span><?= h($releaseFilename !== '' ? $releaseFilename : 'Not published') ?></span></div><div class="releasefield"><strong>Exact size</strong><span><?= h(formatBytes($releaseBytes)) ?></span></div><div class="releasefield"><strong>SHA-256</strong><code><?= h($releaseHash !== '' ? $releaseHash : 'Not published') ?></code></div><div class="releasefield"><strong>Source commit</strong><code><?= h($releaseSourceCommit !== '' ? $releaseSourceCommit : 'Not published') ?></code></div><div class="releasefield"><strong>Build run</strong><span><?= h($releaseBuildRun !== '' ? $releaseBuildRun : 'Not published') ?></span></div><div class="releasefield"><strong>Automated boot smoke test</strong><span><?= h($releaseSmokeTest !== '' ? $releaseSmokeTest : 'pending') ?></span></div></div><div class="releaseactions"><?php if ($downloadEnabled): ?><a class="downloadbtn" href="<?= h($releaseDownload) ?>">Download approved ISO ↓</a><?php else: ?><span class="downloadbtn disabled" aria-disabled="true">Download unavailable</span><?php endif; ?><?php if ($releasePage !== ''): ?><a class="secondarybtn" href="<?= h($releasePage) ?>" target="_blank" rel="noopener noreferrer">View GitHub release →</a><?php endif; ?></div><div class="release-note"><?= h($releaseNote !== '' ? $releaseNote : 'An approved ISO appears only after explicit promotion. A development test candidate above does not satisfy this release gate.') ?></div></div></div></section>
 
 <section class="docs" id="documents"><div class="wrap"><div class="kicker">Project library</div><h2>Documents &amp; project files</h2><div class="docgrid"><?php foreach ($documents as $doc): $url = safeHttpsUrl((string)($doc['url'] ?? '')); if ($url === '') continue; ?><a class="doc" href="<?= h($url) ?>" target="_blank" rel="noopener noreferrer"><div class="doctype"><?= h((string)($doc['type'] ?? 'Document')) ?></div><h3><?= h((string)($doc['title'] ?? 'Untitled')) ?></h3><p><?= h((string)($doc['description'] ?? '')) ?></p><div class="doclink">Open document →</div></a><?php endforeach; ?></div></div></section>
 
@@ -235,6 +256,6 @@ $downloadEnabled =
 <section class="section"><div class="wrap"><div class="kicker">Historical record</div><h2>Version history</h2><div class="timeline"><?php foreach (array_reverse($changelog) as $change): ?><div class="event"><div class="date"><?= h((string)($change['date'] ?? '')) ?></div><h3>Version <?= h((string)($change['version'] ?? '')) ?></h3><p><?= h((string)($change['summary'] ?? '')) ?></p></div><?php endforeach; ?></div><div class="system">Repository: <?= h(GITHUB_OWNER . '/' . GITHUB_REPO) ?><br>Content: <?= h(CONTENT_FILE) ?><br>Git blob: <?= h($githubSha !== '' ? substr($githubSha, 0, 12) : 'unknown') ?><br>Data source: live GitHub API only<br>Credential source: protected server file only</div></div></section>
 <?php endif; ?>
 
-<footer><div class="wrap"><strong style="color:#fff">Black Cat</strong> · Portable Trusted Linux<br>Fail-closed project metadata · controlled release distribution · independent evidence architecture</div></footer>
+<footer><div class="wrap"><strong style="color:#fff">Black Cat</strong> · Portable Trusted Linux<br>Development candidate identity separated from approved release distribution</div></footer>
 </body>
 </html>
