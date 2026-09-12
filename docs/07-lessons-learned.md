@@ -519,3 +519,22 @@ The systemd service remains the **sole root-owned evidence producer**. The login
 
 ### Evidence classification
 **PHYSICAL OBSERVATION / ROOT CAUSE VERIFIED IN SOURCE / FIX IMPLEMENTED, REBUILD AND PHYSICAL RETEST PENDING.**
+
+---
+
+## 2026-09-12 — Project autonomy needs an explicit pre-pause rule
+
+### What was attempted
+Reduce unnecessary operator interruptions during an active engineering workflow without weakening the project's safety and security boundaries.
+
+### What happened
+The project had strong technical security rules but no equally explicit operating rule telling the assistant when *not* to ask for permission. As a result, routine transitions—especially pending CI, safe follow-up checks and ordinary continuation—could be presented as if they required the operator to say “proceed” again.
+
+### Why it matters
+Unnecessary confirmation points slow development, consume operator attention and can leave safe, reversible work unfinished. At the same time, indiscriminate autonomy would be unsafe around USB writes, firmware/TPM ownership, destructive actions, credentials and irreversible trust decisions. The project needs a precise boundary between ordinary autonomous engineering and genuine human gates.
+
+### Decision / change
+`docs/11-automation-manifesto.md` now defines the Black Cat Automation Manifesto. `PROJECT_RULES.md` makes its **pre-pause check mandatory**. Before asking the operator to proceed or pausing merely because a workflow is running, the assistant must first determine whether the next work can be completed through already-authorized tools, whether it is reversible/non-destructive, whether missing information can be retrieved, and whether independent safe work remains. Routine in-scope work proceeds automatically. Pauses are reserved for genuine human gates such as physical hardware interaction, destructive/irreversible actions, new authorization/credentials, trust-ownership changes, material policy choices, or information that truly cannot be derived safely. Static repository checks require both the manifesto and the mandatory rule to remain present.
+
+### Evidence classification
+**IMPLEMENTED PROJECT OPERATING POLICY / STATIC ENFORCEMENT ADDED.** This policy does not override platform authorization requirements or safety rules; it reduces routine permission-seeking inside those boundaries.
