@@ -46,7 +46,8 @@ fi
 for script in \
   "${ROOT_DIR}"/build/*.sh \
   "${ROOT_DIR}"/tests/*.sh \
-  "${ROOT_DIR}"/config/live-build/includes.chroot/usr/local/bin/blackcat-check; do
+  "${ROOT_DIR}"/config/live-build/includes.chroot/usr/local/bin/blackcat-check \
+  "${ROOT_DIR}"/config/live-build/includes.chroot/etc/profile.d/blackcat-auto-check.sh; do
   [[ -f "$script" ]] || continue
   if bash -n "$script"; then
     printf '[OK]      syntax %s\n' "${script#${ROOT_DIR}/}"
@@ -55,6 +56,21 @@ for script in \
     failures=1
   fi
 done
+
+profile_hook="${ROOT_DIR}/config/live-build/includes.chroot/etc/profile.d/blackcat-auto-check.sh"
+if grep -Eq '(^|[[:space:]])/usr/local/bin/blackcat-check([[:space:]]|$)' "$profile_hook"; then
+  printf '[FAILED]  login hook must not execute blackcat-check; systemd is the sole report producer\n'
+  failures=1
+else
+  printf '[OK]      login hook is display-only; systemd remains sole report producer\n'
+fi
+
+if ! grep -Fq '/run/blackcat/quick-check.txt' "$profile_hook"; then
+  printf '[FAILED]  login hook does not reference the root-owned text report\n'
+  failures=1
+else
+  printf '[OK]      login hook displays the root-owned text report\n'
+fi
 
 if [[ "$failures" -ne 0 ]]; then
   echo "Static checks failed." >&2
