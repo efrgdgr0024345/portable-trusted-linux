@@ -12,6 +12,11 @@ on:
 permissions:
   contents: read
 
+# Hosted runners are disposable, so superseded PR smoke tests can be stopped safely.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-boot:
     name: Build on Debian 13 and boot in QEMU
