@@ -498,3 +498,24 @@ The living viewer now supports a separate **Current Test Candidate** panel. It i
 
 ### Evidence classification
 **VERIFIED BUILD IDENTITY / IMPLEMENTED DISTRIBUTION-SEPARATION DESIGN.** Automated CI boot evidence has passed for this candidate; physical no-typing menu and persistence validation remain pending.
+
+---
+
+## 2026-09-12 — Physical no-typing test exposed duplicate diagnostic execution
+
+### What was attempted
+Physically boot the frozen M13B candidate and use the Black Cat - System Check menu without typing diagnostic commands.
+
+### What happened
+The candidate booted successfully on real hardware and the photograph-friendly quick-check screen appeared automatically. It observed UEFI boot, Secure Boot enabled, a TPM device, a TCG event log, no active network link, kernel `6.12.107+deb13-amd64`, architecture `x86_64`, and dm-verity root `NOT_ACTIVE` (expected before milestone M17). However, the screen also showed `Permission denied` when writing `/run/blackcat/quick-check.txt` and `/run/blackcat/quick-check.json`.
+
+Source review identified a deterministic cause: `blackcat-check.service` already runs `/usr/local/bin/blackcat-check` as root before `getty@tty1.service`, creating root-owned report files under `/run/blackcat`. The profile hook then executed the same collector again as the normal live user. That second run could display observations but could not overwrite the root-owned evidence files.
+
+### Why it matters
+An evidence collector should have one authority/producer. Running the same collector twice under different privilege levels creates confusing output and weakens confidence in which report is authoritative even when the observations themselves are useful.
+
+### Decision / change
+The systemd service remains the **sole root-owned evidence producer**. The login/profile hook is now display-only: it waits briefly for `/run/blackcat/quick-check.txt`, displays the service-generated text/JSON paths, asks the operator to photograph the screen, and never executes `blackcat-check` itself. Static checks now fail if the profile hook directly invokes the collector again. The previously frozen candidate is superseded for M13B completion; a rebuilt candidate must pass CI and then receive one more physical no-typing test with no permission errors.
+
+### Evidence classification
+**PHYSICAL OBSERVATION / ROOT CAUSE VERIFIED IN SOURCE / FIX IMPLEMENTED, REBUILD AND PHYSICAL RETEST PENDING.**
