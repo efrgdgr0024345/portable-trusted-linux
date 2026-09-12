@@ -460,3 +460,22 @@ Current assumption: the cPanel account and its private home directory are suffic
 
 ### Evidence classification
 **OBSERVED DEPLOYMENT / IMPLEMENTED REPOSITORY HARDENING.** The operator confirmed the production page works with the protected token file. Canonical source synchronization is recorded in commit `d3bdc15823b65ce15918ad27945c895927579cde`.
+
+---
+
+## 2026-09-12 — PR CI needs concurrency rules or documentation commits can consume build capacity
+
+### What was attempted
+Keep validating the evolving Black Cat pull request while recording lessons and living-project metadata after each engineering change.
+
+### What happened
+Every pull-request synchronization re-evaluated workflow path filters against the full PR diff. Because the PR already contained build/config/workflow changes, later documentation and `project_content.json` commits could trigger another copy of the expensive smoke/build workflows. With a single self-hosted builder, superseded runs accumulated and delayed the newest evidence gate.
+
+### Why it matters
+An evidence pipeline should preferentially test the source revision that could actually be promoted, not spend scarce builder time proving intermediate metadata-only revisions. At the same time, cancelling a self-hosted `live-build` in the middle of chroot/mount activity is less safe than cancelling a disposable hosted-runner job.
+
+### Decision / change
+All three PR workflows now use per-workflow/per-PR concurrency. Disposable hosted Black Cat smoke tests and the read-only builder-evidence job use `cancel-in-progress: true`. The self-hosted ISO workflow uses `cancel-in-progress: false`, which preserves an already-running build while GitHub collapses superseded pending runs to the newest revision. Build work directories remain run-specific.
+
+### Evidence classification
+**OBSERVED CI QUEUE BEHAVIOR / SOURCE FIX IMPLEMENTED.** The concurrency policy reduces redundant CI without changing the Black Cat ISO contents or relaxing any release gate.
