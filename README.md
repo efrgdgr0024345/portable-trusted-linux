@@ -12,9 +12,11 @@ Internal repository names, `PTL_` environment variables, workflow names and evid
 - First Debian Live hybrid ISO built successfully on the remote builder.
 - The first ISO was written to USB in raw/DD mode and **physically booted successfully on real hardware**.
 - That physical boot is currently classified as **OBSERVED bootability**, not proof of Secure Boot, TPM attestation, dm-verity or release authenticity.
-- The no-typing **System Check** boot path has now passed the integrated build + UEFI/QEMU smoke gate in GitHub Actions run `34669451222`.
-- One exact M13B physical-test candidate is frozen for operator testing: `live-image-amd64.hybrid.iso`, 376,438,784 bytes, SHA-256 `34903e52268bf995207cc51e86de9d1950406690445fca7cedfe5a98371f7b32`, source commit `c65c1cf27fc8bf21bbbb95d5bca989bed54e34df`.
-- This is a **TEST CANDIDATE — NOT AN APPROVED RELEASE**. Physical no-typing menu/persistence validation remains pending.
+- The no-typing **System Check** boot path passed the integrated build + UEFI/QEMU smoke gate in GitHub Actions run `34669451222` and was then physically exercised on real hardware.
+- The physical System Check automatically displayed UEFI boot, Secure Boot enabled, a TPM device, TCG event-log exposure, no active network link, kernel `6.12.107+deb13-amd64`, architecture `x86_64`, and dm-verity root `NOT_ACTIVE` (expected before M17).
+- That physical test also exposed a duplicate-execution bug: the root systemd service created `/run/blackcat` evidence first, then the normal-user login hook tried to run the collector again and received `Permission denied` overwriting the root-owned reports.
+- The login hook is now display-only and systemd is the sole report producer. A rebuilt candidate must pass CI and one more physical no-typing test before M13B is complete.
+- The previously frozen candidate `live-image-amd64.hybrid.iso` / SHA-256 `34903e52268bf995207cc51e86de9d1950406690445fca7cedfe5a98371f7b32` is therefore **superseded for M13B completion** and must not be mistaken for the corrected candidate.
 
 ## No-typing diagnostic path
 
@@ -26,7 +28,7 @@ Black Cat - System Check (no typing)
 Black Cat - Advanced options
 ```
 
-Selecting the System Check entry adds `blackcat.check=1` to the kernel command line. The live environment then runs `/usr/local/bin/blackcat-check` automatically and displays a photograph-friendly summary of boot mode, Secure Boot state, TPM exposure, TCG event-log exposure, dm-verity state, network-link state, kernel and architecture.
+Selecting the System Check entry adds `blackcat.check=1` to the kernel command line. The root-owned `blackcat-check.service` runs `/usr/local/bin/blackcat-check` once and creates `/run/blackcat/quick-check.txt` plus JSON evidence. The later login/profile hook only displays that already-created evidence and asks the operator to photograph it; it does not rerun the collector as the live user.
 
 The quick-check output is deliberately classified as **OBSERVED** unless a later independent cryptographic verifier upgrades an individual result. It must never display a universal "SAFE" claim.
 
@@ -34,7 +36,7 @@ The quick-check output is deliberately classified as **OBSERVED** unless a later
 
 Public viewer: https://easyai.com.au/USB/project.php
 
-The public PHP viewer reads `project_content.json` from this private repository using a server-side, read-only GitHub token. Development distribution and release distribution are deliberately separate: the viewer may show one exact **Current Test Candidate** for operator testing while the **Approved Black Cat ISO** remains disabled until explicit release promotion requirements are met.
+The public PHP viewer reads `project_content.json` from this private repository using a server-side, read-only GitHub token. Development distribution and release distribution are deliberately separate: the viewer may show one exact **Current Test Candidate** for operator testing while the **Approved Black Cat ISO** remains disabled until explicit release promotion requirements are met. A candidate that exposes a physical-test defect is removed/superseded until the corrected rebuild passes its gates.
 
 ## Repository structure
 
