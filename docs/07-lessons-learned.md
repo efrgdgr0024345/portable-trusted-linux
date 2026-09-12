@@ -547,9 +547,9 @@ Unnecessary confirmation points slow development, consume operator attention and
 Use the Black Cat project icon theme on the Debian live image boot/loading experience without making visual branding a reliability or security dependency.
 
 ### What happened
-A compact 320×240, 16-colour PNG derivative of the Black Cat boot artwork was created for bootloader compatibility. Because the GitHub contents workflow used by this project is text-oriented, the PNG is stored as repository-tracked base64 text at `assets/blackcat-boot-320x240.png.b64`. The decoded bytes have SHA-256 `894cc95e62b31028baa59235b1b3ddc6ea5bd706e0ac2ac5feccfd5a1198ee59`.
+A compact 320×240, 16-colour PNG derivative of the Black Cat boot artwork was created for bootloader compatibility. Because the GitHub contents workflow used by this project is text-oriented, the PNG was initially stored as repository-tracked base64 text at `assets/blackcat-boot-320x240.png.b64`.
 
-`build/10-prepare-live-build.sh` now decodes the asset locally without a network fetch, verifies that SHA-256, and stages the same bytes as `grub-pc/blackcat.png` and `syslinux_common/splash.png`. GRUB uses a native conditional around PNG/background loading so machines that cannot render the image still retain the ordinary text menu. Syslinux retains its normal bootable labels with the splash as menu decoration. Static checks independently decode the repository asset, verify its hash and require both bootloader configurations to reference it.
+`build/10-prepare-live-build.sh` decoded the asset locally without a network fetch, verified a pinned SHA-256, and staged the same bytes as `grub-pc/blackcat.png` and `syslinux_common/splash.png`. GRUB uses a native conditional around PNG/background loading so machines that cannot render the image still retain the ordinary text menu. Syslinux retains its normal bootable labels with the splash as menu decoration.
 
 ### Why it matters
 Branding should be deterministic enough to reproduce and audit, but a corrupted/missing visual must never be confused with a trust failure or prevent a machine from reaching the boot choices. Separating cosmetic presentation from boot/security state prevents future UI work from accidentally weakening availability or evidence semantics.
@@ -558,4 +558,25 @@ Branding should be deterministic enough to reproduce and audit, but a corrupted/
 Black Cat system images and icons should derive from the established project-cat visual theme. Boot branding must be staged from repository-controlled bytes, checked for exact identity during the build, and treated as **cosmetic only** at runtime. Security claims, boot eligibility and evidence classification must never depend on successful rendering of the cat artwork.
 
 ### Evidence classification
-**SOURCE IMPLEMENTED / AUTOMATED REBUILD VALIDATION PENDING.** The new branded image still needs the normal CI live-build and QEMU gates before it becomes part of a physical-test candidate.
+**SOURCE IMPLEMENTED / AUTOMATED REBUILD VALIDATION PENDING.**
+
+---
+
+## 2026-09-12 — Large text-encoded binary assets need an early decode gate
+
+### What was attempted
+Run CI with the first repository-encoded Black Cat boot splash.
+
+### What happened
+Black Cat Boot Smoke Test run `34684121916` failed before Debian image construction. The failure was deterministic and occurred in `build/10-prepare-live-build.sh`: GNU `base64 --decode` reported `invalid input` for the 320×240 splash text. The bootloader, Debian build, System Check and QEMU stages were therefore never reached.
+
+The malformed large asset was removed rather than trying to normalize unknown corrupted bytes. A new 160×120, 8-colour PNG was generated from the same Black Cat artwork. Its repository base64 text is only 4,188 bytes and decodes independently to SHA-256 `24d03a442c3f7f04a060d30fbf8710f8b8cd2b5495caffdeea7cc47fcbc546ea`. The build script and static checks now use that smaller exact asset and explicitly fail with a clear message if decoding itself fails.
+
+### Why it matters
+A checksum guard cannot help if transport corruption prevents bytes from being reconstructed in the first place. For binary assets carried through a text-only API, **successful decode is a separate prerequisite before digest verification**. Keeping cosmetic boot assets deliberately small also reduces repository/tooling fragility without changing the trust model.
+
+### Decision / change
+Use the compact `assets/blackcat-boot-160x120.png.b64` asset for the current boot splash. Validate in this order: source exists → base64 decodes → decoded SHA-256 matches → stage to bootloader trees. Remove malformed/superseded encoded assets rather than leaving ambiguous alternatives in the repository.
+
+### Evidence classification
+**CI FAILURE OBSERVED / ROOT CAUSE VERIFIED / SOURCE FIX IMPLEMENTED.** A replacement CI run is still required before this branding becomes part of a physical-test candidate.
