@@ -159,17 +159,27 @@ This file records durable project decisions. Changes should be made by new commi
 
 ## ADR-032 — Highest-security automation uses an event-driven deterministic controller
 
-**Status:** Accepted / Implementation staged  
-**Decision:** Black Cat automation will use a cPanel-hosted event controller driven primarily by authenticated GitHub webhooks, with a low-frequency reconciliation watchdog only as fallback. The deterministic controller owns project automation state and human-gate transitions. Browser automation of the consumer ChatGPT interface and continuous high-frequency polling are rejected as the primary architecture. GitHub remains the durable engineering authority.
-
-Security priority is ordered as: security/containment, correctness/deterministic state, auditability/provenance, least privilege, reliability/recoverability, human-gate clarity, autonomy, latency, convenience.
+**Status:** Superseded by ADR-035 before deployment  
+**Decision:** This proposal selected a cPanel-hosted event controller driven by authenticated GitHub webhooks, with deterministic state transitions and a reconciliation watchdog. It was intentionally stopped before deployment after review concluded that a new public listener was not justified merely to reduce operator polling. No webhook/controller service was deployed.
 
 ## ADR-033 — AI is a bounded reasoning worker, not automation authority
 
-**Status:** Accepted / Implementation staged  
-**Decision:** The OpenAI API agent is invoked only when deterministic controller logic cannot resolve a bounded engineering question. The model is not the scheduler, release authority, trust authority or holder of unrestricted infrastructure credentials. Stage 1 of the controller has no OpenAI API key and no GitHub write authority; Stage 2 adds read-only reasoning; later stages may add a separate least-privilege branch-only GitHub identity after negative tests. The agent may never write directly to `main`, promote a release, perform physical/destructive operations, change firmware/TPM ownership, or receive raw secret values.
+**Status:** Accepted as a future constraint; no API integration currently approved  
+**Decision:** If an API-based reasoning worker is ever introduced after separate security review, the model is not the scheduler, release authority, trust authority or holder of unrestricted infrastructure credentials. It may never write directly to `main`, promote a release, perform physical/destructive operations, change firmware/TPM ownership, or receive raw secret values. No OpenAI API credential is part of the current automation baseline.
 
 ## ADR-034 — Controller webhook authentication and replay controls fail closed
 
-**Status:** Accepted / Implementation staged  
-**Decision:** GitHub webhook processing requires HTTPS, an external secret, `X-Hub-Signature-256` HMAC-SHA256 verification over the original request bytes, constant-time comparison, exact repository/event checks, delivery-ID idempotency and explicit rejection of malformed/replayed/unknown events. Controller state must never fall back to ambiguous "latest" artifacts or stale authoritative state when exact identity is unavailable.
+**Status:** Superseded by ADR-035 before deployment  
+**Decision:** These controls remain technically valid requirements if a webhook design is reconsidered, but there is no current webhook endpoint. Avoiding the listener entirely is preferred while existing GitHub Actions and outbound-only mechanisms are sufficient.
+
+## ADR-035 — Automation must not add externally reachable attack surface for convenience
+
+**Status:** Accepted  
+**Decision:** Black Cat must not create a new inbound-facing service merely to reduce human friction. Existing GitHub Actions remain the default automation infrastructure. If unattended reconciliation becomes necessary, prefer an outbound-only scheduled watchdog outside `public_html` that queries exact GitHub commit/run/artifact state. Any future public listener, writable endpoint, OpenAI API integration, new credential, or privileged service requires a separate security justification showing that its benefit outweighs the attack surface it introduces. Browser automation of an authenticated consumer ChatGPT session is rejected.
+
+The existing deterministic `controller/state-machine.json` may remain as a non-networked conceptual state model; retaining state vocabulary does not authorize deployment of a controller service.
+
+## ADR-036 — Living viewer is canonical, fail-closed and candidate-preserving
+
+**Status:** Accepted  
+**Decision:** The production `project.php` must be deployed from the canonical repository copy, use only `/home/learning/.blackcat/github_token`, never silently fall back to an offline authoritative cache, and render the Current Test Candidate from `project_content.json` only when all exact identity fields pass validation. While an unmerged development branch contains the authoritative candidate state, the viewer may temporarily read that explicit branch; after merge it returns to `main`. Static checks guard the credential model, fail-closed behavior and candidate panel so routine viewer changes cannot silently remove the ISO download path.
