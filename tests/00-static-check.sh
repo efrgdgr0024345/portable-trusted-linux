@@ -21,7 +21,7 @@ for path in \
   docs/06-prototype-build-specification-v0.1.md \
   docs/07-lessons-learned.md \
   docs/11-automation-manifesto.md \
-  assets/blackcat-boot-320x240.png.b64 \
+  assets/blackcat-boot-160x120.png.b64 \
   build/00-host-check.sh \
   build/01-install-deps.sh \
   build/10-prepare-live-build.sh \
@@ -88,13 +88,13 @@ else
   printf '[OK]      Automation Manifesto forbids routine permission pauses\n'
 fi
 
-splash_b64="${ROOT_DIR}/assets/blackcat-boot-320x240.png.b64"
+splash_b64="${ROOT_DIR}/assets/blackcat-boot-160x120.png.b64"
 if command -v base64 >/dev/null 2>&1 && command -v sha256sum >/dev/null 2>&1; then
   splash_tmp="$(mktemp)"
   trap 'rm -f "$splash_tmp"' EXIT
   if base64 --decode "$splash_b64" > "$splash_tmp" 2>/dev/null; then
     splash_sha="$(sha256sum "$splash_tmp" | awk '{print $1}')"
-    if [[ "$splash_sha" == "894cc95e62b31028baa59235b1b3ddc6ea5bd706e0ac2ac5feccfd5a1198ee59" ]]; then
+    if [[ "$splash_sha" == "24d03a442c3f7f04a060d30fbf8710f8b8cd2b5495caffdeea7cc47fcbc546ea" ]]; then
       printf '[OK]      Black Cat boot splash decodes to expected SHA-256\n'
     else
       printf '[FAILED]  Black Cat boot splash SHA-256 mismatch: %s\n' "$splash_sha"
