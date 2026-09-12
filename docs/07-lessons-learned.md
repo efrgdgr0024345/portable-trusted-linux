@@ -538,3 +538,24 @@ Unnecessary confirmation points slow development, consume operator attention and
 
 ### Evidence classification
 **IMPLEMENTED PROJECT OPERATING POLICY / STATIC ENFORCEMENT ADDED.** This policy does not override platform authorization requirements or safety rules; it reduces routine permission-seeking inside those boundaries.
+
+---
+
+## 2026-09-12 — Branding assets must be reproducible but remain outside the trust decision
+
+### What was attempted
+Use the Black Cat project icon theme on the Debian live image boot/loading experience without making visual branding a reliability or security dependency.
+
+### What happened
+A compact 320×240, 16-colour PNG derivative of the Black Cat boot artwork was created for bootloader compatibility. Because the GitHub contents workflow used by this project is text-oriented, the PNG is stored as repository-tracked base64 text at `assets/blackcat-boot-320x240.png.b64`. The decoded bytes have SHA-256 `894cc95e62b31028baa59235b1b3ddc6ea5bd706e0ac2ac5feccfd5a1198ee59`.
+
+`build/10-prepare-live-build.sh` now decodes the asset locally without a network fetch, verifies that SHA-256, and stages the same bytes as `grub-pc/blackcat.png` and `syslinux_common/splash.png`. GRUB uses a native conditional around PNG/background loading so machines that cannot render the image still retain the ordinary text menu. Syslinux retains its normal bootable labels with the splash as menu decoration. Static checks independently decode the repository asset, verify its hash and require both bootloader configurations to reference it.
+
+### Why it matters
+Branding should be deterministic enough to reproduce and audit, but a corrupted/missing visual must never be confused with a trust failure or prevent a machine from reaching the boot choices. Separating cosmetic presentation from boot/security state prevents future UI work from accidentally weakening availability or evidence semantics.
+
+### Decision / change
+Black Cat system images and icons should derive from the established project-cat visual theme. Boot branding must be staged from repository-controlled bytes, checked for exact identity during the build, and treated as **cosmetic only** at runtime. Security claims, boot eligibility and evidence classification must never depend on successful rendering of the cat artwork.
+
+### Evidence classification
+**SOURCE IMPLEMENTED / AUTOMATED REBUILD VALIDATION PENDING.** The new branded image still needs the normal CI live-build and QEMU gates before it becomes part of a physical-test candidate.
