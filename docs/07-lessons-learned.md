@@ -381,3 +381,22 @@ Use Black Cat in user-facing boot menus, documentation and status output. Retain
 
 ### Evidence classification
 **IMPLEMENTED DESIGN / BRANDING DECISION.**
+
+---
+
+## 2026-09-12 — A CI candidate must not automatically become the user download
+
+### What was attempted
+Make it easy to download the exact Black Cat ISO from the living project page without accidentally selecting the wrong build output.
+
+### What happened
+During testing, a locally selected file reported as approximately 40,090 KB and Rufus warned that it was non-bootable or used an unsupported compression method. That observation did not by itself establish the file's exact origin or failure cause, but it demonstrated that a generic 'latest build' path is too easy to misuse. GitHub Actions artifacts are also candidate-build containers rather than a stable release channel.
+
+### Why it matters
+Black Cat's goals require the human operator to know exactly which bytes are intended for testing. Convenience must not collapse candidate build output, approved release identity and release authenticity into one vague 'latest' download.
+
+### Decision / change
+The living project viewer now has an **Approved Black Cat ISO** panel driven by `project_content.json`. The download is disabled unless the release record explicitly says `approved` and supplies an HTTPS download URL, exact filename, exact byte size and a syntactically valid SHA-256. The panel also displays source commit, build-run identity and automated smoke-test state. Candidate CI artifacts remain intentionally unlinked. The intended prototype distribution mechanism is a deliberately promoted GitHub Release asset rather than an arbitrary Actions artifact; later cryptographic release signing remains a separate stronger gate.
+
+### Evidence classification
+**OBSERVED OPERATOR FAILURE MODE / IMPLEMENTED DISTRIBUTION GUARD.** There is currently no approved Black Cat ISO; the release panel must therefore remain disabled until a candidate passes its required gates and is explicitly promoted.
