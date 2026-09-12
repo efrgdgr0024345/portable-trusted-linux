@@ -1,10 +1,23 @@
 {
   "title": "Black Cat",
-  "version": "1.0",
+  "version": "1.1",
   "phase": "Prototype 1 Engineering",
-  "progress": 66,
+  "progress": 67,
   "updated": "2026-09-12",
-  "summary": "Black Cat is the user-facing brand for the Portable Trusted Linux (PTL) project. The first Debian Live hybrid ISO has been built, fingerprinted, written to USB in raw/DD mode and physically booted successfully on real hardware. That result is recorded as OBSERVED bootability only. The source now adds a no-typing Black Cat System Check boot option that automatically reports UEFI/legacy mode, Secure Boot state exposure, TPM exposure, TCG event-log exposure, dm-verity state, network-link state, kernel and architecture. The rebuilt diagnostic ISO is now the immediate validation target; PTL internal identifiers remain stable.",
+  "summary": "Black Cat is the user-facing brand for the Portable Trusted Linux (PTL) project. The first Debian Live hybrid ISO has been built, fingerprinted, written to USB in raw/DD mode and physically booted successfully on real hardware. That result is recorded as OBSERVED bootability only. The source now adds a no-typing Black Cat System Check boot option and a controlled approved-release panel so candidate CI outputs cannot be mistaken for the ISO intended for physical testing. PTL internal identifiers remain stable.",
+  "release": {
+    "status": "none",
+    "channel": "prototype",
+    "filename": "",
+    "size_bytes": 0,
+    "sha256": "",
+    "source_commit": "",
+    "build_run": "",
+    "smoke_test": "pending",
+    "download_url": "",
+    "release_page_url": "",
+    "note": "No Black Cat ISO is currently approved for download. Candidate GitHub Actions artifacts are intentionally not linked. After a candidate passes the required build and boot-smoke gates, one exact ISO will be deliberately promoted as a GitHub Release asset and this record will publish its filename, exact byte size, SHA-256, source commit, build run and test status."
+  },
   "documents": [
     {"type":"Project rules","title":"Mandatory Project Rules","description":"Hardcoded development rules including mandatory lessons learned, JSON-last updates and progressive hardening.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/PROJECT_RULES.md"},
     {"type":"Project index","title":"Black Cat Repository README","description":"Current project status, trust chain and no-typing diagnostic boot path.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/README.md"},
@@ -14,7 +27,7 @@
     {"type":"Architecture","title":"External Evidence Anchoring","description":"Future evidence hashing, signatures, history chaining and external anchoring design.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/04-external-evidence-anchoring.md"},
     {"type":"Decision record","title":"Architecture Decision Register","description":"Durable technical decisions including Black Cat branding, PTL internal-name stability and the no-typing hardware diagnostic path.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/05-architecture-decisions.md"},
     {"type":"Build specification","title":"Prototype Build Specification v0.1","description":"Implementation-ready specification for Prototype 1.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/06-prototype-build-specification-v0.1.md"},
-    {"type":"Engineering record","title":"Lessons Learned Register","description":"Mandatory record including the first successful ISO, provenance fix, physical USB boot and Black Cat diagnostic-menu design.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/07-lessons-learned.md"},
+    {"type":"Engineering record","title":"Lessons Learned Register","description":"Mandatory record including the first successful ISO, provenance fix, physical USB boot, no-typing diagnostics and controlled release-download discipline.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/07-lessons-learned.md"},
     {"type":"Paused research","title":"Community Compute Commons Feasibility Study","description":"Preserved deep research; implementation paused while core Prototype 1 is completed.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/08-compute-commons-feasibility-study.md"},
     {"type":"Paused research","title":"Community Compute Commons Architecture","description":"Future architecture retained for later work.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/09-community-compute-commons-architecture.md"},
     {"type":"Paused research","title":"Community Compute Commons Threat Extension","description":"Future threat-model extension retained for later work.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/10-threat-model-extension-community-compute-v0.1.md"},
@@ -28,18 +41,19 @@
     {"type":"Build script","title":"Artifact Manifest Generator","description":"Separately records intended source identity, checked-out identity, artifact digest and builder provenance.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/30-artifact-manifest.sh"},
     {"type":"Test","title":"Static Project Checks","description":"Checks repository files, Black Cat diagnostic assets, JSON syntax and shell syntax before real execution.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/tests/00-static-check.sh"},
     {"type":"Automation","title":"First Builder Evidence Workflow","description":"Repository-scoped GitHub Actions workflow targeting the self-hosted ptl-builder-01 runner.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/.github/workflows/ptl-first-builder-evidence.yml"},
-    {"type":"Live page","title":"Public Living Project Page","description":"Public project status viewer driven by this JSON index.","url":"https://easyai.com.au/USB/project.php"}
+    {"type":"Live page","title":"Public Living Project Page","description":"Public project status viewer driven by this JSON index, including the controlled approved-ISO download panel.","url":"https://easyai.com.au/USB/project.php"}
   ],
   "sections": [
     {"title":"Branding boundary","content":"Black Cat is the user-facing project/product name. Portable Trusted Linux remains the technical description and PTL remains the stable internal engineering shorthand in repository paths, PTL_ variables, workflows and existing evidence identifiers."},
     {"title":"Current focus","content":"All active engineering is focused on Black Cat / Portable Trusted Linux Prototype 1. Community Compute Commons remains paused."},
     {"title":"Core trust chain","content":"Authenticated release reference -> verified USB image -> UEFI/Secure Boot -> measured boot and TCG event log -> TPM PCR evidence -> signed UKI -> authenticated dm-verity root -> immutable Linux -> RAM-backed disposable state -> nonce-bound TPM Quote -> independent verifier -> attestation report."},
+    {"title":"Controlled download channel","content":"The living project page does not expose arbitrary CI artifacts as downloads. Candidate images remain candidates until one exact ISO is deliberately promoted. The approved-release record must publish its filename, exact byte size, SHA-256, source commit, build run and smoke-test state before the download button is enabled. This improves operator safety but is not a substitute for future cryptographic release signing."},
     {"title":"First physical boot","content":"The first generated Debian Live hybrid ISO was written to USB using raw/DD image mode and successfully booted on real hardware. This is OBSERVED bootability on that configuration only; it is not evidence that Secure Boot, TPM attestation, dm-verity, firmware trust or release authenticity have passed."},
     {"title":"No-typing system check","content":"The next image includes a Black Cat - System Check boot-menu entry. It adds blackcat.check=1 and automatically runs a modular diagnostic that displays UEFI/legacy mode, Secure Boot state exposure, TPM exposure, TCG event-log exposure, dm-verity mapper state, network-link state, kernel and architecture. The screen is designed to be photographed during offline testing."},
     {"title":"Evidence classification","content":"The quick-check screen reports observations and does not become its own ultimate verifier. Individual observations remain OBSERVED/UNKNOWN/etc. until stronger cryptographic and independent verification gates are implemented."},
     {"title":"Verified builder toolchain","content":"The remote Debian 13 builder has the declared live-build, xorriso, verity, UKI, signing and TPM tooling installed. It remains a builder rather than an attestation target because the cloud VM does not expose the required UEFI/TPM interfaces."},
     {"title":"Build provenance","content":"The successful ISO workflow records intended source commit/ref separately from checked-out commit/ref. This prevents pull-request merge-checkout identity from being confused with the source revision intended for the build."},
-    {"title":"Immediate evidence gate","content":"M13 is complete: the first Debian Live reference artifact was built/fingerprinted and physically booted. M13B is current: rebuild the image with the Black Cat no-typing System Check menu and verify that menu and report on physical hardware."},
+    {"title":"Immediate evidence gate","content":"M13 is complete: the first Debian Live reference artifact was built/fingerprinted and physically booted. M13B is current: rebuild the image with the Black Cat no-typing System Check menu, pass the corrected automated boot smoke test, then verify the menu and report on physical hardware before publishing an approved test ISO."},
     {"title":"Progressive hardening","content":"Prototype stages may temporarily use weaker controls to prove the workflow, but every such control must document its trust assumption, compromise path, temporary justification and stronger replacement. Bootstrap credentials, the self-hosted runner and temporary live-build privilege are not final security controls."},
     {"title":"Mandatory lessons discipline","content":"Every meaningful session updates docs/07-lessons-learned.md and affected specifications or decisions. project_content.json is always written last."}
   ],
@@ -87,7 +101,8 @@
     {"date":"2026-09-11","title":"Record source identity separately from checkout identity","text":"CI manifests record intended source commit/ref separately from the temporary merge/detached checkout identity that a pull-request workflow may use."},
     {"date":"2026-09-12","title":"Black Cat is the user-facing brand","text":"Keep PTL internal engineering identifiers stable while presenting the product/project to users as Black Cat."},
     {"date":"2026-09-12","title":"No-typing hardware diagnostics","text":"Provide a dedicated Black Cat System Check boot menu entry that automatically collects modular runtime observations and presents a photograph-friendly screen."},
-    {"date":"2026-09-12","title":"Physical boot is an observation, not attestation","text":"A successful USB boot proves bootability on the tested configuration only and must not be promoted to Secure Boot, TPM, dm-verity, firmware or release-authenticity assurance."}
+    {"date":"2026-09-12","title":"Physical boot is an observation, not attestation","text":"A successful USB boot proves bootability on the tested configuration only and must not be promoted to Secure Boot, TPM, dm-verity, firmware or release-authenticity assurance."},
+    {"date":"2026-09-12","title":"Approved releases are separate from CI candidates","text":"The public project viewer only exposes an ISO download after one exact candidate is deliberately promoted and its filename, byte size, SHA-256, source identity and test state are recorded. This reduces operator error but does not replace future cryptographic release signing."}
   ],
   "changelog": [
     {"date":"2026-09-08","version":"0.1","summary":"Initial trust chain and threat model."},
@@ -99,6 +114,7 @@
     {"date":"2026-09-11","version":"0.7","summary":"Provisioned the first remote Debian 13 builder and formalized weak-to-strong progressive hardening as a mandatory project rule."},
     {"date":"2026-09-11","version":"0.8","summary":"Established the self-hosted GitHub Actions execution path, completed the first real-builder evidence run, and separated the cloud build-host role from later UEFI/TPM attestation testing."},
     {"date":"2026-09-11","version":"0.9","summary":"Verified the builder toolchain, fixed the runner PATH false negative and live-build directory mismatch, and advanced to the first ISO build milestone."},
-    {"date":"2026-09-12","version":"1.0","summary":"Rebranded the user-facing project as Black Cat while retaining PTL internals, recorded the first successful physical USB boot, and added a no-typing System Check boot path for real-hardware diagnostics."}
+    {"date":"2026-09-12","version":"1.0","summary":"Rebranded the user-facing project as Black Cat while retaining PTL internals, recorded the first successful physical USB boot, and added a no-typing System Check boot path for real-hardware diagnostics."},
+    {"date":"2026-09-12","version":"1.1","summary":"Added a controlled approved-ISO download panel so CI candidates cannot be mistaken for the test image intended for users; the button remains disabled until an exact release is explicitly promoted with size, SHA-256, source and smoke-test metadata."}
   ]
 }
