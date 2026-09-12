@@ -17,6 +17,8 @@ Internal repository names, `PTL_` environment variables, workflow names and evid
 - That physical test also exposed a duplicate-execution bug: the root systemd service created `/run/blackcat` evidence first, then the normal-user login hook tried to run the collector again and received `Permission denied` overwriting the root-owned reports.
 - The login hook is now display-only and systemd is the sole report producer. A rebuilt candidate must pass CI and one more physical no-typing test before M13B is complete.
 - The previously frozen candidate `live-image-amd64.hybrid.iso` / SHA-256 `34903e52268bf995207cc51e86de9d1950406690445fca7cedfe5a98371f7b32` is therefore **superseded for M13B completion** and must not be mistaken for the corrected candidate.
+- The next rebuilt image also carries Black Cat branding on both GRUB/UEFI and Syslinux/legacy boot menus using a compact repository-tracked splash derived from the project icon. The branding is cosmetic only and must never become a boot dependency.
+- The **Black Cat Automation Manifesto** is mandatory: safe, reversible, auditable work proceeds automatically until a genuine human gate is reached.
 
 ## No-typing diagnostic path
 
@@ -32,11 +34,25 @@ Selecting the System Check entry adds `blackcat.check=1` to the kernel command l
 
 The quick-check output is deliberately classified as **OBSERVED** unless a later independent cryptographic verifier upgrades an individual result. It must never display a universal "SAFE" claim.
 
+## Boot branding
+
+The project icon is treated as the visual source for Black Cat system imagery. The live-build preparation stage decodes a compact repository-tracked PNG asset, verifies its exact SHA-256, and stages it for both GRUB/UEFI and Syslinux/legacy menus.
+
+The current compact splash identity is:
+
+- source file: `assets/blackcat-boot-320x240.png.b64`
+- decoded SHA-256: `894cc95e62b31028baa59235b1b3ddc6ea5bd706e0ac2ac5feccfd5a1198ee59`
+- role: cosmetic boot branding only
+
+GRUB uses the image only when PNG/background rendering is available; otherwise the ordinary text boot menu remains usable. Syslinux likewise retains normal bootable labels independently of the splash.
+
 ## Living project page
 
 Public viewer: https://easyai.com.au/USB/project.php
 
 The public PHP viewer reads `project_content.json` from this private repository using a server-side, read-only GitHub token. Development distribution and release distribution are deliberately separate: the viewer may show one exact **Current Test Candidate** for operator testing while the **Approved Black Cat ISO** remains disabled until explicit release promotion requirements are met. A candidate that exposes a physical-test defect is removed/superseded until the corrected rebuild passes its gates.
+
+The living project page also surfaces the **Automation Manifesto**, which requires a pre-pause check before routine permission is requested.
 
 ## Repository structure
 
@@ -45,6 +61,8 @@ portable-trusted-linux/
 ├── README.md
 ├── PROJECT_RULES.md
 ├── project_content.json
+├── assets/
+│   └── blackcat-boot-320x240.png.b64
 ├── web/
 │   └── project.php
 ├── build/
