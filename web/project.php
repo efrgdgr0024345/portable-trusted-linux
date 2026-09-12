@@ -11,11 +11,17 @@ declare(strict_types=1);
  * - no cache/offline/hard-coded token fallback;
  * - project-data failure fails closed;
  * - test-candidate distribution is visibly separate from approved releases.
+ *
+ * TEMPORARY DEVELOPMENT REF:
+ * PR #6 remains unmerged while M13B physical retest is pending, so production
+ * must read the exact authoritative development branch. After merge, switch
+ * this constant and its static regression check back to main in one reviewed
+ * change cycle.
  */
 
 const GITHUB_OWNER = 'efrgdgr0024345';
 const GITHUB_REPO = 'portable-trusted-linux';
-const GITHUB_BRANCH = 'main';
+const GITHUB_BRANCH = 'codex/remove-chroot-systemd-boot';
 const CONTENT_FILE = 'project_content.json';
 const TOKEN_FILE = '/home/learning/.blackcat/github_token';
 
@@ -109,7 +115,7 @@ function fetchProject(): array
             'Accept: application/vnd.github+json',
             'Authorization: Bearer ' . $token,
             'X-GitHub-Api-Version: 2022-11-28',
-            'User-Agent: Black-Cat-PTL-Viewer/5.2'
+            'User-Agent: Black-Cat-PTL-Viewer/6.0'
         ]
     ]);
 
@@ -249,11 +255,11 @@ $downloadEnabled =
 
 <?php foreach ($sections as $index => $section): ?><section class="section"><div class="wrap sectiongrid"><aside class="index">Section <?= str_pad((string)($index + 1), 2, '0', STR_PAD_LEFT) ?></aside><div><h2><?= h((string)($section['title'] ?? '')) ?></h2><div class="prose"><?php $paragraphs = preg_split('/\R{2,}/', trim((string)($section['content'] ?? ''))); if (is_array($paragraphs)) foreach ($paragraphs as $paragraph) if (trim($paragraph) !== '') echo '<p>' . nl2br(h(trim($paragraph))) . '</p>'; ?></div></div></div></section><?php endforeach; ?>
 
-<section class="section" id="progress"><div class="wrap"><div class="kicker">Project progress</div><h2>Milestones</h2><div class="milestones"><?php foreach ($milestones as $milestone): $status = strtolower((string)($milestone['status'] ?? 'planned')); if (!in_array($status, ['complete','current','planned'], true)) $status = 'planned'; ?><div class="mile"><div class="date"><?= h((string)($milestone['id'] ?? '')) ?></div><div><?= h((string)($milestone['title'] ?? '')) ?></div><div class="status <?= h($status) ?>"><?= h($status) ?></div></div><?php endforeach; ?></div></div></section>
+<section class="section" id="progress"><div class="wrap"><div class="kicker">Project progress</div><h2>Milestones</h2><div class="milestones"><?php foreach ($milestones as $milestone): $status = strtolower((string)($milestone['status'] ?? 'planned')); if (!in_array($status, ['complete','current','planned','paused'], true)) $status = 'planned'; ?><div class="mile"><div class="date"><?= h((string)($milestone['id'] ?? '')) ?></div><div><?= h((string)($milestone['title'] ?? '')) ?></div><div class="status <?= h($status) ?>"><?= h($status) ?></div></div><?php endforeach; ?></div></div></section>
 
 <section class="section" id="decisions"><div class="wrap"><div class="kicker">Architecture record</div><h2>Decisions</h2><div class="timeline"><?php foreach (array_reverse($decisions) as $decision): ?><div class="event"><div class="date"><?= h((string)($decision['date'] ?? '')) ?></div><h3><?= h((string)($decision['title'] ?? '')) ?></h3><p><?= h((string)($decision['text'] ?? '')) ?></p></div><?php endforeach; ?></div></div></section>
 
-<section class="section"><div class="wrap"><div class="kicker">Historical record</div><h2>Version history</h2><div class="timeline"><?php foreach (array_reverse($changelog) as $change): ?><div class="event"><div class="date"><?= h((string)($change['date'] ?? '')) ?></div><h3>Version <?= h((string)($change['version'] ?? '')) ?></h3><p><?= h((string)($change['summary'] ?? '')) ?></p></div><?php endforeach; ?></div><div class="system">Repository: <?= h(GITHUB_OWNER . '/' . GITHUB_REPO) ?><br>Content: <?= h(CONTENT_FILE) ?><br>Git blob: <?= h($githubSha !== '' ? substr($githubSha, 0, 12) : 'unknown') ?><br>Data source: live GitHub API only<br>Credential source: protected server file only</div></div></section>
+<section class="section"><div class="wrap"><div class="kicker">Historical record</div><h2>Version history</h2><div class="timeline"><?php foreach (array_reverse($changelog) as $change): ?><div class="event"><div class="date"><?= h((string)($change['date'] ?? '')) ?></div><h3>Version <?= h((string)($change['version'] ?? '')) ?></h3><p><?= h((string)($change['summary'] ?? '')) ?></p></div><?php endforeach; ?></div><div class="system">Repository: <?= h(GITHUB_OWNER . '/' . GITHUB_REPO) ?><br>Content: <?= h(CONTENT_FILE) ?><br>Repository ref: <?= h(GITHUB_BRANCH) ?><br>Git blob: <?= h($githubSha !== '' ? substr($githubSha, 0, 12) : 'unknown') ?><br>Data source: live GitHub API only<br>Credential source: protected server file only</div></div></section>
 <?php endif; ?>
 
 <footer><div class="wrap"><strong style="color:#fff">Black Cat</strong> · Portable Trusted Linux<br>Development candidate identity separated from approved release distribution</div></footer>
