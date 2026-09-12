@@ -286,3 +286,22 @@ The preparation script now uses the stable `work/live-build` directory and runs 
 
 ### Evidence classification
 **VERIFIED SOURCE DEFECT / FIXED BEFORE EXECUTION.** The privilege design is transitional and not equivalent to the final security architecture.
+
+---
+
+## 2026-09-13 — SSH recovery must be documented without storing the secret
+
+### What was attempted
+Recover manual administrative SSH access to `ptl-builder-01` after the exact connection recipe had been forgotten.
+
+### What happened
+DigitalOcean still held the expected public SSH key and the cPanel host still held both `~/.ssh/ptl_digitalocean` and `~/.ssh/ptl_digitalocean.pub`. Plain SSH attempts failed because the cPanel SSH configuration only selected the GitHub key and therefore did not automatically present the PTL builder key. Explicitly selecting `~/.ssh/ptl_digitalocean` restored access.
+
+### Why it matters
+The key material had not been lost; the operational mapping between host, account and private-key path had been lost. A security control that depends on memory creates unnecessary recovery risk even when the underlying cryptography is sound.
+
+### Decision / change
+`docs/11-builder-access-runbook.md` now records the builder identity, DigitalOcean public-key fingerprint, cPanel private-key location, known-working SSH command, recommended SSH alias, verification steps and recovery procedure. GitHub may record public key material, fingerprints and the **path** to a private key, but never the private key contents, passphrases, API tokens or recovery codes. The current direct-root key remains explicitly classified as a temporary Prototype 1 bootstrap control to be replaced by a dedicated non-root administrative path and stronger credential custody.
+
+### Evidence classification
+**OBSERVED / RECOVERED / DOCUMENTED.** Administrative access was successfully restored using the existing cPanel-held private key; no secret key material was copied into GitHub.
