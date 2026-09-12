@@ -12,6 +12,11 @@ on:
 permissions:
   contents: read
 
+# This job is read-only and quick, so only the newest PR revision needs to run.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   first-builder-evidence:
     name: First real builder evidence
