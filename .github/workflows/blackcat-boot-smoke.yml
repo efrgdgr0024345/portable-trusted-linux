@@ -1,0 +1,138 @@
+name: Black Cat Boot Smoke Test
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'build/**'
+      - 'config/**'
+      - '.github/workflows/blackcat-boot-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-boot:
+    name: Build on Debian 13 and boot in QEMU
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout source revision
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Build Black Cat inside disposable Debian 13
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          rm -rf out artifacts/smoke-hosted || true
+          docker run --privileged --rm \
+            -v "$GITHUB_WORKSPACE:/src" \
+            -w /src \
+            -e PTL_BUILD_WORK_DIR=/var/tmp/blackcat-hosted-smoke-build \
+            -e PTL_SOURCE_COMMIT='${{ github.event.pull_request.head.sha || github.sha }}' \
+            -e PTL_SOURCE_REF='${{ github.head_ref || github.ref_name }}' \
+            debian:trixie \
+            bash -lc 'bash build/01-install-deps.sh && bash build/20-build-live.sh && bash build/30-artifact-manifest.sh'
+          ls -lah out
+          cat out/*.sha256
+
+      - name: Install QEMU test tools
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            qemu-system-x86 ovmf xorriso socat imagemagick tesseract-ocr
+
+      - name: Inspect generated ISO
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ISO="$(find out -maxdepth 1 -type f -name '*.iso' -print -quit)"
+          [[ -n "$ISO" ]] || { echo 'No ISO was generated' >&2; exit 1; }
+          mkdir -p smoke/mnt
+          sudo mount -o loop,ro "$ISO" smoke/mnt
+          trap 'sudo umount smoke/mnt 2>/dev/null || true' EXIT
+          grep -RIna --include='*.cfg' 'Black Cat' smoke/mnt | tee smoke/menu-strings.txt
+          grep -Riq --include='*.cfg' 'Black Cat - System Check' smoke/mnt
+          KERNEL="$(find smoke/mnt/live -maxdepth 1 -type f -name 'vmlinuz*' -print -quit)"
+          INITRD="$(find smoke/mnt/live -maxdepth 1 -type f \( -name 'initrd*' -o -name 'initrd.img*' \) -print -quit)"
+          [[ -n "$KERNEL" && -n "$INITRD" ]] || { echo 'Kernel/initrd missing from ISO' >&2; exit 1; }
+          cp "$KERNEL" smoke/vmlinuz
+          cp "$INITRD" smoke/initrd.img
+          sudo umount smoke/mnt
+          trap - EXIT
+
+      - name: UEFI boot the ISO and capture the menu
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ISO="$(find out -maxdepth 1 -type f -name '*.iso' -print -quit)"
+          OVMF="$(find /usr/share/OVMF -type f -name 'OVMF_CODE*.fd' -print -quit)"
+          [[ -n "$OVMF" ]] || { echo 'OVMF firmware not found' >&2; exit 1; }
+          qemu-system-x86_64 \
+            -machine accel=tcg \
+            -m 1024 \
+            -bios "$OVMF" \
+            -cdrom "$ISO" \
+            -boot d \
+            -display none \
+            -serial file:smoke/uefi-serial.log \
+            -monitor unix:smoke/qemu-monitor,server,nowait \
+            -pidfile smoke/qemu.pid \
+            -no-reboot \
+            -daemonize
+          sleep 10
+          kill -0 "$(cat smoke/qemu.pid)" || { echo 'QEMU exited before menu capture' >&2; exit 1; }
+          printf 'screendump smoke/uefi-menu.ppm\n' | socat - UNIX-CONNECT:smoke/qemu-monitor
+          sleep 2
+          printf 'quit\n' | socat - UNIX-CONNECT:smoke/qemu-monitor || true
+          test -s smoke/uefi-menu.ppm
+          convert smoke/uefi-menu.ppm smoke/uefi-menu.png
+          tesseract smoke/uefi-menu.png stdout > smoke/uefi-menu-ocr.txt 2>/dev/null || true
+          echo '--- UEFI menu OCR ---'
+          cat smoke/uefi-menu-ocr.txt || true
+
+      - name: Boot live userspace and require automatic Black Cat check
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ISO="$(find out -maxdepth 1 -type f -name '*.iso' -print -quit)"
+          set +e
+          timeout 180s qemu-system-x86_64 \
+            -machine accel=tcg \
+            -m 1536 \
+            -kernel smoke/vmlinuz \
+            -initrd smoke/initrd.img \
+            -cdrom "$ISO" \
+            -append 'boot=live components blackcat.check=1 console=ttyS0,115200' \
+            -nographic \
+            -no-reboot \
+            > smoke/live-serial.log 2>&1
+          rc=$?
+          set -e
+          echo "QEMU_EXIT=$rc"
+          tail -n 160 smoke/live-serial.log || true
+          grep -Fq 'BLACK CAT - QUICK CHECK' smoke/live-serial.log || {
+            echo 'Automatic Black Cat quick-check marker was not observed.' >&2
+            exit 1
+          }
+          echo 'BLACK CAT VM BOOT SMOKE TEST: PASS'
+
+      - name: Preserve smoke-test evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: blackcat-hosted-boot-smoke-${{ github.run_id }}
+          path: |
+            out/*.sha256
+            out/build-manifest.json
+            smoke/**
+          if-no-files-found: warn
+          compression-level: 0
+          retention-days: 7
