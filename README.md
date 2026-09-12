@@ -18,6 +18,7 @@ Internal repository names, `PTL_` environment variables, workflow names and evid
 - The login hook is now display-only and systemd is the sole report producer. A rebuilt candidate must pass CI and one more physical no-typing test before M13B is complete.
 - The previously frozen candidate `live-image-amd64.hybrid.iso` / SHA-256 `34903e52268bf995207cc51e86de9d1950406690445fca7cedfe5a98371f7b32` is therefore **superseded for M13B completion** and must not be mistaken for the corrected candidate.
 - The next rebuilt image also carries Black Cat branding on both GRUB/UEFI and Syslinux/legacy boot menus using a compact repository-tracked splash derived from the project icon. The branding is cosmetic only and must never become a boot dependency.
+- The first large base64 branding asset failed CI decoding and was removed. The replacement is deliberately smaller (160×120, 8-colour) to make the text-only repository transport robust while preserving the Black Cat visual theme.
 - The **Black Cat Automation Manifesto** is mandatory: safe, reversible, auditable work proceeds automatically until a genuine human gate is reached.
 
 ## No-typing diagnostic path
@@ -40,8 +41,9 @@ The project icon is treated as the visual source for Black Cat system imagery. T
 
 The current compact splash identity is:
 
-- source file: `assets/blackcat-boot-320x240.png.b64`
-- decoded SHA-256: `894cc95e62b31028baa59235b1b3ddc6ea5bd706e0ac2ac5feccfd5a1198ee59`
+- source file: `assets/blackcat-boot-160x120.png.b64`
+- decoded SHA-256: `24d03a442c3f7f04a060d30fbf8710f8b8cd2b5495caffdeea7cc47fcbc546ea`
+- dimensions/palette: 160×120, 8 colours
 - role: cosmetic boot branding only
 
 GRUB uses the image only when PNG/background rendering is available; otherwise the ordinary text boot menu remains usable. Syslinux likewise retains normal bootable labels independently of the splash.
@@ -62,7 +64,7 @@ portable-trusted-linux/
 ├── PROJECT_RULES.md
 ├── project_content.json
 ├── assets/
-│   └── blackcat-boot-320x240.png.b64
+│   └── blackcat-boot-160x120.png.b64
 ├── web/
 │   └── project.php
 ├── build/
