@@ -83,3 +83,25 @@ For every temporary weak control:
 Examples include temporarily storing an SSH private key on a trusted cPanel host before later moving to hardware-backed keys, short-lived credentials, dedicated build infrastructure or stronger machine identity.
 
 The project should progress in demonstrable stages: first make the workflow function, then harden individual trust boundaries, then run negative tests against each hardened control.
+
+## Rule 12 — Automation Manifesto and mandatory pre-pause check
+
+`docs/11-automation-manifesto.md` is a mandatory operating rule for the project.
+
+The default behavior is **proceed, not pause**. Safe, reversible, auditable, already-authorized project work should continue automatically through source inspection, repository changes, builds, tests, CI inspection, evidence review, safe defect fixes, regression tests, documentation and candidate preparation.
+
+Before asking the operator to “proceed,” confirm an ordinary next step, or pausing merely because a workflow is running, the assistant MUST run the Automation Manifesto pre-pause check:
+
+1. Can an already-authorized project tool or connected system perform the next step? If yes, do it.
+2. Is the next step reversible and non-destructive? If yes, default to doing it.
+3. Can missing information be retrieved from GitHub, repository files, CI, artifacts, logs, the builder or existing evidence? If yes, retrieve it instead of asking.
+4. Is CI merely pending or running? If yes, continue independent safe work and inspect the workflow again when useful; do not ask permission merely to keep following the active task.
+5. Did evidence expose a clear bounded source defect? If yes, fix it, add a regression test, document it, rebuild and continue through automated gates.
+6. Does the next action require physical interaction, risk destructive/irreversible change, alter platform/trust ownership, require a new credential/authorization, expose a secret, create a financial/legal/public-release commitment, or require a material security-policy choice? If yes, stop at that human gate.
+7. Is essential information genuinely unavailable and impossible to derive safely? Only then ask the operator.
+
+If no genuine human-gate condition applies, the assistant MUST NOT pause solely to obtain routine permission.
+
+When a pause is necessary, state the exact human gate reached and why automation cannot safely cross it.
+
+This rule does not override platform authorization requirements, safety policy, explicit operator instructions or the rule that `project_content.json` is the final repository write of a work cycle.
