@@ -580,3 +580,43 @@ Use the compact `assets/blackcat-boot-160x120.png.b64` asset for the current boo
 
 ### Evidence classification
 **CI FAILURE OBSERVED / ROOT CAUSE VERIFIED / SOURCE FIX IMPLEMENTED.** A replacement CI run is still required before this branding becomes part of a physical-test candidate.
+
+---
+
+## 2026-09-13 — Automation convenience must not create a new attack surface by default
+
+### What was attempted
+Design an unattended controller so project work could continue without the operator checking in manually.
+
+### What happened
+A cPanel-hosted webhook/controller and optional OpenAI API worker were explored and documented, but the operator challenged the additional attack surface before anything was deployed. Review confirmed that a new public listener, new secrets and another writable control plane were not justified while GitHub Actions already handles the core automated work.
+
+### Why it matters
+Automation can accidentally weaken the security posture it is meant to improve. A convenience feature that adds an Internet-facing endpoint or another privileged credential must be judged as a security change, not merely as workflow polish.
+
+### Decision / change
+The webhook/controller design is superseded before deployment. Existing GitHub Actions remain the default automation infrastructure. If unattended reconciliation is later justified, prefer an outbound-only watchdog outside `public_html`. New public listeners, API credentials or writable automation services require a separate security decision demonstrating that their benefit outweighs the added attack surface. The deterministic state-machine file may remain as non-networked conceptual documentation.
+
+### Evidence classification
+**SECURITY DESIGN REVISION / NO NEW SERVICE DEPLOYED.**
+
+---
+
+## 2026-09-13 — Viewer drift can silently hide the correct ISO even when the build is healthy
+
+### What was attempted
+Use the public `project.php` page to retrieve the newly validated M13B ISO candidate.
+
+### What happened
+The production page reported `offline-cache` and `GitHub read-only token is not configured`. Inspection showed the live cPanel file was an older viewer that looked for `PTL_GITHUB_TOKEN` or a hard-coded fallback and could serve stale cached data. The protected token file `/home/learning/.blackcat/github_token` still existed with correct private permissions (`700` directory, `600` token). The repository's newer canonical viewer already used the protected token file and had a separate Current Test Candidate panel, but it was still pointed at `main`, whose project metadata lagged behind the active M13B branch.
+
+The corrected integrated build run `34686464650` and its artifact `10300658965` passed the self-hosted build and integrated UEFI/QEMU smoke gates. The exact ISO is `live-image-amd64.hybrid.iso`, 376,438,784 bytes, SHA-256 `cb14d25b7fd43e2b0e563efaada357d6ab196a42d717b016c4857f85968fe641`, sourced from commit `c56389b71ecd96270bdd047369378f5a94d8bf93`.
+
+### Why it matters
+A correct artifact can become operationally inaccessible if the viewer source, credential model and metadata branch drift apart. Serving stale cache is particularly dangerous because it can look healthy while hiding or misrepresenting the exact candidate selected for physical testing.
+
+### Decision / change
+`web/project.php` is the single canonical viewer source. It uses only `/home/learning/.blackcat/github_token`, fails closed instead of serving authoritative offline cache, and is temporarily pinned to `codex/remove-chroot-systemd-boot` while PR #6 remains the authoritative M13B line. Static checks now guard the token-file model, forbid the old environment/fallback/cache paths, require the Current Test Candidate panel, and ensure M13B cannot silently lose its candidate record. After the branch is merged, the viewer and its regression check must be switched back to `main` together.
+
+### Evidence classification
+**ROOT CAUSE VERIFIED / REPOSITORY FIX IMPLEMENTED / PRODUCTION DEPLOYMENT STILL REQUIRED.**
