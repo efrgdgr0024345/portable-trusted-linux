@@ -1,0 +1,15 @@
+[Unit]
+Description=Black Cat automatic quick check
+ConditionKernelCommandLine=blackcat.check=1
+After=local-fs.target
+Before=getty@tty1.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/blackcat-check
+StandardOutput=journal+console
+StandardError=journal+console
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
