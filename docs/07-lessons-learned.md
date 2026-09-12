@@ -400,3 +400,22 @@ The living project viewer now has an **Approved Black Cat ISO** panel driven by 
 
 ### Evidence classification
 **OBSERVED OPERATOR FAILURE MODE / IMPLEMENTED DISTRIBUTION GUARD.** There is currently no approved Black Cat ISO; the release panel must therefore remain disabled until a candidate passes its required gates and is explicitly promoted.
+
+---
+
+## 2026-09-12 — The public project viewer must fail closed on credentials and authoritative release data
+
+### What was attempted
+Harden the living project viewer after reviewing its GitHub credential fallback behavior in the context of a potentially compromised Windows development PC.
+
+### What happened
+The viewer previously supported fallback credential sources and could retain cached/offline project data. That was convenient, but it weakened the desired trust posture: a missing primary credential or unavailable GitHub authority could still leave alternate paths active.
+
+### Why it matters
+Black Cat is explicitly being developed under the assumption that the Windows workstation may already be compromised. Security-sensitive distribution metadata should therefore prefer loss of availability over silently falling back to another credential source or stale release authority.
+
+### Decision / change
+`web/project.php` now accepts the GitHub credential **only** from the server environment variable `PTL_GITHUB_TOKEN`. There is no hard-coded fallback constant, no token-file fallback and no offline/cached project authority. If the environment variable is absent, GitHub cannot be reached, TLS/API validation fails, or project JSON is invalid, the viewer fails closed and offers no ISO download. An approved download additionally requires exact size, SHA-256, a 40-character source commit and `smoke_test=passed`.
+
+### Evidence classification
+**IMPLEMENTED SECURITY HARDENING.** This improves the public distribution control path but does not itself authenticate the ISO cryptographically; release signing remains a later trust gate.
