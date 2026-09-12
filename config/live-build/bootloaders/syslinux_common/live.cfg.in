@@ -1,3 +1,7 @@
+# Black Cat BIOS/Syslinux menu.
+# The splash is cosmetic; menu entries remain ordinary bootable labels.
+menu background splash.png
+
 label blackcat
     menu label ^Black Cat - Start
     menu default
