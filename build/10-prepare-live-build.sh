@@ -7,6 +7,8 @@ source "${SCRIPT_DIR}/lib/common.sh"
 
 require_cmd lb
 require_cmd git
+require_cmd base64
+require_cmd sha256sum
 
 BUILD_ID="${BUILD_ID:-$(new_build_id)}"
 # CI uses a unique directory outside the repository checkout so root-owned
@@ -54,6 +56,32 @@ if [[ -d "${PTL_CONFIG_DIR}/live-build" ]]; then
   cp -a "${PTL_CONFIG_DIR}/live-build/." config/
 fi
 
+# Branding asset policy:
+# - source is a compact, repository-tracked base64 representation so the build
+#   never depends on a network fetch;
+# - exact decoded SHA-256 is checked before use;
+# - the artwork is cosmetic only: GRUB/Syslinux configurations keep ordinary
+#   menu entries, so a firmware that cannot render the PNG can still boot.
+BOOT_SPLASH_B64="${PTL_ROOT}/assets/blackcat-boot-320x240.png.b64"
+BOOT_SPLASH_SHA256="894cc95e62b31028baa59235b1b3ddc6ea5bd706e0ac2ac5feccfd5a1198ee59"
+if [[ ! -f "$BOOT_SPLASH_B64" ]]; then
+  echo "Black Cat boot splash source is missing: $BOOT_SPLASH_B64" >&2
+  exit 1
+fi
+
+mkdir -p config/bootloaders/grub-pc config/bootloaders/syslinux_common
+base64 --decode "$BOOT_SPLASH_B64" > config/bootloaders/grub-pc/blackcat.png
+cp config/bootloaders/grub-pc/blackcat.png config/bootloaders/syslinux_common/splash.png
+
+splash_sha="$(sha256sum config/bootloaders/grub-pc/blackcat.png | awk '{print $1}')"
+if [[ "$splash_sha" != "$BOOT_SPLASH_SHA256" ]]; then
+  echo "Black Cat boot splash checksum mismatch" >&2
+  echo "Expected: $BOOT_SPLASH_SHA256" >&2
+  echo "Observed: $splash_sha" >&2
+  exit 1
+fi
+log "Black Cat boot splash verified: ${splash_sha}"
+
 # GitHub's contents API stores new text files without executable mode metadata.
 # Apply runtime modes explicitly during preparation so the generated image does
 # not depend on repository file-mode transport.
@@ -77,10 +105,11 @@ cat > "${ARTIFACT_DIR}/prepare.json" <<EOF
   "suite": "trixie",
   "architecture": "amd64",
   "work_dir": "${WORK_DIR}",
+  "boot_splash_sha256": "${splash_sha}",
   "prepared_utc": "$(date -u '+%Y-%m-%dT%H:%M:%SZ')",
   "repository_commit": "$(git -C "${PTL_ROOT}" rev-parse HEAD 2>/dev/null || printf 'unknown')"
 }
 EOF
 
 log "Black Cat live-build configuration prepared."
-log "The image includes normal boot plus a no-typing System Check menu entry."
+log "The image includes branded GRUB/Syslinux menus plus a no-typing System Check entry."
