@@ -20,7 +20,8 @@ Internal repository names, `PTL_` environment variables, workflow names and evid
 - Black Cat branding is present on GRUB/UEFI and Syslinux/legacy menus using a compact repository-tracked splash. Branding is cosmetic only and cannot determine trust or boot eligibility.
 - The **Black Cat Automation Manifesto** and root **AI Autonomy Policy** are mandatory: safe, reversible, auditable work proceeds automatically until a genuine human gate is reached.
 - Chat/session continuity is recoverable through compact root `AI_WORK_STATE.md`, selective repository reload and an empirical GREEN/AMBER/RED context-health heuristic rather than repeatedly loading the full project history.
-- A future post-core milestone now plans to build this repository-governed automation style directly into Black Cat Linux as a sandboxed, model-neutral user-space project system. It is deliberately scheduled after the core prototype so it does not displace the M13B→M25 trust-chain work.
+- A future post-core milestone plans to build this repository-governed automation style directly into Black Cat Linux as a sandboxed, model-neutral user-space project system. It is deliberately scheduled after the core prototype so it does not displace the M13B→M25 trust-chain work.
+- The future M26 design is now concretely scaffolded under `templates/ai-project/`, with a fail-closed machine-readable policy example and `schema/ai-project-policy.schema.json`. These files are inert design/template assets and grant no new runtime privilege today.
 
 ## No-typing diagnostic path
 
@@ -76,9 +77,11 @@ blackcat-project init my-project
 blackcat-project continue
 ```
 
-A generated project would carry its own `PROJECT_RULES.md`, `AI_AUTONOMY_POLICY.md`, compact `AI_WORK_STATE.md`, lessons, decisions, tests and project metadata. A local project worker would reconstruct only the minimum state it needs and continue until the next genuine human gate.
+A generated project would carry its own `PROJECT_RULES.md`, `AI_AUTONOMY_POLICY.md`, compact `AI_WORK_STATE.md`, `project-policy.json`, lessons, decisions, tests and project metadata. A local project worker would reconstruct only the minimum state it needs and continue until the next genuine human gate.
 
 The important security boundary is that **the model does not become root or policy authority**. The proposed architecture separates repository state, model reasoning, operating-system capability enforcement and human authority. A sandboxed capability broker would control filesystem, Git, test/build, network and privilege operations independently of the model. Local models and deterministic offline operation are preferred where practical; remote AI providers remain optional project capabilities.
+
+The repository now contains a provider-neutral seed in `templates/ai-project/`. Its sample `project-policy.json` is intentionally conservative: default action class `HUMAN_GATE`, network disabled, no inbound listeners, no root, no raw block devices and no credentials. `schema/ai-project-policy.schema.json` defines the first machine-policy contract for future broker validation. Repository/untrusted content cannot grant itself capabilities, and the sample audit policy explicitly records action summaries rather than private model chain-of-thought.
 
 Background continuation should use user-level systemd services/timers or outbound-only checks, not a new public webhook/listener. The future subsystem also includes a project dashboard, audit summaries, Context Health, explicit human-gate display, model-neutral adapters and adversarial tests for prompt injection/policy bypass/credential/device-access attempts.
 
@@ -118,6 +121,17 @@ portable-trusted-linux/
 │       ├── bootloaders/
 │       └── includes.chroot/
 ├── schema/
+│   └── ai-project-policy.schema.json
+├── templates/
+│   └── ai-project/
+│       ├── README.md
+│       ├── PROJECT_RULES.md
+│       ├── AI_AUTONOMY_POLICY.md
+│       ├── AI_WORK_STATE.md
+│       ├── project-policy.json
+│       └── docs/
+│           ├── architecture-decisions.md
+│           └── lessons-learned.md
 ├── verifier/
 ├── tests/
 ├── research/
