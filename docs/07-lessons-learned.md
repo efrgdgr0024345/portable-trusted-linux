@@ -639,3 +639,22 @@ Security hardening and operational visibility are separate requirements. Removin
 
 ### Evidence classification
 **SOURCE FIX / REGRESSION GUARD IMPLEMENTED.** Production redeployment and visual confirmation remain pending.
+
+---
+
+## 2026-09-13 — Autonomy rules need a root-level operational decision table
+
+### What was attempted
+Reduce repeated human delays by making it immediately clear when GPT/AI project work may continue automatically and when it must stop for the operator.
+
+### What happened
+The existing Automation Manifesto and Rule 12 already established a strong proceed-by-default principle, but the practical action classes were spread across prose and were not visible at the repository root. That left room for inconsistent interpretation of routine branch work, CI waiting, production-viewer deployment, merges, releases and capability limitations.
+
+### Why it matters
+A durable automation policy needs a fast, unambiguous continue/stop decision surface. The operator should not have to restate permission for ordinary safe work, while high-impact boundaries such as physical media, secrets, trust ownership, merges and release promotion must remain explicit.
+
+### Decision / change
+Create root-level `AI_AUTONOMY_POLICY.md` as the canonical operational decision table. It classifies actions as `AUTO`, `AUTO_WITH_CHECKS`, `HUMAN_GATE`, or `FORBIDDEN_BY_DEFAULT`; distinguishes a missing-tool capability boundary from a policy approval gate; keeps `PROJECT_RULES.md` as the master policy; retains `docs/11-automation-manifesto.md` as the explanatory rationale; records the durable choice as ADR-037; and adds static checks so the policy, root placement, required action classes and project-page link cannot silently disappear.
+
+### Evidence classification
+**IMPLEMENTED POLICY / STATIC ENFORCEMENT ADDED.** The policy governs future AI-assisted work inside existing safety, authorization and platform limits; it does not create new permissions or background execution capabilities.
