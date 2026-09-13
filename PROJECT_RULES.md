@@ -115,3 +115,27 @@ The file must remain at the repository root so the continue/stop boundary is imm
 Before asking for routine permission, the assistant MUST consult that decision table. If an action is `AUTO` or `AUTO_WITH_CHECKS` and the required checks pass, continue automatically. If the current tool environment cannot perform an otherwise authorized action, report a **capability boundary, not an approval gate**, and request only the minimum human execution needed.
 
 Merging into `main`, approving/publishing a release, physical/destructive device actions, trust-ownership changes, new credentials/permissions, new externally reachable services, financial/legal/public commitments, and material security-policy choices remain human gates unless a later explicit repository decision delegates them.
+
+## Rule 14 — Compact AI work-state recovery and context-health checkpoint are mandatory
+
+`AI_WORK_STATE.md` is the compact first-read checkpoint for fresh sessions and context recovery. It MUST remain at the repository root and MUST stay deliberately small; its role is to answer the current milestone, branch/PR, exact active candidate/build identity where applicable, last completed work, next automatic action, next genuine human gate, blockers and context-health state.
+
+The repository, not the chat window, is the durable project memory. The assistant MUST NOT bulk-load the full project history at the start of every ordinary turn. Use the recovery sequence only for a fresh chat/session, suspected continuity loss, long-gap check-in, or when current state cannot be recalled confidently:
+
+1. read `AI_WORK_STATE.md` first;
+2. verify only the volatile GitHub/CI/artifact facts required for the next action;
+3. load policy/technical/history files selectively when the task actually needs them;
+4. do not reload the complete lessons register or `project_content.json` merely to reconstruct state;
+5. continue automatically until a genuine human gate.
+
+Context pressure MUST be described as an estimate, never as a fabricated exact context-window percentage. Track observable proxies such as turns since checkpoint, large document/log reads, tool-heavy operations, large pasted material and continuity symptoms. Use GREEN/AMBER/RED only as operational heuristics:
+
+- GREEN: continue normally;
+- AMBER: refresh `AI_WORK_STATE.md` automatically before continuing;
+- RED: refresh the compact checkpoint, minimize nonessential bulk reads and use the recovery sequence when continuity is uncertain.
+
+Context pressure itself is not a human gate. Checkpoint maintenance is `AUTO` work and must not require routine operator permission.
+
+`docs/13-ai-continuity-and-context-recovery.md` documents the reusable pattern for other projects. `docs/14-context-health-calibration-log.md` records real dropout/continuity events and future threshold changes. Unknown measurements remain `unknown`; never invent retrospective precision.
+
+When `AI_WORK_STATE.md` is materially refreshed during a work cycle, it must be written before the final `project_content.json` update so Rule 2 remains intact.
