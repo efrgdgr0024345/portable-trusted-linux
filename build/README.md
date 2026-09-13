@@ -19,10 +19,15 @@ Every meaningful run or change must update `docs/07-lessons-learned.md` before `
       ↓
 30-artifact-manifest.sh
       ↓
-tests/00-static-check.sh
+M14 authenticated release-signing layer
+      ├── 40-create-release-manifest.sh
+      ├── 41-sign-release-manifest.sh
+      └── 42-verify-release.sh
+      ↓
+tests/00-static-check.sh + tests/01-release-signing-check.sh
 ```
 
-These stages prepare and build a Debian Live artifact and generate evidence about the resulting file. They deliberately do **not** enroll Secure Boot keys, take TPM ownership, or write to target-PC internal disks.
+The live-build stages prepare and build a Debian Live artifact and generate provenance evidence. The M14 layer separately creates and verifies authenticated release metadata. None of these stages enroll Secure Boot keys, take TPM ownership, or write to target-PC internal disks.
 
 ## Prototype baseline
 
@@ -30,21 +35,22 @@ These stages prepare and build a Debian Live artifact and generate evidence abou
 - amd64 / x86-64
 - UEFI-first
 - Debian `live-build`
-- systemd `ukify` planned for the signed UKI stage
+- authenticated release signing: M14 current
+- systemd `ukify` planned for the later signed-UKI stage
 - TPM 2.0 optional for lower assurance, required for attested levels
 - dm-verity read-only trusted root planned
 - RAM-backed writable session planned
 - network off during initial verification target
 
-## First successful live image
+## M13B physical result
 
-The project has produced a successful Debian Live ISO on the remote builder and the resulting hybrid ISO was written to USB in raw/DD mode. The USB then **physically booted successfully on real hardware**.
+The corrected M13B image physically booted on real hardware through the no-typing **Black Cat - System Check** path. The old report `Permission denied` regression was absent. A read-only `lsblk -o NAME,SIZE,TYPE,MOUNTPOINTS` observation showed the live USB mounted at `/run/live/medium` while the internal 476.9G NVMe and all four of its partitions had no mount points.
 
-That is classified as **OBSERVED bootability**, not as proof of release authenticity, Secure Boot enforcement, TPM attestation, dm-verity root integrity or firmware trust.
+This closes M13B on the tested hardware/configuration as **OBSERVED** evidence. It is not a universal guarantee or attestation result.
 
 ## Black Cat no-typing system check
 
-The next image adds a user-facing boot option:
+The image provides:
 
 ```text
 Black Cat - Start
@@ -52,9 +58,9 @@ Black Cat - System Check (no typing)
 Black Cat - Advanced options
 ```
 
-The diagnostic entry appends `blackcat.check=1` to the kernel command line. A profile launcher detects that flag and runs `/usr/local/bin/blackcat-check` automatically.
+The diagnostic entry appends `blackcat.check=1` to the kernel command line. `blackcat-check.service` is the sole root-owned evidence producer; the later login/profile hook only displays the already-created report.
 
-The quick check displays:
+The quick check reports:
 
 - UEFI vs legacy/unknown boot mode;
 - Secure Boot state when exposed through EFI variables;
@@ -65,7 +71,7 @@ The quick check displays:
 - kernel version; and
 - architecture.
 
-It also writes a text report and, when `jq` is available, a small JSON report under `/run/blackcat/`. These are runtime observations only. They do not replace the later independent verifier.
+It writes text/JSON reports under `/run/blackcat/`. These are runtime observations only and do not replace later independent cryptographic verification.
 
 ## live-build customisation method
 
@@ -85,12 +91,25 @@ The Actions runner remains unprivileged by default. `lb config` and preparation 
 
 Prototype 1 currently uses a narrowly documented temporary permission for `/usr/bin/lb build`. This is transitional under the project's progressive-hardening rule and is not the final security design.
 
-## Artifact identity
+## Artifact identity versus release authenticity
 
-`30-artifact-manifest.sh` records the image filename, SHA-256 digest, size, explicit source commit/ref, checked-out commit/ref, GitHub run identity, build-host identity and selected package versions.
+`30-artifact-manifest.sh` records image filename, SHA-256, size, source identity, Actions run identity, builder identity and selected package versions. That is **build provenance evidence**.
 
-This is **build provenance evidence**, not release authenticity. Cryptographic release signing is a separate later gate.
+M14 adds a separate authenticated release layer documented in `docs/16-authenticated-release-signing.md`:
+
+- `40-create-release-manifest.sh` creates canonical signed metadata for one exact artifact and trusted Ed25519 public key;
+- `41-sign-release-manifest.sh` signs those exact canonical bytes and refuses a private key whose derived public-key fingerprint does not match the manifest;
+- `42-verify-release.sh` independently checks canonical form, key fingerprint, detached Ed25519 signature, artifact filename, exact byte size and SHA-256;
+- `tests/01-release-signing-check.sh` generates only an ephemeral development keypair and proves valid verification plus tamper/wrong-key failures.
+
+The signing self-test intentionally requires **no production secret**. It validates mechanics only.
+
+## Signing-key boundary
+
+The release-signing identity is separate from the later Secure Boot signing identity/path. No production private signing key belongs in GitHub or on the general-purpose builder merely for convenience.
+
+Selecting the real release-signing key ownership/custody model is a human trust-policy gate. Until that is explicitly resolved, only ephemeral development keys may be used in automated tests.
 
 ## Safety boundary
 
-A project-supplied destructive USB writer remains deferred until explicit device-selection protections and negative tests exist. For the initial physical test the external imaging tool was deliberately used in raw/DD mode so the hybrid ISO was written as an image rather than reconstructed file-by-file.
+A project-supplied destructive USB writer remains deferred until explicit device-selection protections and negative tests exist. For physical prototype tests the external imaging tool is used deliberately in raw/DD mode so the hybrid ISO is written as an image rather than reconstructed file-by-file.
