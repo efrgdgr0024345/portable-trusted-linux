@@ -6,7 +6,7 @@ This is the compact recovery/checkpoint file for AI-assisted work on Black Cat /
 
 ## Current project state
 
-- State revision: 3
+- State revision: 4
 - Last checkpoint: 2026-09-13
 - Current milestone: M13B — rebuild and physically retest Black Cat no-typing System Check after report-permission fix
 - Active branch: `codex/remove-chroot-systemd-boot`
@@ -14,7 +14,7 @@ This is the compact recovery/checkpoint file for AI-assisted work on Black Cat /
 - Project progress: 74%
 - Approved release: none
 - Current blocker: none for repository work; M13B completion is waiting at a physical-human gate
-- Future roadmap: M26 will integrate repository-governed AI project automation into Black Cat user space after the first usable core prototype (M25)
+- Future roadmap: M26 will integrate repository-governed AI project automation into Black Cat user space after M25
 
 ## Current exact test candidate
 
@@ -30,13 +30,12 @@ This is the compact recovery/checkpoint file for AI-assisted work on Black Cat /
 
 ## Last completed engineering state
 
-- Root `AI_AUTONOMY_POLICY.md` defines AUTO, AUTO_WITH_CHECKS, HUMAN_GATE and FORBIDDEN_BY_DEFAULT actions.
-- Root `AI_WORK_STATE.md` is the compact fresh-session/recovery checkpoint; full history is loaded selectively.
-- `docs/13-ai-continuity-and-context-recovery.md` publishes the reusable continuity pattern.
-- `docs/14-context-health-calibration-log.md` provides empirical GREEN/AMBER/RED calibration without claiming an exact hidden context percentage.
-- `docs/15-black-cat-ai-project-automation.md` now designs a future native Linux project subsystem using repository policy, a sandboxed capability broker, model-neutral workers, local-first operation and explicit human gates.
-- ADR-039 records that future subsystem as post-core work; M26 is planned after M25 so it cannot displace the current trust-chain roadmap.
-- Static checks now protect the future design document and M26/project-page visibility.
+- Root autonomy/recovery policy remains governed by `AI_AUTONOMY_POLICY.md` and this compact checkpoint.
+- Future M26 architecture is documented in `docs/15-black-cat-ai-project-automation.md` and ADR-039/ADR-040.
+- A provider-neutral reusable seed now exists under `templates/ai-project/`.
+- `schema/ai-project-policy.schema.json` defines the first machine-readable capability-policy contract.
+- The sample policy defaults to HUMAN_GATE, network disabled, no inbound listener, no root/raw-device/credential access and explicit forbidden secret/safety/self-expansion rules.
+- Static checks now guard the template files, JSON syntax, fail-closed defaults, compact checkpoint shape and future-plan boundaries.
 - `project_content.json` must be the final repository write of this work cycle.
 
 ## Next automatic actions
@@ -46,7 +45,7 @@ This is the compact recovery/checkpoint file for AI-assisted work on Black Cat /
 3. Load other repository files selectively when required by the task or when a policy/version mismatch is detected.
 4. Continue safe, reversible, already-authorized work automatically under `AI_AUTONOMY_POLICY.md`.
 5. Refresh this checkpoint automatically when context pressure becomes AMBER/RED or project state materially changes.
-6. Keep M26 future-only until the core M13B→M25 security roadmap reaches its required gates.
+6. Keep M26 design/template work future-only until the core M13B→M25 security roadmap reaches its required gates.
 
 ## Next genuine human gate
 
@@ -65,10 +64,10 @@ Physical/destructive device work remains a HUMAN_GATE.
 
 Context health is an estimate based on observable conversation/workload signals. It is **not** an exact percentage of ChatGPT's hidden context window.
 
-- Checkpoint revision: 3
+- Checkpoint revision: 4
 - Estimated context pressure: AMBER
 - Confidence: medium-low (initial calibration)
-- Turns since checkpoint: several active design turns
+- Turns since checkpoint: several active design/implementation turns
 - Large document/log reads since checkpoint: several repository reads
 - Tool-heavy repository operations since checkpoint: high
 - Confirmed continuity/dropout events since checkpoint: 0
@@ -79,29 +78,26 @@ Context health is an estimate based on observable conversation/workload signals.
 
 - GREEN: continue normally; do not reload repository state unnecessarily.
 - AMBER: automatically refresh this compact checkpoint before continuing; do not interrupt the operator merely because the chat is long.
-- RED: create/refresh a compact checkpoint, avoid unnecessary bulk reads, and use the recovery sequence on the next session/turn if continuity is uncertain.
+- RED: refresh a compact checkpoint, avoid unnecessary bulk reads, and prefer clean recovery if continuity becomes uncertain.
 
 Context pressure itself is never a human-approval gate.
 
 ## Recovery sequence
 
-Use this sequence only for a fresh chat, suspected context loss, long-gap check-in, or when current project state cannot be recalled confidently:
-
 1. Read `AI_WORK_STATE.md` only.
 2. Verify the active GitHub branch/PR and any exact run/artifact needed for the next action.
-3. Read `AI_AUTONOMY_POLICY.md` or `PROJECT_RULES.md` only if the requested action touches an autonomy/safety boundary or this file indicates a policy change.
+3. Read autonomy/master rules only if the next action touches a policy boundary or policy changed.
 4. Read the relevant technical document/lesson section only when the task needs it.
-5. Do **not** bulk-load `docs/07-lessons-learned.md` or `project_content.json` merely to reconstruct state.
+5. Do **not** bulk-load the lessons register or `project_content.json` merely to reconstruct state.
 6. Continue automatically until a genuine human gate is reached.
 
 ## Durable references
 
 - Master rules: `PROJECT_RULES.md`
 - Continue/stop decision table: `AI_AUTONOMY_POLICY.md`
-- Automation rationale: `docs/11-automation-manifesto.md`
-- Reusable continuity/context design: `docs/13-ai-continuity-and-context-recovery.md`
-- Empirical calibration log: `docs/14-context-health-calibration-log.md`
-- Future native AI project automation design: `docs/15-black-cat-ai-project-automation.md`
+- Continuity design/calibration: `docs/13-ai-continuity-and-context-recovery.md`, `docs/14-context-health-calibration-log.md`
+- Future native project system: `docs/15-black-cat-ai-project-automation.md`
+- Reusable seed and machine policy: `templates/ai-project/`, `schema/ai-project-policy.schema.json`
 - Full lessons/history: `docs/07-lessons-learned.md`
 - Living project index: `project_content.json`
 
