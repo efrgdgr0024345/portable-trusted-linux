@@ -18,6 +18,7 @@ check_file() {
 for path in \
   PROJECT_RULES.md \
   AI_AUTONOMY_POLICY.md \
+  AI_WORK_STATE.md \
   project_content.json \
   web/project.php \
   docs/05-architecture-decisions.md \
@@ -25,6 +26,8 @@ for path in \
   docs/07-lessons-learned.md \
   docs/11-automation-manifesto.md \
   docs/12-high-security-controller-architecture.md \
+  docs/13-ai-continuity-and-context-recovery.md \
+  docs/14-context-health-calibration-log.md \
   assets/blackcat-boot-160x120.png.b64 \
   build/00-host-check.sh \
   build/01-install-deps.sh \
@@ -86,6 +89,18 @@ if command -v jq >/dev/null 2>&1; then
     printf '[FAILED]  project_content.json does not surface the root AI autonomy policy\n'
     failures=1
   fi
+
+  if jq -e '
+      ([.documents[] | select(.url | endswith("/AI_WORK_STATE.md"))] | length) == 1 and
+      ([.documents[] | select(.url | endswith("/docs/13-ai-continuity-and-context-recovery.md"))] | length) == 1 and
+      ([.documents[] | select(.url | endswith("/docs/14-context-health-calibration-log.md"))] | length) == 1 and
+      ([.sections[] | select(.title == "Recoverable AI chat continuity and context health")] | length) == 1
+    ' "${ROOT_DIR}/project_content.json" >/dev/null; then
+    printf '[OK]      project viewer index surfaces compact AI recovery/context documentation\n'
+  else
+    printf '[FAILED]  project_content.json does not surface AI recovery/context documentation\n'
+    failures=1
+  fi
 else
   printf '[SKIP]    jq unavailable; JSON/candidate checks skipped\n'
 fi
@@ -133,6 +148,13 @@ else
   printf '[OK]      root AI autonomy decision table is mandatory\n'
 fi
 
+if ! grep -Fq 'Compact AI work-state recovery and context-health checkpoint are mandatory' "${ROOT_DIR}/PROJECT_RULES.md"; then
+  printf '[FAILED]  PROJECT_RULES.md is missing the compact AI recovery/context-health rule\n'
+  failures=1
+else
+  printf '[OK]      compact AI recovery/context-health checkpoint is mandatory\n'
+fi
+
 if ! grep -Fq 'If no genuine human-gate condition applies' "${ROOT_DIR}/docs/11-automation-manifesto.md"; then
   printf '[FAILED]  Automation Manifesto is missing its no-routine-pause rule\n'
   failures=1
@@ -155,6 +177,8 @@ for required in \
   '### HUMAN_GATE' \
   '### FORBIDDEN_BY_DEFAULT' \
   'capability boundary, not an approval gate' \
+  'Fresh-session and context-recovery rule' \
+  'Context Health rule' \
   'project_content.json` **last**'; do
   if grep -Fq "$required" "$autonomy_policy"; then
     printf '[OK]      autonomy policy retains: %s\n' "$required"
@@ -163,6 +187,48 @@ for required in \
     failures=1
   fi
 done
+
+work_state="${ROOT_DIR}/AI_WORK_STATE.md"
+for required in \
+  '## Current project state' \
+  '## Current exact test candidate' \
+  '## Next automatic actions' \
+  '## Next genuine human gate' \
+  '## Context health' \
+  '## Recovery sequence' \
+  'Context pressure itself is never a human-approval gate'; do
+  if grep -Fq "$required" "$work_state"; then
+    printf '[OK]      AI work state retains: %s\n' "$required"
+  else
+    printf '[FAILED]  AI work state is missing: %s\n' "$required"
+    failures=1
+  fi
+done
+
+work_state_lines="$(wc -l < "$work_state" | tr -d '[:space:]')"
+if [[ "$work_state_lines" =~ ^[0-9]+$ ]] && (( work_state_lines <= 120 )); then
+  printf '[OK]      AI_WORK_STATE.md remains compact (%s lines)\n' "$work_state_lines"
+else
+  printf '[FAILED]  AI_WORK_STATE.md is too large for a compact recovery checkpoint (%s lines)\n' "$work_state_lines"
+  failures=1
+fi
+
+if grep -Fq 'The repository is the durable project memory' "${ROOT_DIR}/docs/13-ai-continuity-and-context-recovery.md" && \
+   grep -Fq 'selective reconstruction' "${ROOT_DIR}/docs/13-ai-continuity-and-context-recovery.md" && \
+   grep -Fq 'does not provide this workflow with a trustworthy live value' "${ROOT_DIR}/docs/13-ai-continuity-and-context-recovery.md"; then
+  printf '[OK]      reusable AI continuity guide retains checkpoint/selective-reload boundaries\n'
+else
+  printf '[FAILED]  reusable AI continuity guide is missing required recovery/context boundaries\n'
+  failures=1
+fi
+
+if grep -Fq 'v0.1 baseline established' "${ROOT_DIR}/docs/14-context-health-calibration-log.md" && \
+   grep -Fq 'do not reconstruct a false precision' "${ROOT_DIR}/docs/14-context-health-calibration-log.md"; then
+  printf '[OK]      context-health calibration log preserves empirical/no-false-precision rules\n'
+else
+  printf '[FAILED]  context-health calibration log is missing its empirical/no-false-precision rule\n'
+  failures=1
+fi
 
 viewer="${ROOT_DIR}/web/project.php"
 if grep -Fq "const TOKEN_FILE = '/home/learning/.blackcat/github_token';" "$viewer"; then
