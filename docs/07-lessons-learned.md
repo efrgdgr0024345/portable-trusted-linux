@@ -658,3 +658,24 @@ Create root-level `AI_AUTONOMY_POLICY.md` as the canonical operational decision 
 
 ### Evidence classification
 **IMPLEMENTED POLICY / STATIC ENFORCEMENT ADDED.** The policy governs future AI-assisted work inside existing safety, authorization and platform limits; it does not create new permissions or background execution capabilities.
+
+---
+
+## 2026-09-13 — Long AI chats need compact repository checkpoints, not repeated full-history reloads
+
+### What was attempted
+Reduce the natural delays and continuity failures that occur when a long-running GPT/ChatGPT project approaches practical context limits or a chat/session drops out, while avoiding the opposite failure mode of re-reading the entire repository on every turn.
+
+### What happened
+The project already treated GitHub as the durable engineering record, but it did not have a deliberately small first-read handoff file or an empirical method for noticing that a conversation was becoming context-heavy. Re-reading `PROJECT_RULES.md`, the autonomy policy, the full lessons register and `project_content.json` at every turn would itself consume the context we are trying to conserve. At the same time, pretending we can see an exact hidden context-window percentage would create false precision.
+
+### Why it matters
+A long AI-assisted project should survive a lost chat without requiring the operator to reconstruct the current milestone, exact candidate, next action and human gate. It also needs a way to improve its estimate of practical context pressure using real observed failures rather than unsupported token assumptions.
+
+### Decision / change
+Add root `AI_WORK_STATE.md` as a compact checkpoint that is read first only on fresh/recovery sessions or when continuity is uncertain. Ordinary continuing turns do not bulk-reload project history. Add `docs/13-ai-continuity-and-context-recovery.md` as a reusable implementation guide for other projects and `docs/14-context-health-calibration-log.md` as an append-only empirical record of real dropout/continuity events and heuristic changes. `AI_AUTONOMY_POLICY.md` and `PROJECT_RULES.md` now classify context checkpoint/recovery as automatic work and require GREEN/AMBER/RED to remain explicitly heuristic rather than an exact context percentage. ADR-038 records the durable architecture choice and static checks protect the compact state file, selective-reload rules, project-page visibility and no-false-precision boundary.
+
+The context-health model starts at provisional v0.1. Unknown historical counts remain `unknown`; future thresholds are changed only when observed project evidence supports the change.
+
+### Evidence classification
+**IMPLEMENTED CONTINUITY POLICY / REPOSITORY CHECKPOINT AND DOCUMENTATION ADDED / HEURISTIC CALIBRATION PROVISIONAL.** No exact model context meter is claimed. The value of the thresholds will be established by future observed continuity/dropout events.
