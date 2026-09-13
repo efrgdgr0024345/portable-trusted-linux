@@ -29,6 +29,14 @@ for path in \
   docs/13-ai-continuity-and-context-recovery.md \
   docs/14-context-health-calibration-log.md \
   docs/15-black-cat-ai-project-automation.md \
+  schema/ai-project-policy.schema.json \
+  templates/ai-project/README.md \
+  templates/ai-project/PROJECT_RULES.md \
+  templates/ai-project/AI_AUTONOMY_POLICY.md \
+  templates/ai-project/AI_WORK_STATE.md \
+  templates/ai-project/project-policy.json \
+  templates/ai-project/docs/architecture-decisions.md \
+  templates/ai-project/docs/lessons-learned.md \
   assets/blackcat-boot-160x120.png.b64 \
   build/00-host-check.sh \
   build/01-install-deps.sh \
@@ -47,6 +55,33 @@ if command -v jq >/dev/null 2>&1; then
     printf '[OK]      project_content.json parses as JSON\n'
   else
     printf '[FAILED]  project_content.json is invalid JSON\n'
+    failures=1
+  fi
+
+  if jq -e . "${ROOT_DIR}/schema/ai-project-policy.schema.json" >/dev/null && \
+     jq -e . "${ROOT_DIR}/templates/ai-project/project-policy.json" >/dev/null; then
+    printf '[OK]      AI project policy schema/template parse as JSON\n'
+  else
+    printf '[FAILED]  AI project policy schema or template is invalid JSON\n'
+    failures=1
+  fi
+
+  if jq -e '
+      .schema_version == "0.1" and
+      .default_action_class == "HUMAN_GATE" and
+      .network.mode == "disabled" and
+      .network.inbound_listeners == false and
+      .capabilities.raw_block_devices == false and
+      .capabilities.root == false and
+      .capabilities.credentials == "none" and
+      .audit.record_action_summary == true and
+      .audit.record_chain_of_thought == false and
+      ([.human_gates[].id | select(. == "credential.new" or . == "storage.raw_write" or . == "trust.change" or . == "network.inbound")] | length) == 4 and
+      ([.forbidden[].id | select(. == "secret.expose" or . == "safety.bypass" or . == "authority.self_expand")] | length) == 3
+    ' "${ROOT_DIR}/templates/ai-project/project-policy.json" >/dev/null; then
+    printf '[OK]      AI project template retains fail-closed capability defaults\n'
+  else
+    printf '[FAILED]  AI project template lost one or more fail-closed capability defaults\n'
     failures=1
   fi
 
@@ -114,7 +149,7 @@ if command -v jq >/dev/null 2>&1; then
     failures=1
   fi
 else
-  printf '[SKIP]    jq unavailable; JSON/candidate checks skipped\n'
+  printf '[SKIP]    jq unavailable; JSON/candidate/policy checks skipped\n'
 fi
 
 for script in \
@@ -244,10 +279,32 @@ fi
 
 if grep -Fq 'The repository owns project state' "${ROOT_DIR}/docs/15-black-cat-ai-project-automation.md" && \
    grep -Fq '## 19. Proposed implementation phases' "${ROOT_DIR}/docs/15-black-cat-ai-project-automation.md" && \
+   grep -Fq '## 22. Design scaffold now baked into the repository' "${ROOT_DIR}/docs/15-black-cat-ai-project-automation.md" && \
+   grep -Fq 'templates/ai-project/' "${ROOT_DIR}/docs/15-black-cat-ai-project-automation.md" && \
+   grep -Fq 'schema/ai-project-policy.schema.json' "${ROOT_DIR}/docs/15-black-cat-ai-project-automation.md" && \
    grep -Fq 'after the first usable core prototype' "${ROOT_DIR}/docs/15-black-cat-ai-project-automation.md"; then
-  printf '[OK]      future Black Cat AI project automation design retains authority and roadmap boundaries\n'
+  printf '[OK]      future Black Cat AI project automation design retains authority, scaffold and roadmap boundaries\n'
 else
-  printf '[FAILED]  future Black Cat AI project automation design is missing required boundaries\n'
+  printf '[FAILED]  future Black Cat AI project automation design is missing required scaffold/boundaries\n'
+  failures=1
+fi
+
+template_root="${ROOT_DIR}/templates/ai-project"
+if grep -Fq 'The repository owns project state' "${template_root}/README.md" && \
+   grep -Fq '## 7. Untrusted-data boundary' "${template_root}/PROJECT_RULES.md" && \
+   grep -Fq '### FORBIDDEN_BY_DEFAULT' "${template_root}/AI_AUTONOMY_POLICY.md" && \
+   grep -Fq 'Context pressure itself is never a human-approval gate' "${template_root}/AI_WORK_STATE.md"; then
+  printf '[OK]      reusable AI project template retains durable-state/untrusted-data/autonomy/recovery boundaries\n'
+else
+  printf '[FAILED]  reusable AI project template is missing a required policy/recovery boundary\n'
+  failures=1
+fi
+
+template_state_lines="$(wc -l < "${template_root}/AI_WORK_STATE.md" | tr -d '[:space:]')"
+if [[ "$template_state_lines" =~ ^[0-9]+$ ]] && (( template_state_lines <= 100 )); then
+  printf '[OK]      template AI_WORK_STATE.md remains compact (%s lines)\n' "$template_state_lines"
+else
+  printf '[FAILED]  template AI_WORK_STATE.md is too large (%s lines)\n' "$template_state_lines"
   failures=1
 fi
 
