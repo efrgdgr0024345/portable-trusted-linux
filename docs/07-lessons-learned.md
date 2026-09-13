@@ -494,7 +494,7 @@ The integrated live-build and UEFI/QEMU smoke workflow run `34669451222` complet
 A development operator needs an easy route to one exact candidate while the project still needs a separate, stronger meaning for an approved release. Treating these as the same state either creates unnecessary friction during testing or weakens release semantics.
 
 ### Decision / change
-The living viewer now supports a separate **Current Test Candidate** panel. It is enabled only when candidate metadata includes an exact filename, byte size, SHA-256, source commit, workflow run, artifact identity, HTTPS GitHub artifact link and `smoke_test=passed`. It is prominently labelled **TEST CANDIDATE — NOT AN APPROVED RELEASE**. The Approved Black Cat ISO panel and its promotion requirements remain independent and unchanged. GitHub Actions artifact distribution is temporary development infrastructure; authenticated release signing remains a later gate.
+The living project viewer now supports a separate **Current Test Candidate** panel. It is enabled only when candidate metadata includes an exact filename, byte size, SHA-256, source commit, workflow run, artifact identity, HTTPS GitHub artifact link and `smoke_test=passed`. It is prominently labelled **TEST CANDIDATE — NOT AN APPROVED RELEASE**. The Approved Black Cat ISO panel and its promotion requirements remain independent and unchanged. GitHub Actions artifact distribution is temporary development infrastructure; authenticated release signing remains a later gate.
 
 ### Evidence classification
 **VERIFIED BUILD IDENTITY / IMPLEMENTED DISTRIBUTION-SEPARATION DESIGN.** Automated CI boot evidence has passed for this candidate; physical no-typing menu and persistence validation remain pending.
@@ -698,3 +698,22 @@ Add `docs/15-black-cat-ai-project-automation.md` as the implementation/brainstor
 
 ### Evidence classification
 **DESIGN / ROADMAP DECISION ONLY.** No native AI project subsystem has been implemented yet; the active M13B→M25 Black Cat security roadmap remains the engineering priority.
+
+---
+
+## 2026-09-13 — Reusable AI automation needs a fail-closed project profile, not just good prose
+
+### What was attempted
+Turn the future Black Cat AI-project concept from an attractive design document into concrete repository scaffolding that another project could actually start from.
+
+### What happened
+A provider-neutral seed was added under `templates/ai-project/` with master rules, an autonomy decision table, compact recovery state, a fail-closed machine-readable `project-policy.json`, ADR/lessons templates and a setup guide. `schema/ai-project-policy.schema.json` now defines the first machine-policy contract. Static checks require the scaffold to remain present, parse the JSON files, verify conservative defaults and preserve key untrusted-data/recovery boundaries.
+
+### Why it matters
+Markdown guidance alone cannot safely become execution authority. A future Linux capability broker needs a deterministic, machine-readable policy input whose defaults are conservative and whose permissions cannot be expanded by prompt injection, repository content or a model's own output. At the same time, checking the scaffold into the repository lets other people reproduce the project pattern before the native M26 runtime exists.
+
+### Decision / change
+M26 starts from this checked-in template and schema. The sample policy defaults to `HUMAN_GATE`, network disabled, no inbound listeners, no root, no raw block devices and no credential access; secret exposure, safety bypass and self-expanding authority are forbidden. Human-readable project policy remains the source of intent, while the future broker must independently validate the machine profile and fail closed on disagreement. The scaffold is inert design/template material in Prototype 1 and does not authorize a daemon, listener, credential, root privilege or other new runtime capability.
+
+### Evidence classification
+**DESIGN SCAFFOLD IMPLEMENTED / STATIC GUARDS ADDED / RUNTIME ENFORCEMENT FUTURE (M26).**
