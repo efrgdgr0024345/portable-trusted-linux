@@ -679,3 +679,22 @@ The context-health model starts at provisional v0.1. Unknown historical counts r
 
 ### Evidence classification
 **IMPLEMENTED CONTINUITY POLICY / REPOSITORY CHECKPOINT AND DOCUMENTATION ADDED / HEURISTIC CALIBRATION PROVISIONAL.** No exact model context meter is claimed. The value of the thresholds will be established by future observed continuity/dropout events.
+
+---
+
+## 2026-09-13 — Native AI project automation should be a bounded Linux capability, not a privileged AI daemon
+
+### What was attempted
+Plan how the autonomy, compact recovery and context-health workflow could eventually be built directly into Black Cat Linux so users could create other projects that follow the same logic.
+
+### What happened
+The repository workflow generalises cleanly into a future Linux project system, but only if model reasoning is separated from execution authority. Giving an AI an unrestricted root shell would destroy the very boundary the project is trying to formalise. A safer design is a user-space project worker whose repository defines project policy and whose operating-system capability broker independently controls filesystem, Git, test/build, network, device and privilege operations.
+
+### Why it matters
+If Black Cat later provides AI-assisted project automation as a product feature, the security model must survive model mistakes, prompt injection and provider changes. Durable project state should remain portable and model-neutral; human gates must be enforced by code/permissions, not merely remembered by the model. The feature also must not distract from completing the current core trust-chain prototype.
+
+### Decision / change
+Add `docs/15-black-cat-ai-project-automation.md` as the implementation/brainstorming blueprint and ADR-039 as the durable architecture direction. Plan M26 after M25 for a project template/CLI, deterministic autonomy engine, sandboxed capability broker, model adapter, user-level background/resume worker, desktop dashboard and adversarial negative tests. Prefer local-first/offline operation, optional remote models, user-level systemd timers/services, no new public listener by default, no unrestricted root authority and concise audit summaries rather than private model reasoning.
+
+### Evidence classification
+**DESIGN / ROADMAP DECISION ONLY.** No native AI project subsystem has been implemented yet; the active M13B→M25 Black Cat security roadmap remains the engineering priority.
