@@ -2,7 +2,7 @@
 
 This file is the **canonical operational decision table** for when an AI assistant working on Black Cat / Portable Trusted Linux should continue automatically and when it must stop for the operator.
 
-`PROJECT_RULES.md` remains the master repository policy. `docs/11-automation-manifesto.md` explains the philosophy and rationale. This top-level file exists so the continue/stop rules are visible immediately at the repository root and can be checked by automation.
+`PROJECT_RULES.md` remains the master repository policy. `docs/11-automation-manifesto.md` explains the philosophy and rationale. `AI_WORK_STATE.md` is the compact recovery/checkpoint state used after chat/session discontinuity. This top-level file exists so the continue/stop rules are visible immediately at the repository root and can be checked by automation.
 
 ## Core operating rule
 
@@ -23,6 +23,7 @@ Examples:
 - make ordinary changes on the active development branch;
 - update technical documentation affected by the work;
 - update `docs/07-lessons-learned.md` as part of the same engineering cycle;
+- maintain the compact `AI_WORK_STATE.md` checkpoint when project state or context-health state materially changes;
 - run static checks, non-destructive tests and negative tests that cannot damage physical devices or trust ownership;
 - inspect, retry or rerun safe CI jobs;
 - continue independent work while another workflow is pending or running;
@@ -93,6 +94,35 @@ A running or queued workflow is not a human gate. Continue independent safe work
 
 This does not imply indefinite background execution. If the current interaction cannot remain active until a future event, state that limitation accurately; do not mislabel it as a need for operator approval.
 
+## Fresh-session and context-recovery rule
+
+Chat continuity is not authoritative project state. GitHub is the durable project record.
+
+On an ordinary continuing turn, do **not** reload repository policy/history unnecessarily. On a fresh chat/session, suspected context loss, long-gap check-in, or when current milestone/branch/next action cannot be recalled confidently:
+
+1. read `AI_WORK_STATE.md` first;
+2. verify only the current branch/PR/CI/artifact facts required for the next action;
+3. read `AI_AUTONOMY_POLICY.md` or `PROJECT_RULES.md` only when the next action touches a policy boundary or the checkpoint reports a policy change;
+4. load only the relevant technical document or lesson section;
+5. do **not** bulk-load the full lessons register or `project_content.json` merely to reconstruct state;
+6. continue automatically until a genuine human gate.
+
+The compact checkpoint must remain a handoff file, not another complete project history. Detailed rationale and the reusable pattern live in `docs/13-ai-continuity-and-context-recovery.md`.
+
+## Context Health rule
+
+The assistant normally cannot see a trustworthy exact percentage of a ChatGPT conversation's hidden context capacity. It MUST NOT invent one.
+
+Instead, estimate context pressure from observable proxies such as turns since checkpoint, large document/log reads, tool-heavy operations, large pasted material and continuity symptoms. Classify the estimate as:
+
+- **GREEN** — continue normally and avoid unnecessary reloads;
+- **AMBER** — automatically refresh `AI_WORK_STATE.md` before continuing;
+- **RED** — refresh the compact checkpoint, minimize nonessential bulk reads, and use the recovery sequence when continuity is uncertain.
+
+Context pressure itself is **not a HUMAN_GATE**. Checkpointing/recovery is ordinary reversible project work and should not require the operator to say “proceed”.
+
+Real continuity/dropout events and threshold changes are recorded in `docs/14-context-health-calibration-log.md`. Unknown metrics stay `unknown`; do not manufacture precision. The heuristic should improve from observed project history over time.
+
 ## Bounded defect rule
 
 If evidence exposes a clear, reproducible and bounded defect:
@@ -103,8 +133,9 @@ If evidence exposes a clear, reproducible and bounded defect:
 4. run the relevant automated checks;
 5. update the affected technical document;
 6. record the lesson in `docs/07-lessons-learned.md`;
-7. update `project_content.json` **last**;
-8. continue automatically until the next genuine human gate.
+7. update `AI_WORK_STATE.md` if the material project/recovery state changed;
+8. update `project_content.json` **last**;
+9. continue automatically until the next genuine human gate.
 
 ## Documentation rule
 
@@ -114,8 +145,9 @@ Documentation is part of the engineering action, not a separate permission reque
 2. update `docs/07-lessons-learned.md`;
 3. update the Architecture Decision Register when a durable decision changed;
 4. update milestone/status data where appropriate;
-5. write `project_content.json` last;
-6. perform no further repository writes in that completed cycle.
+5. refresh `AI_WORK_STATE.md` when the compact handoff/context state materially changed;
+6. write `project_content.json` last;
+7. perform no further repository writes in that completed cycle.
 
 ## Current Black Cat examples
 
@@ -124,6 +156,7 @@ Documentation is part of the engineering action, not a separate permission reque
 | Inspect GitHub, CI, logs, artifacts or builder evidence | AUTO | Read-only, auditable and already authorized |
 | Fix a clear branch-local source defect and add a regression test | AUTO | Reversible development work |
 | Update lessons and affected technical documentation | AUTO | Mandatory part of the engineering cycle |
+| Refresh compact context/work-state checkpoint | AUTO | Reversible continuity maintenance; not a trust decision |
 | Rerun an existing safe workflow | AUTO | Uses established infrastructure |
 | Build/fingerprint a new test candidate | AUTO_WITH_CHECKS | Exact provenance and automated gates must pass |
 | Replace canonical `project.php` through an existing authorized deployment path | AUTO_WITH_CHECKS | Requires backup/rollback, syntax and post-deploy checks |
@@ -144,9 +177,10 @@ Before asking the operator for routine permission, the assistant must ask itself
 4. Can missing information be retrieved instead of requested?
 5. Can independent safe work continue while CI is running?
 6. Is a clear defect fixable without changing material security policy?
-7. Does any `HUMAN_GATE` condition above actually apply?
+7. Is apparent difficulty only context pressure that can be handled by an automatic checkpoint/recovery read?
+8. Does any `HUMAN_GATE` condition above actually apply?
 
-If the answer to 7 is **no**, continue automatically.
+If the answer to 8 is **no**, continue automatically.
 
 ## Stopping message
 
