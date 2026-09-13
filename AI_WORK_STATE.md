@@ -6,15 +6,27 @@ This is the compact recovery/checkpoint file for AI-assisted work on Black Cat /
 
 ## Current project state
 
-- State revision: 5
+- State revision: 6
 - Last checkpoint: 2026-09-13
-- Current milestone: M13B — rebuild and physically retest Black Cat no-typing System Check after report-permission fix
+- Current milestone: M14 — implement authenticated release signing
 - Active branch: `codex/remove-chroot-systemd-boot`
 - Pull request: #6 (unmerged)
-- Project progress: 74%
+- Project progress: 76%
 - Approved release: none
-- Current blocker: final physical confirmation that internal disks remain unmounted by default
+- Current blocker: none for non-secret M14 design/repository work
+- M13B status: COMPLETE on the tested hardware/configuration
 - Future roadmap: M26 will integrate repository-governed AI project automation into Black Cat user space after M25
+
+## M13B physical evidence
+
+- Corrected candidate physically reached **BLACK CAT - QUICK CHECK**.
+- Earlier ACPI `AE_NOT_FOUND` firmware messages were non-fatal and boot continued.
+- Previous `/run/blackcat/quick-check.txt` / `.json` `Permission denied` errors were absent.
+- Quick-check observations: UEFI; Secure Boot ENABLED; TPM DEVICE_FOUND; TCG event log FOUND; dm-verity root NOT_ACTIVE; no active network link observed; kernel `6.12.107+deb13-amd64`; architecture `x86_64`.
+- Read-only `lsblk -o NAME,SIZE,TYPE,MOUNTPOINTS` showed the 14.6G `sda` live USB with `sda1` mounted at `/run/live/medium` and `loop0` mounted as the live squashfs.
+- The 476.9G internal `nvme0n1` and partitions `nvme0n1p1` through `nvme0n1p4` showed no mount points.
+- Therefore the tested internal NVMe was **OBSERVED unmounted by default** during this Black Cat boot.
+- This is physical observation on one tested configuration, not a universal guarantee or attestation.
 
 ## Current exact test candidate
 
@@ -28,75 +40,48 @@ This is the compact recovery/checkpoint file for AI-assisted work on Black Cat /
 - Artifact name: `ptl-first-live-build-34686464650`
 - Automated smoke state: passed
 
-## Latest physical evidence
-
-- The corrected candidate physically reached **BLACK CAT - QUICK CHECK** on real hardware.
-- The earlier ACPI `AE_NOT_FOUND` firmware messages did not prevent boot; the system progressed to the quick-check screen.
-- The previous `/run/blackcat/quick-check.txt` / `.json` `Permission denied` errors are absent from the photographed corrected run.
-- Screen observations: UEFI; Secure Boot ENABLED; TPM DEVICE_FOUND; TCG event log FOUND; dm-verity root NOT_ACTIVE; no active network link observed; kernel `6.12.107+deb13-amd64`; architecture `x86_64`.
-- Evidence remains **OBSERVED unless independently verified**; Secure Boot enabled is a firmware-state observation, not proof that the Black Cat boot chain is authenticated.
-- M13B is not closed yet because the photographed quick-check does not display internal-disk mount state.
-
-## Last completed engineering state
-
-- Root autonomy/recovery policy remains governed by `AI_AUTONOMY_POLICY.md` and this compact checkpoint.
-- Future M26 architecture and reusable fail-closed project scaffolding remain preserved under `docs/15-black-cat-ai-project-automation.md`, `templates/ai-project/` and `schema/ai-project-policy.schema.json`.
-- Corrected physical retest confirms the report-permission regression is no longer visible and the no-typing quick-check path reaches its intended screen.
-- `project_content.json` must be the final repository write of this work cycle.
-
 ## Next automatic actions
 
-1. Preserve the corrected physical quick-check result as M13B evidence.
-2. After the operator supplies disk/mount evidence, classify the internal-disk-default-unmounted gate.
-3. If that gate passes, complete M13B documentation and advance planning toward M14 automatically, stopping only at the next genuine human gate.
-4. Keep M26 design/template work future-only until the core M13B→M25 security roadmap reaches its required gates.
+1. Begin M14 by reviewing the existing release-signing requirements and current build/release path.
+2. Design the authenticated release manifest/signature format and verification flow without creating or exposing private signing keys.
+3. Keep build/release signing identity separate from the later Secure Boot signing identity/path.
+4. Add deterministic verification/negative tests before any release promotion.
+5. Continue automatically until a genuine signing-key ownership/custody or other material trust-policy decision requires the operator.
 
 ## Next genuine human gate
 
-Final M13B physical disk-state observation:
+No immediate physical action is required.
 
-- from the quick-check screen press Enter to reach the shell;
-- run a short block-device/mount listing;
-- photograph the result so internal disks can be distinguished from the live USB and checked for mount points.
-
-Physical/destructive device work remains a HUMAN_GATE. This observation is read-only and must not mount, write or repair any internal disk.
+The expected M14 human gate is selection/approval of the real release-signing key ownership and custody model (for example, where the private signing key is generated and held). Private signing material must not be committed to GitHub or placed on the general-purpose builder merely for convenience.
 
 ## Context health
 
-Context health is an estimate based on observable conversation/workload signals. It is **not** an exact percentage of ChatGPT's hidden context window.
-
-- Checkpoint revision: 5
+- Checkpoint revision: 6
 - Estimated context pressure: AMBER
 - Confidence: medium-low (initial calibration)
 - Confirmed continuity/dropout events since checkpoint: 0
 - Calibration version: v0.1 (provisional)
-- Reason for AMBER: this remains a long, repository/tool-heavy conversation with physical-test evidence being added; compact checkpointing protects recovery.
-
-### Pressure actions
-
-- GREEN: continue normally; do not reload repository state unnecessarily.
-- AMBER: automatically refresh this compact checkpoint before continuing; do not interrupt the operator merely because the chat is long.
-- RED: refresh a compact checkpoint, avoid unnecessary bulk reads, and prefer clean recovery if continuity becomes uncertain.
+- Reason for AMBER: long repository/tool-heavy conversation with completed physical-test evidence; compact checkpointing protects recovery.
 
 Context pressure itself is never a human-approval gate.
 
 ## Recovery sequence
 
 1. Read `AI_WORK_STATE.md` only.
-2. Verify the active GitHub branch/PR and any exact run/artifact needed for the next action.
-3. Read autonomy/master rules only if the next action touches a policy boundary or policy changed.
-4. Read the relevant technical document/lesson section only when the task needs it.
-5. Do **not** bulk-load the lessons register or `project_content.json` merely to reconstruct state.
+2. Verify the active branch/PR and exact run/artifact only if relevant to the next action.
+3. Load autonomy/master rules only when a policy boundary is touched.
+4. Load relevant technical documents selectively.
+5. Do not bulk-load project history merely to reconstruct state.
 6. Continue automatically until a genuine human gate is reached.
 
 ## Durable references
 
 - Master rules: `PROJECT_RULES.md`
 - Continue/stop decision table: `AI_AUTONOMY_POLICY.md`
+- Build specification: `docs/06-prototype-build-specification-v0.1.md`
+- Full lessons/history: `docs/07-lessons-learned.md`
 - Continuity design/calibration: `docs/13-ai-continuity-and-context-recovery.md`, `docs/14-context-health-calibration-log.md`
 - Future native project system: `docs/15-black-cat-ai-project-automation.md`
-- Reusable seed and machine policy: `templates/ai-project/`, `schema/ai-project-policy.schema.json`
-- Full lessons/history: `docs/07-lessons-learned.md`
 - Living project index: `project_content.json`
 
-Keep this file compact. The target is under 100 lines; it is a handoff/checkpoint, not a replacement for durable technical documentation.
+Keep this file compact. It is a handoff/checkpoint, not a replacement for durable technical documentation.
