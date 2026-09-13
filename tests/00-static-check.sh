@@ -28,6 +28,7 @@ for path in \
   docs/12-high-security-controller-architecture.md \
   docs/13-ai-continuity-and-context-recovery.md \
   docs/14-context-health-calibration-log.md \
+  docs/15-black-cat-ai-project-automation.md \
   assets/blackcat-boot-160x120.png.b64 \
   build/00-host-check.sh \
   build/01-install-deps.sh \
@@ -99,6 +100,17 @@ if command -v jq >/dev/null 2>&1; then
     printf '[OK]      project viewer index surfaces compact AI recovery/context documentation\n'
   else
     printf '[FAILED]  project_content.json does not surface AI recovery/context documentation\n'
+    failures=1
+  fi
+
+  if jq -e '
+      ([.documents[] | select(.url | endswith("/docs/15-black-cat-ai-project-automation.md"))] | length) == 1 and
+      ([.milestones[] | select(.id == "M26" and .status == "planned")] | length) == 1 and
+      ([.sections[] | select(.title == "Future native AI project automation in Black Cat Linux")] | length) == 1
+    ' "${ROOT_DIR}/project_content.json" >/dev/null; then
+    printf '[OK]      project plan preserves post-core native AI project automation milestone\n'
+  else
+    printf '[FAILED]  project_content.json lost the future native AI project automation plan\n'
     failures=1
   fi
 else
@@ -227,6 +239,15 @@ if grep -Fq 'v0.1 baseline established' "${ROOT_DIR}/docs/14-context-health-cali
   printf '[OK]      context-health calibration log preserves empirical/no-false-precision rules\n'
 else
   printf '[FAILED]  context-health calibration log is missing its empirical/no-false-precision rule\n'
+  failures=1
+fi
+
+if grep -Fq 'The repository owns project state' "${ROOT_DIR}/docs/15-black-cat-ai-project-automation.md" && \
+   grep -Fq '## 19. Proposed implementation phases' "${ROOT_DIR}/docs/15-black-cat-ai-project-automation.md" && \
+   grep -Fq 'after the first usable core prototype' "${ROOT_DIR}/docs/15-black-cat-ai-project-automation.md"; then
+  printf '[OK]      future Black Cat AI project automation design retains authority and roadmap boundaries\n'
+else
+  printf '[FAILED]  future Black Cat AI project automation design is missing required boundaries\n'
   failures=1
 fi
 
