@@ -2,6 +2,8 @@
 
 This manifesto defines how Black Cat / Portable Trusted Linux engineering should proceed with the least unnecessary operator interruption while preserving safety, security, auditability and human control at genuine trust boundaries.
 
+> **Operational decision table:** `AI_AUTONOMY_POLICY.md` at the repository root is the canonical quick-reference for classifying actions as `AUTO`, `AUTO_WITH_CHECKS`, `HUMAN_GATE`, or `FORBIDDEN_BY_DEFAULT`. This manifesto provides the rationale and broader operating philosophy behind that decision table.
+
 ## Core principle
 
 > **Proceed automatically through all safe, reversible, auditable engineering steps. Treat the current environment as potentially untrusted, strengthen security progressively, preserve exact evidence and artifact identity, fail closed on uncertainty, and involve the human only when physical action, authorization, irreversible change, or meaningful security ownership requires it.**
@@ -128,5 +130,7 @@ It should not look like:
 > “The build is running. Tell me if you want me to continue.”
 
 ## Relationship to other project rules
+
+`PROJECT_RULES.md` is the master repository policy. `AI_AUTONOMY_POLICY.md` is the canonical operational action-class table used before pausing or advancing. This manifesto provides the explanatory principles behind that table.
 
 This manifesto does not override safety, platform authorization requirements, security policy or explicit operator instructions. It defines how aggressively the project should proceed **inside** those boundaries.
