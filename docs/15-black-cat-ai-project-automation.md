@@ -49,6 +49,7 @@ my-project/
 ├── PROJECT_RULES.md
 ├── AI_AUTONOMY_POLICY.md
 ├── AI_WORK_STATE.md
+├── project-policy.json
 ├── project_content.json
 ├── docs/
 │   ├── architecture-decisions.md
@@ -61,6 +62,8 @@ my-project/
 ```
 
 The exact filenames may later become a versioned Black Cat project profile, but the roles should remain stable.
+
+The current repository now carries a concrete reusable seed in `templates/ai-project/` plus the machine-policy schema at `schema/ai-project-policy.schema.json`. That scaffold is design material for M26; it does not grant any new runtime authority in today's Black Cat prototype.
 
 ## 4. Project bootstrap workflow
 
@@ -315,32 +318,35 @@ A reusable Black Cat project template should eventually ship with:
 - example `PROJECT_RULES.md`;
 - example `AI_AUTONOMY_POLICY.md`;
 - compact `AI_WORK_STATE.md` template;
+- machine-readable `project-policy.json`;
 - lessons and ADR templates;
-- context-health calibration template;
+- context-health calibration guidance;
 - safe static checks;
 - example Git workflow;
 - capability-policy examples;
 - a README explaining how to customize human gates.
 
-This would let another person reproduce the automation style without copying Black Cat-specific TPM/USB/security rules.
+The first concrete seed is now versioned under `templates/ai-project/`. It already contains the core human policy, compact recovery state, machine policy and durable history templates. The machine-policy contract is described by `schema/ai-project-policy.schema.json`.
+
+This lets another person begin reproducing the automation style without copying Black Cat-specific TPM/USB/security rules, while still making it clear that runtime enforcement belongs to the future broker rather than to Markdown files alone.
 
 ## 19. Proposed implementation phases
 
 ### M26A — Project template and CLI
 
-Create project templates plus `blackcat-project init/status/checkpoint` with no AI dependency.
+Start from the checked-in `templates/ai-project/` seed. Implement `blackcat-project init/status/checkpoint`, schema validation and policy/profile generation with no AI dependency.
 
 ### M26B — Deterministic autonomy engine
 
-Parse the project policy and represent AUTO/AUTO_WITH_CHECKS/HUMAN_GATE/FORBIDDEN actions in a machine-readable local state model.
+Parse the project policy and represent AUTO/AUTO_WITH_CHECKS/HUMAN_GATE/FORBIDDEN actions in a machine-readable local state model. Human-readable rules and `project-policy.json` must be checked for policy/profile drift.
 
 ### M26C — Sandboxed capability broker
 
-Implement project-scoped filesystem, Git, test/build and network capabilities with no general root shell.
+Implement project-scoped filesystem, Git, test/build and network capabilities with no general root shell. Refuse undeclared capabilities by default.
 
 ### M26D — Model adapter
 
-Add a model-neutral interface supporting local models first and optional remote providers under explicit authorization.
+Add a model-neutral interface supporting local models first and optional remote providers under explicit authorization. Model replacement must not alter project capability policy.
 
 ### M26E — Background/resume worker
 
@@ -352,7 +358,7 @@ Expose state, Context Health, diffs, audit records and exact human gates in the 
 
 ### M26G — Adversarial/negative testing
 
-Test policy bypass attempts, prompt injection from repository content, unsafe shell proposals, credential access, raw-device requests, network escalation and corrupted work-state recovery.
+Test policy bypass attempts, prompt injection from repository content, unsafe shell proposals, credential access, raw-device requests, network escalation, schema/policy mismatch and corrupted work-state recovery.
 
 ## 20. Security questions to resolve before implementation
 
@@ -376,3 +382,39 @@ This subsystem is intentionally **after the first usable core prototype**.
 The current M13B→M25 security roadmap remains the active priority. The planned M26 milestone captures this future direction so the idea is not lost, but it must not delay the signed-boot, TPM, dm-verity, independent-verifier, negative-test and safe-USB work needed to complete the core product.
 
 The implementation should reuse the autonomy and recovery lessons already proven in project development while applying Black Cat's own security philosophy to the agent runtime itself.
+
+## 22. Design scaffold now baked into the repository
+
+The M26 idea is no longer only prose. The repository contains an implementation-neutral seed that future Black Cat tooling can consume:
+
+```text
+templates/ai-project/
+├── README.md
+├── PROJECT_RULES.md
+├── AI_AUTONOMY_POLICY.md
+├── AI_WORK_STATE.md
+├── project-policy.json
+└── docs/
+    ├── architecture-decisions.md
+    └── lessons-learned.md
+
+schema/
+└── ai-project-policy.schema.json
+```
+
+The sample `project-policy.json` deliberately starts fail-closed:
+
+- default action class is `HUMAN_GATE`;
+- network is disabled;
+- inbound listeners are false;
+- raw block-device access is false;
+- root access is false;
+- credential access is `none`;
+- secrets/safety-bypass/self-expanding authority are forbidden;
+- audit records exclude hidden chain-of-thought.
+
+Future `blackcat-project init` should copy/version this profile, ask only the questions necessary to change its boundaries, validate it against the schema, and require an explicit human decision for any high-impact relaxation.
+
+The future capability broker must treat the machine policy as an enforcement input, not as model prompt decoration. If the model, repository content and machine policy disagree, execution fails closed and surfaces the mismatch rather than letting the model choose the more permissive interpretation.
+
+This design scaffold remains inert in the current Prototype 1 runtime. It records and tests the architecture without adding a daemon, API key, listener, root capability or other new attack surface before M26.
