@@ -620,3 +620,22 @@ A correct artifact can become operationally inaccessible if the viewer source, c
 
 ### Evidence classification
 **ROOT CAUSE VERIFIED / REPOSITORY FIX IMPLEMENTED / PRODUCTION DEPLOYMENT STILL REQUIRED.**
+
+---
+
+## 2026-09-13 — Viewer hardening must preserve observational operations panels
+
+### What was attempted
+Replace the stale production viewer with the repository-canonical fail-closed version while keeping the living project page useful for day-to-day operations.
+
+### What happened
+The hardened viewer correctly restored the exact M13B test candidate and protected token-file model, but replacing the older cPanel `project.php` also removed the existing builder/server status windows because those panels were not represented in the canonical repository copy.
+
+### Why it matters
+Security hardening and operational visibility are separate requirements. Removing an authoritative fallback is correct; removing a read-only observational status panel is unnecessary and makes the project page less useful. Local builder telemetry must also never be confused with GitHub project authority.
+
+### Decision / change
+`web/project.php` again reads `project_cache/builder_status.json` for display-only builder/server telemetry. Secret-like keys are filtered before display. The telemetry is rendered in a separate **Builder / Server Status** panel and cannot affect candidate or release gates. A separate **Project Data Source** panel now clearly shows repository, branch, project file, Git blob, credential source and the fact that authoritative project metadata comes from the live GitHub API. Static tests require both panels and the authority boundary so future viewer replacements cannot silently remove them again.
+
+### Evidence classification
+**SOURCE FIX / REGRESSION GUARD IMPLEMENTED.** Production redeployment and visual confirmation remain pending.
