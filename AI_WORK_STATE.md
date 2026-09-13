@@ -6,7 +6,7 @@ This is the compact recovery/checkpoint file for AI-assisted work on Black Cat /
 
 ## Current project state
 
-- State revision: 1
+- State revision: 2
 - Last checkpoint: 2026-09-13
 - Current milestone: M13B — rebuild and physically retest Black Cat no-typing System Check after report-permission fix
 - Active branch: `codex/remove-chroot-systemd-boot`
@@ -30,9 +30,12 @@ This is the compact recovery/checkpoint file for AI-assisted work on Black Cat /
 ## Last completed engineering state
 
 - Root `AI_AUTONOMY_POLICY.md` defines AUTO, AUTO_WITH_CHECKS, HUMAN_GATE and FORBIDDEN_BY_DEFAULT actions.
-- Canonical `project.php` is fail-closed, protected-token-file only and preserves the Current Test Candidate plus display-only Builder / Server Status.
-- A compact chat-continuity/recovery design is now part of the repository: this file is the first-read handoff, while full documents/history are loaded selectively.
-- Context health is treated as a heuristic operational signal, not an exact model token/context meter.
+- Root `AI_WORK_STATE.md` is now the compact fresh-session/recovery checkpoint; full history is loaded selectively.
+- `docs/13-ai-continuity-and-context-recovery.md` publishes the reusable pattern for other AI-assisted projects.
+- `docs/14-context-health-calibration-log.md` begins empirical GREEN/AMBER/RED calibration without claiming an exact model context percentage.
+- Rule 14, ADR-038, README guidance and static regression guards now enforce the continuity design.
+- `docs/07-lessons-learned.md` records the continuity/context lesson.
+- `project_content.json` version 2.3 is the required final repository write for this work cycle.
 
 ## Next automatic actions
 
@@ -59,14 +62,15 @@ Physical/destructive device work remains a HUMAN_GATE.
 
 Context health is an estimate based on observable conversation/workload signals. It is **not** an exact percentage of ChatGPT's hidden context window.
 
-- Checkpoint revision: 1
-- Estimated context pressure immediately after checkpoint: GREEN
+- Checkpoint revision: 2
+- Estimated context pressure: AMBER
 - Confidence: medium-low (initial calibration)
-- Turns since checkpoint: 0
+- Turns since checkpoint: 0 (same active engineering turn)
 - Large document/log reads since checkpoint: 0
-- Tool-heavy operations since checkpoint: 0
+- Tool-heavy repository operations since checkpoint: 8+
 - Confirmed continuity/dropout events since checkpoint: 0
 - Calibration version: v0.1 (provisional)
+- Reason for AMBER: the checkpoint was established during an already long, repository/tool-heavy conversation; checkpointing protects the next recovery even though it does not shrink the current chat context.
 
 ### Pressure actions
 
