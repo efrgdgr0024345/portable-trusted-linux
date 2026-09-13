@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://blackcat.local/schema/ai-project-policy.schema.json",
+  "title": "Black Cat AI Project Capability Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project",
+    "default_action_class",
+    "capabilities",
+    "human_gates",
+    "forbidden"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "0.1"
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    },
+    "default_action_class": {
+      "type": "string",
+      "enum": [
+        "AUTO",
+        "AUTO_WITH_CHECKS",
+        "HUMAN_GATE",
+        "FORBIDDEN_BY_DEFAULT"
+      ]
+    },
+    "network": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "inbound_listeners"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "disabled",
+            "allowlist",
+            "unrestricted"
+          ]
+        },
+        "allow_hosts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "inbound_listeners": {
+          "type": "boolean"
+        }
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project_read",
+        "project_write",
+        "git_read",
+        "git_write_dev_branch",
+        "run_tests",
+        "shell",
+        "raw_block_devices",
+        "root",
+        "credentials"
+      ],
+      "properties": {
+        "project_read": {
+          "type": "boolean"
+        },
+        "project_write": {
+          "type": "boolean"
+        },
+        "git_read": {
+          "type": "boolean"
+        },
+        "git_write_dev_branch": {
+          "type": "boolean"
+        },
+        "run_tests": {
+          "type": "boolean"
+        },
+        "shell": {
+          "type": "string",
+          "enum": [
+            "none",
+            "allowlisted",
+            "restricted",
+            "unrestricted"
+          ]
+        },
+        "raw_block_devices": {
+          "type": "boolean"
+        },
+        "root": {
+          "type": "boolean"
+        },
+        "credentials": {
+          "type": "string",
+          "enum": [
+            "none",
+            "named-existing-only",
+            "prompt-per-use",
+            "unrestricted"
+          ]
+        }
+      }
+    },
+    "auto_with_checks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/actionRule"
+      }
+    },
+    "human_gates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/actionRule"
+      }
+    },
+    "forbidden": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/actionRule"
+      }
+    },
+    "audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_action_summary",
+        "record_chain_of_thought"
+      ],
+      "properties": {
+        "record_action_summary": {
+          "type": "boolean"
+        },
+        "record_commands": {
+          "type": "boolean"
+        },
+        "record_diffs": {
+          "type": "boolean"
+        },
+        "record_chain_of_thought": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "actionRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "description"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9._-]+$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
