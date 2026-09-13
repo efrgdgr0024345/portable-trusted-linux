@@ -1,0 +1,55 @@
+name: Black Cat Release Signing Self-Test
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'build/40-create-release-manifest.sh'
+      - 'build/41-sign-release-manifest.sh'
+      - 'build/42-verify-release.sh'
+      - 'tests/01-release-signing-check.sh'
+      - 'docs/16-authenticated-release-signing.md'
+      - '.github/workflows/release-signing-self-test.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  signing-self-test:
+    name: Verify release-signing mechanics without production secrets
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout source revision
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Install verification tools
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends jq openssl coreutils
+
+      - name: Shell syntax
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bash -n build/40-create-release-manifest.sh
+          bash -n build/41-sign-release-manifest.sh
+          bash -n build/42-verify-release.sh
+          bash -n tests/01-release-signing-check.sh
+
+      - name: Positive and negative release-signing tests
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bash tests/01-release-signing-check.sh
