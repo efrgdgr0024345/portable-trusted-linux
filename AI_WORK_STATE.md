@@ -6,7 +6,7 @@ This is the compact recovery/checkpoint file for AI-assisted work on Black Cat /
 
 ## Current project state
 
-- State revision: 2
+- State revision: 3
 - Last checkpoint: 2026-09-13
 - Current milestone: M13B — rebuild and physically retest Black Cat no-typing System Check after report-permission fix
 - Active branch: `codex/remove-chroot-systemd-boot`
@@ -14,6 +14,7 @@ This is the compact recovery/checkpoint file for AI-assisted work on Black Cat /
 - Project progress: 74%
 - Approved release: none
 - Current blocker: none for repository work; M13B completion is waiting at a physical-human gate
+- Future roadmap: M26 will integrate repository-governed AI project automation into Black Cat user space after the first usable core prototype (M25)
 
 ## Current exact test candidate
 
@@ -30,12 +31,13 @@ This is the compact recovery/checkpoint file for AI-assisted work on Black Cat /
 ## Last completed engineering state
 
 - Root `AI_AUTONOMY_POLICY.md` defines AUTO, AUTO_WITH_CHECKS, HUMAN_GATE and FORBIDDEN_BY_DEFAULT actions.
-- Root `AI_WORK_STATE.md` is now the compact fresh-session/recovery checkpoint; full history is loaded selectively.
-- `docs/13-ai-continuity-and-context-recovery.md` publishes the reusable pattern for other AI-assisted projects.
-- `docs/14-context-health-calibration-log.md` begins empirical GREEN/AMBER/RED calibration without claiming an exact model context percentage.
-- Rule 14, ADR-038, README guidance and static regression guards now enforce the continuity design.
-- `docs/07-lessons-learned.md` records the continuity/context lesson.
-- `project_content.json` version 2.3 is the required final repository write for this work cycle.
+- Root `AI_WORK_STATE.md` is the compact fresh-session/recovery checkpoint; full history is loaded selectively.
+- `docs/13-ai-continuity-and-context-recovery.md` publishes the reusable continuity pattern.
+- `docs/14-context-health-calibration-log.md` provides empirical GREEN/AMBER/RED calibration without claiming an exact hidden context percentage.
+- `docs/15-black-cat-ai-project-automation.md` now designs a future native Linux project subsystem using repository policy, a sandboxed capability broker, model-neutral workers, local-first operation and explicit human gates.
+- ADR-039 records that future subsystem as post-core work; M26 is planned after M25 so it cannot displace the current trust-chain roadmap.
+- Static checks now protect the future design document and M26/project-page visibility.
+- `project_content.json` must be the final repository write of this work cycle.
 
 ## Next automatic actions
 
@@ -44,6 +46,7 @@ This is the compact recovery/checkpoint file for AI-assisted work on Black Cat /
 3. Load other repository files selectively when required by the task or when a policy/version mismatch is detected.
 4. Continue safe, reversible, already-authorized work automatically under `AI_AUTONOMY_POLICY.md`.
 5. Refresh this checkpoint automatically when context pressure becomes AMBER/RED or project state materially changes.
+6. Keep M26 future-only until the core M13B→M25 security roadmap reaches its required gates.
 
 ## Next genuine human gate
 
@@ -62,15 +65,15 @@ Physical/destructive device work remains a HUMAN_GATE.
 
 Context health is an estimate based on observable conversation/workload signals. It is **not** an exact percentage of ChatGPT's hidden context window.
 
-- Checkpoint revision: 2
+- Checkpoint revision: 3
 - Estimated context pressure: AMBER
 - Confidence: medium-low (initial calibration)
-- Turns since checkpoint: 0 (same active engineering turn)
-- Large document/log reads since checkpoint: 0
-- Tool-heavy repository operations since checkpoint: 8+
+- Turns since checkpoint: several active design turns
+- Large document/log reads since checkpoint: several repository reads
+- Tool-heavy repository operations since checkpoint: high
 - Confirmed continuity/dropout events since checkpoint: 0
 - Calibration version: v0.1 (provisional)
-- Reason for AMBER: the checkpoint was established during an already long, repository/tool-heavy conversation; checkpointing protects the next recovery even though it does not shrink the current chat context.
+- Reason for AMBER: this remains a long, repository/tool-heavy conversation; compact checkpointing protects recovery even though it does not shrink the current chat context.
 
 ### Pressure actions
 
@@ -98,6 +101,7 @@ Use this sequence only for a fresh chat, suspected context loss, long-gap check-
 - Automation rationale: `docs/11-automation-manifesto.md`
 - Reusable continuity/context design: `docs/13-ai-continuity-and-context-recovery.md`
 - Empirical calibration log: `docs/14-context-health-calibration-log.md`
+- Future native AI project automation design: `docs/15-black-cat-ai-project-automation.md`
 - Full lessons/history: `docs/07-lessons-learned.md`
 - Living project index: `project_content.json`
 
