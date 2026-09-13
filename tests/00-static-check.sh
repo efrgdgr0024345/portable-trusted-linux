@@ -17,6 +17,7 @@ check_file() {
 
 for path in \
   PROJECT_RULES.md \
+  AI_AUTONOMY_POLICY.md \
   project_content.json \
   web/project.php \
   docs/05-architecture-decisions.md \
@@ -75,6 +76,16 @@ if command -v jq >/dev/null 2>&1; then
     printf '[FAILED]  M13B is current but the candidate record was removed\n'
     failures=1
   fi
+
+  if jq -e '
+      ([.documents[] | select(.url | endswith("/AI_AUTONOMY_POLICY.md"))] | length) == 1 and
+      ([.sections[] | select(.title == "AI autonomy policy — when GPT continues automatically")] | length) == 1
+    ' "${ROOT_DIR}/project_content.json" >/dev/null; then
+    printf '[OK]      project viewer index surfaces the root AI autonomy policy\n'
+  else
+    printf '[FAILED]  project_content.json does not surface the root AI autonomy policy\n'
+    failures=1
+  fi
 else
   printf '[SKIP]    jq unavailable; JSON/candidate checks skipped\n'
 fi
@@ -115,12 +126,43 @@ else
   printf '[OK]      Automation Manifesto pre-pause rule is mandatory\n'
 fi
 
+if ! grep -Fq 'Root AI autonomy decision table is mandatory' "${ROOT_DIR}/PROJECT_RULES.md"; then
+  printf '[FAILED]  PROJECT_RULES.md is missing the root AI autonomy policy rule\n'
+  failures=1
+else
+  printf '[OK]      root AI autonomy decision table is mandatory\n'
+fi
+
 if ! grep -Fq 'If no genuine human-gate condition applies' "${ROOT_DIR}/docs/11-automation-manifesto.md"; then
   printf '[FAILED]  Automation Manifesto is missing its no-routine-pause rule\n'
   failures=1
 else
   printf '[OK]      Automation Manifesto forbids routine permission pauses\n'
 fi
+
+if ! grep -Fq 'AI_AUTONOMY_POLICY.md' "${ROOT_DIR}/docs/11-automation-manifesto.md"; then
+  printf '[FAILED]  Automation Manifesto does not point to the root autonomy policy\n'
+  failures=1
+else
+  printf '[OK]      Automation Manifesto points to the root autonomy policy\n'
+fi
+
+autonomy_policy="${ROOT_DIR}/AI_AUTONOMY_POLICY.md"
+for required in \
+  'Default = continue automatically' \
+  '### AUTO' \
+  '### AUTO_WITH_CHECKS' \
+  '### HUMAN_GATE' \
+  '### FORBIDDEN_BY_DEFAULT' \
+  'capability boundary, not an approval gate' \
+  'project_content.json` **last**'; do
+  if grep -Fq "$required" "$autonomy_policy"; then
+    printf '[OK]      autonomy policy retains: %s\n' "$required"
+  else
+    printf '[FAILED]  autonomy policy is missing: %s\n' "$required"
+    failures=1
+  fi
+done
 
 viewer="${ROOT_DIR}/web/project.php"
 if grep -Fq "const TOKEN_FILE = '/home/learning/.blackcat/github_token';" "$viewer"; then
