@@ -153,6 +153,27 @@ else
   failures=1
 fi
 
+if grep -Fq 'project_cache/builder_status.json' "$viewer" && grep -Fq 'Builder / Server Status' "$viewer" && grep -Fq 'display-only operational telemetry' "$viewer"; then
+  printf '[OK]      viewer retains display-only builder/server status telemetry\n'
+else
+  printf '[FAILED]  viewer lost the builder/server status panel or authority boundary\n'
+  failures=1
+fi
+
+if grep -Fq 'Project Data Source' "$viewer" && grep -Fq 'LIVE / SYNCHRONISED' "$viewer" && grep -Fq 'Live GitHub API only' "$viewer"; then
+  printf '[OK]      viewer clearly identifies authoritative live project data\n'
+else
+  printf '[FAILED]  viewer lost the clear Project Data Source panel\n'
+  failures=1
+fi
+
+if grep -Fq "preg_match('/token|secret|password|passwd|private|authorization|credential|api[_-]?key|ssh[_-]?key/i'" "$viewer"; then
+  printf '[OK]      viewer filters secret-like builder-status keys\n'
+else
+  printf '[FAILED]  builder-status display is missing its secret-like key filter\n'
+  failures=1
+fi
+
 splash_b64="${ROOT_DIR}/assets/blackcat-boot-160x120.png.b64"
 if command -v base64 >/dev/null 2>&1 && command -v sha256sum >/dev/null 2>&1; then
   splash_tmp="$(mktemp)"
