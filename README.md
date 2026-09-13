@@ -19,7 +19,8 @@ Internal repository names, `PTL_` environment variables, workflow names and evid
 - The earlier candidate with SHA-256 `34903e52268bf995207cc51e86de9d1950406690445fca7cedfe5a98371f7b32` remains superseded evidence and must not be used for M13B completion.
 - Black Cat branding is present on GRUB/UEFI and Syslinux/legacy menus using a compact repository-tracked splash. Branding is cosmetic only and cannot determine trust or boot eligibility.
 - The **Black Cat Automation Manifesto** and root **AI Autonomy Policy** are mandatory: safe, reversible, auditable work proceeds automatically until a genuine human gate is reached.
-- Chat/session continuity is now recoverable through compact root `AI_WORK_STATE.md`, selective repository reload and an empirical GREEN/AMBER/RED context-health heuristic rather than repeatedly loading the full project history.
+- Chat/session continuity is recoverable through compact root `AI_WORK_STATE.md`, selective repository reload and an empirical GREEN/AMBER/RED context-health heuristic rather than repeatedly loading the full project history.
+- A future post-core milestone now plans to build this repository-governed automation style directly into Black Cat Linux as a sandboxed, model-neutral user-space project system. It is deliberately scheduled after the core prototype so it does not displace the M13B→M25 trust-chain work.
 
 ## No-typing diagnostic path
 
@@ -64,13 +65,32 @@ The project does not pretend to know an exact hidden ChatGPT context-window perc
 
 This continuity design is independent of Black Cat's Linux/TPM architecture and is intended to be reusable for other long-running AI-assisted engineering/research projects.
 
+## Future: AI project automation built into Black Cat Linux
+
+After the first usable core prototype, Black Cat plans to turn the same automation pattern into a native user-space project facility. The design is documented in `docs/15-black-cat-ai-project-automation.md` and tracked as future milestone **M26**.
+
+The intended experience is roughly:
+
+```text
+blackcat-project init my-project
+blackcat-project continue
+```
+
+A generated project would carry its own `PROJECT_RULES.md`, `AI_AUTONOMY_POLICY.md`, compact `AI_WORK_STATE.md`, lessons, decisions, tests and project metadata. A local project worker would reconstruct only the minimum state it needs and continue until the next genuine human gate.
+
+The important security boundary is that **the model does not become root or policy authority**. The proposed architecture separates repository state, model reasoning, operating-system capability enforcement and human authority. A sandboxed capability broker would control filesystem, Git, test/build, network and privilege operations independently of the model. Local models and deterministic offline operation are preferred where practical; remote AI providers remain optional project capabilities.
+
+Background continuation should use user-level systemd services/timers or outbound-only checks, not a new public webhook/listener. The future subsystem also includes a project dashboard, audit summaries, Context Health, explicit human-gate display, model-neutral adapters and adversarial tests for prompt injection/policy bypass/credential/device-access attempts.
+
+This is deliberately **future work after M25**, not a reason to delay the current signed-boot, TPM, dm-verity, independent-verifier and safe-USB roadmap.
+
 ## Living project page
 
 Public viewer: https://easyai.com.au/USB/project.php
 
 The public PHP viewer reads `project_content.json` from this private repository using a server-side, read-only GitHub token stored outside the public web root. Development distribution and release distribution are deliberately separate: the viewer may show one exact **Current Test Candidate** for operator testing while the **Approved Black Cat ISO** remains disabled until explicit release promotion requirements are met.
 
-The viewer also presents display-only Builder / Server Status separately from authoritative GitHub project data, and its document library surfaces the Automation Manifesto, AI Autonomy Policy, compact AI Work State, continuity/recovery guide, context-health calibration log and other current technical records.
+The viewer also presents display-only Builder / Server Status separately from authoritative GitHub project data, and its document library surfaces the Automation Manifesto, AI Autonomy Policy, compact AI Work State, continuity/recovery guide, context-health calibration log, future Linux-integrated AI project automation design and other current technical records.
 
 ## Repository structure
 
@@ -107,7 +127,8 @@ portable-trusted-linux/
     ├── 11-automation-manifesto.md
     ├── 12-high-security-controller-architecture.md
     ├── 13-ai-continuity-and-context-recovery.md
-    └── 14-context-health-calibration-log.md
+    ├── 14-context-health-calibration-log.md
+    └── 15-black-cat-ai-project-automation.md
 ```
 
 ## Core runtime trust chain
