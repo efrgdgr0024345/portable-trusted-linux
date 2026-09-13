@@ -9,17 +9,17 @@ Internal repository names, `PTL_` environment variables, workflow names and evid
 ## Current status
 
 - Debian 13/trixie amd64 build baseline established.
-- First Debian Live hybrid ISO built successfully on the remote builder.
-- The first ISO was written to USB in raw/DD mode and **physically booted successfully on real hardware**.
-- That physical boot is currently classified as **OBSERVED bootability**, not proof of Secure Boot, TPM attestation, dm-verity or release authenticity.
-- The no-typing **System Check** boot path passed the integrated build + UEFI/QEMU smoke gate in GitHub Actions run `34669451222` and was then physically exercised on real hardware.
-- The physical System Check automatically displayed UEFI boot, Secure Boot enabled, a TPM device, TCG event-log exposure, no active network link, kernel `6.12.107+deb13-amd64`, architecture `x86_64`, and dm-verity root `NOT_ACTIVE` (expected before M17).
-- That physical test also exposed a duplicate-execution bug: the root systemd service created `/run/blackcat` evidence first, then the normal-user login hook tried to run the collector again and received `Permission denied` overwriting the root-owned reports.
-- The login hook is now display-only and systemd is the sole report producer. A rebuilt candidate must pass CI and one more physical no-typing test before M13B is complete.
-- The previously frozen candidate `live-image-amd64.hybrid.iso` / SHA-256 `34903e52268bf995207cc51e86de9d1950406690445fca7cedfe5a98371f7b32` is therefore **superseded for M13B completion** and must not be mistaken for the corrected candidate.
-- The next rebuilt image also carries Black Cat branding on both GRUB/UEFI and Syslinux/legacy boot menus using a compact repository-tracked splash derived from the project icon. The branding is cosmetic only and must never become a boot dependency.
-- The first large base64 branding asset failed CI decoding and was removed. The replacement is deliberately smaller (160×120, 8-colour) to make the text-only repository transport robust while preserving the Black Cat visual theme.
-- The **Black Cat Automation Manifesto** is mandatory: safe, reversible, auditable work proceeds automatically until a genuine human gate is reached.
+- First Debian Live hybrid ISO built successfully on the remote builder and physically booted from USB on real hardware.
+- Physical boot remains **OBSERVED bootability**, not proof of Secure Boot, TPM attestation, dm-verity or release authenticity.
+- The first physical no-typing System Check exposed duplicate root/user diagnostic execution and `Permission denied` report writes.
+- The source fix makes `blackcat-check.service` the sole root-owned evidence producer; the login/profile hook is display-only.
+- The corrected M13B candidate passed the integrated self-hosted build plus UEFI/QEMU smoke gates and is frozen for physical retest.
+- Current exact test candidate: `live-image-amd64.hybrid.iso`, 376,438,784 bytes, SHA-256 `cb14d25b7fd43e2b0e563efaada357d6ab196a42d717b016c4857f85968fe641`, source commit `c56389b71ecd96270bdd047369378f5a94d8bf93`, workflow run `34686464650`, artifact `10300658965` (`ptl-first-live-build-34686464650`).
+- That image is **TEST CANDIDATE — NOT AN APPROVED RELEASE**. M13B remains current until one physical retest confirms the report-permission fix and internal-disk behavior.
+- The earlier candidate with SHA-256 `34903e52268bf995207cc51e86de9d1950406690445fca7cedfe5a98371f7b32` remains superseded evidence and must not be used for M13B completion.
+- Black Cat branding is present on GRUB/UEFI and Syslinux/legacy menus using a compact repository-tracked splash. Branding is cosmetic only and cannot determine trust or boot eligibility.
+- The **Black Cat Automation Manifesto** and root **AI Autonomy Policy** are mandatory: safe, reversible, auditable work proceeds automatically until a genuine human gate is reached.
+- Chat/session continuity is now recoverable through compact root `AI_WORK_STATE.md`, selective repository reload and an empirical GREEN/AMBER/RED context-health heuristic rather than repeatedly loading the full project history.
 
 ## No-typing diagnostic path
 
@@ -48,13 +48,29 @@ The current compact splash identity is:
 
 GRUB uses the image only when PNG/background rendering is available; otherwise the ordinary text boot menu remains usable. Syslinux likewise retains normal bootable labels independently of the splash.
 
+## AI autonomy and recoverable chat continuity
+
+Black Cat deliberately separates **project state** from **chat state**.
+
+- `PROJECT_RULES.md` is the master mandatory policy.
+- `AI_AUTONOMY_POLICY.md` is the root continue/stop decision table with `AUTO`, `AUTO_WITH_CHECKS`, `HUMAN_GATE` and `FORBIDDEN_BY_DEFAULT` classes.
+- `AI_WORK_STATE.md` is a compact first-read checkpoint for fresh sessions/context recovery. It contains only current milestone/branch/candidate/next-action/human-gate/context-health state rather than full project history.
+- `docs/13-ai-continuity-and-context-recovery.md` documents the reusable pattern so another project can reproduce the approach.
+- `docs/14-context-health-calibration-log.md` records real continuity/dropout evidence so the GREEN/AMBER/RED heuristic can improve over time.
+
+A normal continuing turn does **not** reload all repository documents. After a fresh session or suspected continuity loss, the AI reads `AI_WORK_STATE.md` first, verifies only volatile GitHub/CI facts needed for the next action, then loads larger files selectively.
+
+The project does not pretend to know an exact hidden ChatGPT context-window percentage. Context health is estimated from observable proxies such as turns since checkpoint, large file/log reads, tool-heavy operations, pasted material and actual continuity symptoms. AMBER/RED checkpoint maintenance is automatic work, not a human gate.
+
+This continuity design is independent of Black Cat's Linux/TPM architecture and is intended to be reusable for other long-running AI-assisted engineering/research projects.
+
 ## Living project page
 
 Public viewer: https://easyai.com.au/USB/project.php
 
-The public PHP viewer reads `project_content.json` from this private repository using a server-side, read-only GitHub token. Development distribution and release distribution are deliberately separate: the viewer may show one exact **Current Test Candidate** for operator testing while the **Approved Black Cat ISO** remains disabled until explicit release promotion requirements are met. A candidate that exposes a physical-test defect is removed/superseded until the corrected rebuild passes its gates.
+The public PHP viewer reads `project_content.json` from this private repository using a server-side, read-only GitHub token stored outside the public web root. Development distribution and release distribution are deliberately separate: the viewer may show one exact **Current Test Candidate** for operator testing while the **Approved Black Cat ISO** remains disabled until explicit release promotion requirements are met.
 
-The living project page also surfaces the **Automation Manifesto**, which requires a pre-pause check before routine permission is requested.
+The viewer also presents display-only Builder / Server Status separately from authoritative GitHub project data, and its document library surfaces the Automation Manifesto, AI Autonomy Policy, compact AI Work State, continuity/recovery guide, context-health calibration log and other current technical records.
 
 ## Repository structure
 
@@ -62,6 +78,8 @@ The living project page also surfaces the **Automation Manifesto**, which requir
 portable-trusted-linux/
 ├── README.md
 ├── PROJECT_RULES.md
+├── AI_AUTONOMY_POLICY.md
+├── AI_WORK_STATE.md
 ├── project_content.json
 ├── assets/
 │   └── blackcat-boot-160x120.png.b64
@@ -84,6 +102,12 @@ portable-trusted-linux/
 ├── tests/
 ├── research/
 └── docs/
+    ├── 05-architecture-decisions.md
+    ├── 07-lessons-learned.md
+    ├── 11-automation-manifesto.md
+    ├── 12-high-security-controller-architecture.md
+    ├── 13-ai-continuity-and-context-recovery.md
+    └── 14-context-health-calibration-log.md
 ```
 
 ## Core runtime trust chain
@@ -120,4 +144,4 @@ A successful physical boot proves bootability on the tested configuration. It do
 
 ## Mandatory lessons-learned rule
 
-Every meaningful engineering/research session updates `docs/07-lessons-learned.md`, relevant technical/decision documents, and finally `project_content.json` **last**. See `PROJECT_RULES.md`.
+Every meaningful engineering/research session updates `docs/07-lessons-learned.md`, relevant technical/decision documents and the compact work-state checkpoint when materially affected, then updates `project_content.json` **last**. See `PROJECT_RULES.md`.
