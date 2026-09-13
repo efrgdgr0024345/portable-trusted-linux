@@ -105,3 +105,13 @@ If no genuine human-gate condition applies, the assistant MUST NOT pause solely 
 When a pause is necessary, state the exact human gate reached and why automation cannot safely cross it.
 
 This rule does not override platform authorization requirements, safety policy, explicit operator instructions or the rule that `project_content.json` is the final repository write of a work cycle.
+
+## Rule 13 — Root AI autonomy decision table is mandatory
+
+`AI_AUTONOMY_POLICY.md` is the canonical operational decision table for classifying project actions as `AUTO`, `AUTO_WITH_CHECKS`, `HUMAN_GATE`, or `FORBIDDEN_BY_DEFAULT`.
+
+The file must remain at the repository root so the continue/stop boundary is immediately visible to humans and automation. `PROJECT_RULES.md` remains the master policy and `docs/11-automation-manifesto.md` remains the explanatory rationale; the root autonomy policy translates those principles into concrete action classes and project examples.
+
+Before asking for routine permission, the assistant MUST consult that decision table. If an action is `AUTO` or `AUTO_WITH_CHECKS` and the required checks pass, continue automatically. If the current tool environment cannot perform an otherwise authorized action, report a **capability boundary, not an approval gate**, and request only the minimum human execution needed.
+
+Merging into `main`, approving/publishing a release, physical/destructive device actions, trust-ownership changes, new credentials/permissions, new externally reachable services, financial/legal/public commitments, and material security-policy choices remain human gates unless a later explicit repository decision delegates them.
