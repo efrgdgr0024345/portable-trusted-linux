@@ -736,3 +736,43 @@ Record the report-permission regression as **physically observed fixed on this t
 
 ### Evidence classification
 **PHYSICAL OBSERVATION / REPORT-PERMISSION FIX PASSED ON TESTED HARDWARE / INTERNAL-DISK MOUNT GATE STILL PENDING.**
+
+---
+
+## 2026-09-13 — M13B closes only after internal-disk state is observed separately
+
+### What was attempted
+Close the corrected physical-test milestone without assuming that the quick-check screen proved internal storage remained untouched.
+
+### What happened
+After the corrected quick-check screen passed, the operator entered the live shell and ran the read-only command `lsblk -o NAME,SIZE,TYPE,MOUNTPOINTS`. The photograph shows `sda` as a 14.6G disk with `sda1` mounted at `/run/live/medium`, matching the live USB, and `loop0` mounted as the live squashfs. The internal `nvme0n1` is 476.9G and its four partitions (`p1` 260M, `p2` 16M, `p3` 475.7G, `p4` 952M) all have blank mount-point columns.
+
+### Why it matters
+The security requirement is not merely that the live OS boots; internal disks should remain unmounted by default. That requirement needs direct storage-state evidence rather than inference from an unrelated diagnostics screen.
+
+### Decision / change
+M13B is complete on the tested hardware/configuration. Record the internal NVMe as **OBSERVED unmounted by default** during this boot. Do not generalise the result to all hardware; later multi-PC testing and stronger runtime policy tests remain separate gates.
+
+### Evidence classification
+**PHYSICAL OBSERVATION / M13B COMPLETE ON TESTED CONFIGURATION.**
+
+---
+
+## 2026-09-13 — Release authenticity needs a signed canonical object, not just another checksum
+
+### What was attempted
+Begin M14 without prematurely creating or exposing a production signing secret.
+
+### What happened
+The project already had strong build provenance and exact candidate SHA-256 values, but an unsigned checksum and unsigned manifest can be replaced together with a malicious artifact. The non-secret M14 implementation now defines one exact canonical JSON release manifest, binds it to an Ed25519 public-key fingerprint, signs the exact manifest bytes with a detached signature, and verifies the signature plus exact artifact filename, byte size and SHA-256. The signer also derives its own public key and refuses to sign when that fingerprint does not match the manifest.
+
+A dedicated development self-test creates only a temporary Ed25519 keypair, verifies the valid path, and requires failure for artifact tampering, manifest tampering, wrong public key and private-key/fingerprint mismatch. A GitHub-hosted workflow runs these mechanics without any production secret.
+
+### Why it matters
+This cleanly separates three different questions: what bytes were built, whether those bytes behaved as expected in tests, and whether a trusted release authority authenticated the exact release metadata. It also avoids the dangerous shortcut of placing a long-lived release private key on the general-purpose builder merely to make CI convenient.
+
+### Decision / change
+Use the M14 format and tooling documented in `docs/16-authenticated-release-signing.md` and ADR-041. Keep release signing separate from Secure Boot/UKI signing. Automated work may validate signing mechanics with ephemeral keys, but selecting and provisioning the production release-signing key ownership/custody model remains a genuine HUMAN_GATE.
+
+### Evidence classification
+**NON-SECRET M14 IMPLEMENTATION ADDED / DEVELOPMENT SELF-TEST PENDING CI / PRODUCTION KEY AUTHORITY NOT YET PROVISIONED.**
