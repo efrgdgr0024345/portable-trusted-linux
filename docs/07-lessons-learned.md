@@ -494,7 +494,7 @@ The integrated live-build and UEFI/QEMU smoke workflow run `34669451222` complet
 A development operator needs an easy route to one exact candidate while the project still needs a separate, stronger meaning for an approved release. Treating these as the same state either creates unnecessary friction during testing or weakens release semantics.
 
 ### Decision / change
-The living project viewer now supports a separate **Current Test Candidate** panel. It is enabled only when candidate metadata includes an exact filename, byte size, SHA-256, source commit, workflow run, artifact identity, HTTPS GitHub artifact link and `smoke_test=passed`. It is prominently labelled **TEST CANDIDATE — NOT AN APPROVED RELEASE**. The Approved Black Cat ISO panel and its promotion requirements remain independent and unchanged. GitHub Actions artifact distribution is temporary development infrastructure; authenticated release signing remains a later gate.
+The living viewer now supports a separate **Current Test Candidate** panel. It is enabled only when candidate metadata includes an exact filename, byte size, SHA-256, source commit, workflow run, artifact identity, HTTPS GitHub artifact link and `smoke_test=passed`. It is prominently labelled **TEST CANDIDATE — NOT AN APPROVED RELEASE**. The Approved Black Cat ISO panel and its promotion requirements remain independent and unchanged. GitHub Actions artifact distribution is temporary development infrastructure; authenticated release signing remains a later gate.
 
 ### Evidence classification
 **VERIFIED BUILD IDENTITY / IMPLEMENTED DISTRIBUTION-SEPARATION DESIGN.** Automated CI boot evidence has passed for this candidate; physical no-typing menu and persistence validation remain pending.
@@ -717,3 +717,22 @@ M26 starts from this checked-in template and schema. The sample policy defaults 
 
 ### Evidence classification
 **DESIGN SCAFFOLD IMPLEMENTED / STATIC GUARDS ADDED / RUNTIME ENFORCEMENT FUTURE (M26).**
+
+---
+
+## 2026-09-13 — Corrected M13B physical retest clears the report-permission regression
+
+### What was attempted
+Physically retest the corrected M13B candidate on real hardware using the no-typing **Black Cat - System Check** path.
+
+### What happened
+The machine first displayed repeated firmware/ACPI `AE_NOT_FOUND` messages, but boot continued without intervention and reached the intended **BLACK CAT - QUICK CHECK** screen. The photographed corrected run shows UEFI, Secure Boot ENABLED, TPM DEVICE_FOUND, TCG event log FOUND, dm-verity root NOT_ACTIVE, no active network link observed, kernel `6.12.107+deb13-amd64` and architecture `x86_64`. Crucially, the previous `/run/blackcat/quick-check.txt` and `.json` `Permission denied` errors are absent.
+
+### Why it matters
+This is the first real-hardware evidence that the single-producer fix behaves as intended: systemd can create the evidence and the display path no longer visibly attempts an unauthorized second write. It also shows that noisy firmware ACPI diagnostics can precede a successful Black Cat boot and should not automatically be classified as an image failure. However, the quick-check screen does not currently expose internal-disk mount state, so it cannot by itself close the full M13B acceptance gate.
+
+### Decision / change
+Record the report-permission regression as **physically observed fixed on this tested configuration**. Preserve the ACPI messages as firmware compatibility evidence rather than suppressing them from diagnostic records. Keep M13B current until one read-only disk/mount observation confirms internal disks remain unmounted by default. A later UX improvement may present non-fatal firmware diagnostics less prominently while retaining them in evidence logs.
+
+### Evidence classification
+**PHYSICAL OBSERVATION / REPORT-PERMISSION FIX PASSED ON TESTED HARDWARE / INTERNAL-DISK MOUNT GATE STILL PENDING.**
