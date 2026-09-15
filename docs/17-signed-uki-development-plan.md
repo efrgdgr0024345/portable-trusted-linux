@@ -1,0 +1,116 @@
+# Signed UKI Development Plan — M15 Preparation
+
+**Status:** pre-implementation design while M14 production signing custody remains unresolved  
+**Target:** Debian 13/trixie amd64, systemd-ukify 257-series toolchain  
+**Safety boundary:** development keys only; no firmware key enrollment; no target-disk writes.
+
+## Purpose
+
+M15 will bind the Linux kernel, initrd, kernel command line and OS metadata into a Unified Kernel Image (UKI), then authenticate that PE/EFI binary through a Secure Boot signing path.
+
+This work is separate from M14 release signing:
+
+- **M14 release key** authenticates release metadata and exact artifact identity.
+- **M15 Secure Boot key/path** authorizes EFI/UKI execution under firmware/shim policy.
+
+The two identities must remain logically separate even if temporary development fixtures are used during engineering.
+
+## Debian 13 toolchain facts
+
+Debian trixie's `systemd-ukify` provides `ukify build`, `ukify genkey` and `ukify inspect`. The `build` command can combine a kernel and one or more initrds and can embed command-line, OS-release, uname, SBAT and other UKI sections. It can sign for Secure Boot when a Secure Boot private key/certificate are supplied.
+
+For Black Cat, repository scripts should pass explicit paths/options rather than relying on ambient `/etc/systemd/ukify.conf`, so a builder's local configuration cannot silently alter the produced UKI.
+
+Reference: Debian trixie `ukify(1)` man page for the installed 257-series toolchain.
+
+## Initial development flow
+
+The first M15 development build should:
+
+1. take the exact kernel and initrd produced for the Black Cat live image;
+2. provide an explicit Black Cat kernel command line;
+3. provide explicit OS-release metadata;
+4. provide the kernel version explicitly where known;
+5. generate a UKI with `ukify build`;
+6. inspect the UKI with `ukify inspect` and record section digests;
+7. calculate and record the whole-file UKI SHA-256;
+8. sign using an **ephemeral DEVELOPMENT ONLY** Secure Boot key/certificate;
+9. verify the PE signature independently with an appropriate verification tool;
+10. preserve unsigned and deliberately modified copies for negative tests.
+
+The development keypair must be created in temporary storage and destroyed after the test. It is not a production trust root and must never be enrolled into the operator's firmware as part of an automated test.
+
+## Required UKI bindings
+
+Initial Black Cat UKI content should include at minimum:
+
+- `.linux` — exact kernel;
+- `.initrd` — exact initrd/initramfs;
+- `.cmdline` — explicit trusted command line;
+- `.osrel` — Black Cat/Debian OS-release identity;
+- `.uname` — explicit kernel version when known;
+- `.sbat` — retain valid SBAT metadata so future revocation remains possible.
+
+M17 later adds the authenticated dm-verity root identity/root-hash relationship. M15 must leave an explicit place for that binding rather than hard-code an incompatible layout now.
+
+## Fail-closed development checks
+
+Before any M15 artifact can be called a successful development UKI, automated tests should prove:
+
+- expected sections are present;
+- whole UKI SHA-256 is recorded;
+- PE/EFI signature verification succeeds with the expected development certificate;
+- verification fails with the wrong certificate/key identity;
+- byte modification after signing causes verification failure;
+- an unsigned UKI is not reported as signed/authorized;
+- the embedded command line is the expected exact string;
+- the embedded kernel/initrd digests correspond to the intended build inputs;
+- build scripts do not discover or use a production/private key implicitly.
+
+## Secure Boot compatibility modes
+
+Black Cat retains two conceptually different deployment modes from the Prototype 1 specification:
+
+### Commodity compatibility mode
+
+Use an ordinary vendor/Microsoft-compatible trust path where practical, likely involving shim or an equivalent signed first-stage path. This maximizes random-PC compatibility but inherits a larger external trust base.
+
+### Controlled-hardware mode
+
+Use explicitly project-owned Secure Boot keys only on hardware deliberately prepared for that policy.
+
+The project must never silently enroll Black Cat keys into arbitrary firmware. Firmware enrollment, key ownership and Secure Boot policy changes remain HUMAN_GATE actions.
+
+## Development-key policy
+
+Until a separate M15 Secure Boot key-custody decision is approved:
+
+- CI/dev tests may generate ephemeral keys;
+- development certificates must be labelled DEVELOPMENT ONLY;
+- no generated private key is committed or uploaded as a retained artifact;
+- no general-purpose builder key becomes a production authority by accident;
+- no M14 release private key is reused for Secure Boot signing.
+
+## Measurement preparation
+
+A UKI also provides a cleaner measured-boot boundary for later M16 work. M15 should preserve enough evidence to correlate:
+
+- UKI whole-file SHA-256;
+- section digests from `ukify inspect`;
+- exact command line;
+- kernel/initrd identities;
+- Secure Boot signing certificate fingerprint;
+- later TPM/event-log measurements.
+
+The project must still distinguish **signature verification** from **firmware enforcement evidence**. A correctly signed UKI on disk does not prove firmware actually enforced that signature during a particular boot.
+
+## M15 preparation acceptance point
+
+Safe pre-work can continue before the real USB/signing hardware exists when:
+
+- the UKI build inputs and evidence schema are documented;
+- development-only key policy is explicit;
+- negative-test requirements are defined;
+- scripts can later consume exact live-build kernel/initrd outputs without changing target disks or firmware.
+
+Actual production Secure Boot key ownership, enrollment and real-hardware enforcement remain later human/physical gates.
