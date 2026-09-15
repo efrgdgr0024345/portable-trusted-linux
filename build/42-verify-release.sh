@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+VALIDATOR="$ROOT_DIR/build/lib/validate-release-manifest.sh"
+
 usage() {
   echo "Usage: $0 <release-manifest.json> <signature.bin> <ed25519-public-key.pem> [artifact]" >&2
   exit 2
@@ -13,36 +16,16 @@ PUBLIC_KEY="$3"
 ARTIFACT="${4:-}"
 
 [[ -f "$MANIFEST" ]] || { echo "Manifest not found: $MANIFEST" >&2; exit 1; }
-[[ -f "$SIGNATURE" ]] || { echo "Signature not found: $SIGNATURE" >&2; exit 1; }
+[[ -s "$SIGNATURE" ]] || { echo "Signature missing or empty: $SIGNATURE" >&2; exit 1; }
 [[ -f "$PUBLIC_KEY" ]] || { echo "Public key not found: $PUBLIC_KEY" >&2; exit 1; }
 [[ -z "$ARTIFACT" || -f "$ARTIFACT" ]] || { echo "Artifact not found: $ARTIFACT" >&2; exit 1; }
-command -v jq >/dev/null || { echo 'jq is required' >&2; exit 1; }
-command -v openssl >/dev/null || { echo 'openssl is required' >&2; exit 1; }
-command -v sha256sum >/dev/null || { echo 'sha256sum is required' >&2; exit 1; }
-command -v stat >/dev/null || { echo 'stat is required' >&2; exit 1; }
 
-canonical="$(mktemp)"
-trap 'rm -f "$canonical"' EXIT
+for cmd in jq openssl sha256sum stat; do
+  command -v "$cmd" >/dev/null || { echo "$cmd is required" >&2; exit 1; }
+done
+[[ -x "$VALIDATOR" ]] || { echo "Manifest validator missing: $VALIDATOR" >&2; exit 1; }
 
-jq -S -c . "$MANIFEST" > "$canonical"
-cmp -s "$MANIFEST" "$canonical" || {
-  echo 'MANIFEST CANONICAL FORM: FAILED' >&2
-  exit 1
-}
-echo 'MANIFEST CANONICAL FORM: VERIFIED'
-
-jq -e '
-  .schema == "blackcat-release-manifest-v0.1" and
-  .signing.algorithm == "Ed25519" and
-  (.signing.key_fingerprint_sha256 | test("^[a-f0-9]{64}$")) and
-  (.artifact.sha256 | test("^[a-f0-9]{64}$")) and
-  (.artifact.size_bytes | type == "number" and . > 0) and
-  (.source.commit | test("^[a-f0-9]{40}$"))
-' "$MANIFEST" >/dev/null || {
-  echo 'MANIFEST SCHEMA: FAILED' >&2
-  exit 1
-}
-echo 'MANIFEST SCHEMA: VERIFIED'
+bash "$VALIDATOR" "$MANIFEST"
 
 if ! openssl pkey -pubin -in "$PUBLIC_KEY" -text -noout 2>&1 | grep -qi 'ED25519'; then
   echo 'PUBLIC KEY TYPE: FAILED (Ed25519 required)' >&2
