@@ -6,7 +6,7 @@ This is the compact recovery/checkpoint file for AI-assisted work on Black Cat /
 
 ## Current project state
 
-- State revision: 8
+- State revision: 9
 - Last checkpoint: 2026-09-15
 - Current milestone: M14 — implement authenticated release signing
 - Active branch: `codex/remove-chroot-systemd-boot`
@@ -17,7 +17,7 @@ This is the compact recovery/checkpoint file for AI-assisted work on Black Cat /
 - Current blocker: production release-signing key ownership/custody is a human trust-policy gate; non-secret M14 mechanics are hardened and local development self-tests pass
 - Current-revision GitHub Actions evidence for M14: still pending/not observed
 - M15 status: planned, with safe pre-implementation design prepared using ephemeral development keys only
-- Future roadmap: M26 will integrate repository-governed AI project automation into Black Cat user space after M25
+- Future roadmap: M26 will integrate repository-governed AI project automation into Black Cat user space after M25, now extended with pre-built session modules and an external untrusted AI build workshop
 
 ## M13B physical evidence
 
@@ -51,13 +51,25 @@ This is the compact recovery/checkpoint file for AI-assisted work on Black Cat /
 - No automated firmware enrollment, target-disk writes or production Secure Boot key creation is authorized.
 - M14 release-signing identity and M15 Secure Boot signing identity remain distinct.
 
+## Future modular runtime / AI workshop direction
+
+- `docs/18-modular-runtime-and-ai-workshop.md` defines a future three-zone architecture: trusted Black Cat core, selected ready-to-run session modules, and an external/disposable untrusted AI build workshop.
+- ADR-042 records that non-essential software should remain outside the immutable core and be activated only when selected for the session.
+- Future modules should be pre-built rather than installed or dependency-resolved during boot.
+- Module selection should also drive least-privilege capability grants enforced independently by the operating system.
+- Official Black Cat modules, local user modules and unverified candidates must remain visibly distinct trust classes.
+- AI-generated software should preferably be built outside the trusted core; the workshop gets no trusted-core write authority or production signing keys.
+- A pre-desktop AI interface may eventually exist only after a minimal authenticated Black Cat environment and capability broker are active; no firmware/pre-kernel LLM execution is authorized.
+- This is design/roadmap work only and does not change the current M14–M25 implementation priority.
+
 ## Next automatic actions
 
 1. Inspect the latest branch/PR and current-revision M14 workflow evidence when available.
 2. If the signing self-test fails for a bounded implementation defect, diagnose and repair automatically.
 3. Continue non-secret M15 preparation where it does not create persistent signing authority or touch firmware/hardware trust ownership.
-4. Preserve exact evidence and keep Approved Release state closed.
-5. Stop before production release-key generation/provisioning, production Secure Boot key ownership/enrollment, protected merge or release promotion.
+4. Preserve the modular-runtime/workshop architecture for M26 without expanding the current trusted core prematurely.
+5. Preserve exact evidence and keep Approved Release state closed.
+6. Stop before production release-key generation/provisioning, production Secure Boot key ownership/enrollment, protected merge or release promotion.
 
 ## Next genuine human gate
 
@@ -71,12 +83,12 @@ A later separate HUMAN_GATE will cover real Secure Boot key ownership/enrollment
 
 ## Context health
 
-- Checkpoint revision: 8
+- Checkpoint revision: 9
 - Estimated context pressure: AMBER
 - Confidence: medium-low (initial calibration)
 - Confirmed continuity/dropout events since checkpoint: 0
 - Calibration version: v0.1 (provisional)
-- Reason for AMBER: long repository/tool-heavy conversation; compact checkpoint now captures M14 hardening and M15 preparation before the next trust-policy decisions.
+- Reason for AMBER: long repository/tool-heavy conversation; compact checkpoint now captures M14 hardening, M15 preparation and the future modular-runtime/external-workshop design.
 
 Context pressure itself is never a human-approval gate.
 
@@ -86,8 +98,9 @@ Context pressure itself is never a human-approval gate.
 2. Verify the active branch/PR and latest M14 signing self-test status.
 3. Load autonomy/master rules only when a policy boundary is touched.
 4. Load M14/M15 design/scripts/lessons selectively if diagnosis or implementation requires them.
-5. Do not bulk-load project history merely to reconstruct state.
-6. Continue automatically through bounded non-secret work until a production key/trust-ownership HUMAN_GATE is reached.
+5. Load `docs/18-modular-runtime-and-ai-workshop.md` only when future M26/module/workshop design is relevant.
+6. Do not bulk-load project history merely to reconstruct state.
+7. Continue automatically through bounded non-secret work until a production key/trust-ownership HUMAN_GATE is reached.
 
 ## Durable references
 
@@ -99,6 +112,7 @@ Context pressure itself is never a human-approval gate.
 - Full lessons/history: `docs/07-lessons-learned.md`
 - Continuity design/calibration: `docs/13-ai-continuity-and-context-recovery.md`, `docs/14-context-health-calibration-log.md`
 - Future native project system: `docs/15-black-cat-ai-project-automation.md`
+- Future modular runtime / AI workshop: `docs/18-modular-runtime-and-ai-workshop.md`
 - Living project index: `project_content.json`
 
 Keep this file compact. It is a handoff/checkpoint, not a replacement for durable technical documentation.
