@@ -776,3 +776,43 @@ Use the M14 format and tooling documented in `docs/16-authenticated-release-sign
 
 ### Evidence classification
 **NON-SECRET M14 IMPLEMENTATION ADDED / DEVELOPMENT SELF-TEST PENDING CI / PRODUCTION KEY AUTHORITY NOT YET PROVISIONED.**
+
+---
+
+## 2026-09-15 — Closed manifest schemas reduce signature ambiguity
+
+### What was attempted
+Continue M14 safely without a production signing key by strengthening the release-manifest parser/verifier and expanding negative tests.
+
+### What happened
+A shared `build/lib/validate-release-manifest.sh` validator now enforces both exact canonical JSON bytes and an exact closed field set. The generator, signer and verifier all use the same validator. The test suite was expanded to reject non-canonical JSON, unexpected fields, wrong artifact filenames, malformed signatures, wrong keys, non-Ed25519 keys and invalid release IDs in addition to the existing tamper checks.
+
+The updated M14 scripts and expanded test suite were reproduced in an isolated local shell and completed successfully with only ephemeral development keys. No production private key was created or stored.
+
+### Why it matters
+A valid signature over loosely interpreted JSON is not enough if different implementations can ignore or reinterpret extra fields. A closed canonical schema makes the exact signed meaning smaller and reduces parser ambiguity. Sharing one validator also reduces the chance that the generator, signer and verifier drift into subtly different interpretations.
+
+### Decision / change
+Treat `blackcat-release-manifest-v0.1` as closed/fail-closed. Unknown fields require a future explicit schema version rather than being silently accepted. Keep local development-test success distinct from GitHub CI evidence until a current-revision Actions run appears.
+
+### Evidence classification
+**SOURCE HARDENING IMPLEMENTED / LOCAL DEVELOPMENT SELF-TEST PASSED / CURRENT-REVISION CI EVIDENCE STILL PENDING.**
+
+---
+
+## 2026-09-15 — M15 can be prepared without creating Secure Boot authority
+
+### What was attempted
+Make useful progress toward the signed-UKI milestone while production release-key custody and future Secure Boot key ownership remain intentionally unresolved.
+
+### What happened
+Debian 13/trixie's `systemd-ukify` 257-series toolchain supports building, inspecting and Secure-Boot-signing Unified Kernel Images. A new M15 preparation document defines how Black Cat will bind the exact kernel, initrd, command line, OS release, kernel version and SBAT metadata, record UKI/section digests and exercise negative tests with ephemeral DEVELOPMENT ONLY keys.
+
+### Why it matters
+The project does not need to stall simply because production key custody is a human gate. We can design the artifact format, evidence and failure tests now while refusing to create a long-lived authority or touch target firmware. This preserves momentum without weakening the trust model.
+
+### Decision / change
+`docs/17-signed-uki-development-plan.md` is the M15 pre-implementation plan. Development keys may exist only ephemerally for testing; no automatic firmware enrollment is allowed; M14 release signing and M15 Secure Boot signing remain separate identities.
+
+### Evidence classification
+**DESIGN PREPARATION IMPLEMENTED / NO PRODUCTION SECURE BOOT KEY CREATED / NO FIRMWARE CHANGES MADE.**
