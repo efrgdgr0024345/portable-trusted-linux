@@ -38,8 +38,8 @@ if bash "$ROOT_DIR/build/42-verify-release.sh" "$manifest" "$signature" "$public
   echo '[FAIL] tampered artifact unexpectedly verified' >&2
   exit 1
 fi
-echo '[PASS] tampered artifact is rejected'
 mv "$TMP/artifact.original" "$artifact"
+echo '[PASS] tampered artifact is rejected'
 
 jq -S -c '.release_id = "tampered-release-id"' "$manifest" > "$TMP/tampered-manifest.json"
 if bash "$ROOT_DIR/build/42-verify-release.sh" "$TMP/tampered-manifest.json" "$signature" "$public_key" "$artifact" >/dev/null 2>&1; then
@@ -47,6 +47,35 @@ if bash "$ROOT_DIR/build/42-verify-release.sh" "$TMP/tampered-manifest.json" "$s
   exit 1
 fi
 echo '[PASS] tampered signed manifest is rejected'
+
+jq . "$manifest" > "$TMP/noncanonical-manifest.json"
+if bash "$ROOT_DIR/build/42-verify-release.sh" "$TMP/noncanonical-manifest.json" "$signature" "$public_key" "$artifact" >/dev/null 2>&1; then
+  echo '[FAIL] non-canonical manifest unexpectedly verified' >&2
+  exit 1
+fi
+echo '[PASS] non-canonical manifest is rejected'
+
+jq -S -c '.unexpected = "field"' "$manifest" > "$TMP/extra-field-manifest.json"
+if bash "$ROOT_DIR/build/lib/validate-release-manifest.sh" "$TMP/extra-field-manifest.json" >/dev/null 2>&1; then
+  echo '[FAIL] unexpected manifest field accepted' >&2
+  exit 1
+fi
+echo '[PASS] unexpected manifest fields are rejected'
+
+cp "$artifact" "$TMP/wrong-name.iso"
+if bash "$ROOT_DIR/build/42-verify-release.sh" "$manifest" "$signature" "$public_key" "$TMP/wrong-name.iso" >/dev/null 2>&1; then
+  echo '[FAIL] wrong artifact filename unexpectedly verified' >&2
+  exit 1
+fi
+echo '[PASS] wrong artifact filename is rejected'
+
+cp "$signature" "$TMP/bad.sig"
+printf 'x' >> "$TMP/bad.sig"
+if bash "$ROOT_DIR/build/42-verify-release.sh" "$manifest" "$TMP/bad.sig" "$public_key" "$artifact" >/dev/null 2>&1; then
+  echo '[FAIL] malformed signature unexpectedly verified' >&2
+  exit 1
+fi
+echo '[PASS] malformed signature is rejected'
 
 openssl genpkey -algorithm ED25519 -out "$wrong_private" >/dev/null 2>&1
 openssl pkey -in "$wrong_private" -pubout -out "$wrong_public" >/dev/null 2>&1
@@ -57,9 +86,23 @@ fi
 echo '[PASS] wrong public key is rejected'
 
 if bash "$ROOT_DIR/build/41-sign-release-manifest.sh" "$manifest" "$wrong_private" "$TMP/wrong.sig" >/dev/null 2>&1; then
-  echo '[FAIL] signer accepted a private key that does not match manifest fingerprint' >&2
+  echo '[FAIL] signer accepted private-key/fingerprint mismatch' >&2
   exit 1
 fi
 echo '[PASS] signer rejects private-key/fingerprint mismatch'
+
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out "$TMP/rsa-private.pem" >/dev/null 2>&1
+openssl pkey -in "$TMP/rsa-private.pem" -pubout -out "$TMP/rsa-public.pem" >/dev/null 2>&1
+if bash "$ROOT_DIR/build/40-create-release-manifest.sh" "$artifact" "$TMP/rsa-public.pem" "$TMP/rsa-manifest.json" >/dev/null 2>&1; then
+  echo '[FAIL] generator accepted non-Ed25519 public key' >&2
+  exit 1
+fi
+echo '[PASS] non-Ed25519 release public key is rejected'
+
+if PTL_RELEASE_ID='bad release id' bash "$ROOT_DIR/build/40-create-release-manifest.sh" "$artifact" "$public_key" "$TMP/bad-id.json" >/dev/null 2>&1; then
+  echo '[FAIL] invalid release id accepted' >&2
+  exit 1
+fi
+echo '[PASS] invalid release id is rejected'
 
 echo 'BLACK CAT RELEASE SIGNING SELF-TEST: PASS'
