@@ -816,3 +816,22 @@ The project does not need to stall simply because production key custody is a hu
 
 ### Evidence classification
 **DESIGN PREPARATION IMPLEMENTED / NO PRODUCTION SECURE BOOT KEY CREATED / NO FIRMWARE CHANGES MADE.**
+
+---
+
+## 2026-09-15 — AI tool creation should be outside the trusted core, and software selection should reduce the active attack surface
+
+### What was attempted
+Refine the future Black Cat AI/project concept so users can choose only the tools needed for a session and can ask an AI to create new tools without giving that AI direct authority over the trusted operating system.
+
+### What happened
+The architecture now separates three trust zones: a small immutable Black Cat core, pre-built ready-to-run session modules, and a separate disposable AI build workshop. Modules are intended to live outside the core, remain inactive/unmounted unless selected, and request only explicit capabilities. The external workshop may design, compile and test software but is deliberately treated as untrusted and receives no trusted-core write access or production signing authority.
+
+### Why it matters
+Sandboxing the AI builder reduces the blast radius of model mistakes or workshop compromise, while keeping unused applications out of the active session can reduce attack surface. However, isolation does not make generated software safe. A compromised workshop can still produce malicious output, so Black Cat must independently verify what crosses back into the trusted environment and must enforce capability limits outside the model/application.
+
+### Decision / change
+Add `docs/18-modular-runtime-and-ai-workshop.md`, extend the M26 design in `docs/15-black-cat-ai-project-automation.md`, and record ADR-042. Future modules should be pre-built rather than installed during boot; official, local-user and unverified-candidate modules remain distinct trust classes; a pre-desktop AI interface may run only after a minimal authenticated Black Cat environment and capability broker are active. The current M14–M25 core trust-chain work remains the implementation priority.
+
+### Evidence classification
+**ARCHITECTURE/DESIGN DECISION RECORDED / NO RUNTIME MODULE SYSTEM OR AI WORKSHOP DEPLOYED.**
