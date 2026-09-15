@@ -39,7 +39,27 @@ M14 uses a deliberately small, auditable format:
 
 The signed object is the exact canonical manifest bytes. Verification rejects a manifest that parses as JSON but is not in the required canonical byte representation.
 
+The schema is **closed**, not extensible by accident. Unexpected top-level or nested fields are rejected. This avoids a future verifier silently ignoring attacker-controlled or semantically ambiguous metadata.
+
 ## 4. Repository tooling
+
+### `build/lib/validate-release-manifest.sh`
+
+Central fail-closed validator used by the generator, signer and verifier. It requires:
+
+- exact canonical JSON bytes;
+- the exact supported top-level and nested field sets;
+- schema `blackcat-release-manifest-v0.1`;
+- constrained release ID format;
+- UTC timestamp format;
+- basename-only artifact filename with no control characters;
+- positive integer artifact size;
+- lower-case 64-character SHA-256 values;
+- a 40-character lower-case source commit;
+- non-empty bounded source-ref/build-run strings;
+- Ed25519, raw-detached signature form and the exact manifest-encoding declaration.
+
+Any mismatch exits non-zero.
 
 ### `build/40-create-release-manifest.sh`
 
@@ -55,9 +75,17 @@ Required inputs/environment:
 
 Optional provenance fields include `PTL_SOURCE_REF`, `PTL_BUILD_RUN` and an explicit `PTL_RELEASE_CREATED_UTC` for deterministic fixtures.
 
+The generator rejects empty artifacts, invalid release IDs/timestamps and non-Ed25519 public keys, then sends its result through the shared strict validator before publishing the manifest file.
+
 ### `build/41-sign-release-manifest.sh`
 
-Signs an already-canonical manifest with an Ed25519 private key supplied by path. Before signing, it derives the private key's public key and requires its fingerprint to match the fingerprint already embedded in the manifest. This prevents accidental signing with the wrong release identity.
+Signs an already-canonical manifest with an Ed25519 private key supplied by path. Before signing, it:
+
+1. runs the shared strict validator;
+2. verifies the private key is Ed25519;
+3. derives the corresponding public key;
+4. requires its SHA-256 fingerprint to match the fingerprint embedded in the manifest;
+5. writes the detached signature through a temporary file and atomically renames it into place.
 
 The script does not create, store, upload or choose a production key.
 
@@ -65,11 +93,12 @@ The script does not create, store, upload or choose a production key.
 
 Performs independent verification:
 
-1. require valid canonical JSON;
-2. require the expected Black Cat release-manifest schema and Ed25519 declaration;
-3. compute the supplied public key fingerprint and require it to equal the signed manifest value;
-4. verify the detached Ed25519 signature;
-5. when an artifact path is supplied, require exact filename, byte size and SHA-256 equality with the signed manifest.
+1. require valid canonical JSON through the shared strict validator;
+2. require the exact supported Black Cat release-manifest schema;
+3. require an Ed25519 public key;
+4. compute the supplied public-key fingerprint and require it to equal the signed manifest value;
+5. verify the detached Ed25519 signature;
+6. when an artifact path is supplied, require exact filename, byte size and SHA-256 equality with the signed manifest.
 
 Any failed mandatory check exits non-zero.
 
@@ -81,11 +110,20 @@ It then proves negative cases fail, including:
 
 - artifact tampering after signing;
 - signed-manifest tampering;
-- verification with the wrong public key.
+- non-canonical JSON encoding;
+- unexpected manifest fields;
+- wrong artifact filename even when bytes match;
+- malformed signature bytes;
+- verification with the wrong public key;
+- signing with a private key whose public fingerprint does not match the manifest;
+- attempting to build a release manifest with a non-Ed25519 public key;
+- invalid release IDs.
 
 The temporary keypair exists only for the test process and is not a release trust root.
 
 A dedicated GitHub-hosted workflow runs this self-test without repository secrets. Passing this workflow validates the signing/verification mechanics, not production key custody.
+
+A local isolated shell execution of the same scripts is also useful as development evidence when GitHub Actions has not yet produced a run for the current branch revision. Local success must be labelled as local development evidence, not CI evidence.
 
 ## 6. Human gate: production key custody
 
@@ -111,7 +149,32 @@ The decision must address:
 
 Until that decision is explicitly made, M14 tooling may use ephemeral development keys only.
 
-## 7. Release verification model
+## 7. Key rotation and compromise policy baseline
+
+The production key has not been created, but the lifecycle rules can still be defined now.
+
+### Planned rotation
+
+A future replacement key must have a distinct public-key fingerprint. A release must never silently switch trusted signing identity. The new public key/fingerprint must be deliberately published through the project's trusted release-reference path before releases signed only by the new key are treated as approved.
+
+### Suspected compromise
+
+If the production release private key is suspected compromised:
+
+1. stop approving new releases under that key;
+2. preserve existing signed evidence and identify the affected trust window;
+3. generate/select a replacement identity only through the approved custody process;
+4. publish the old key/fingerprint as revoked/superseded through the trusted reference path;
+5. require users/verifiers to update the trusted key set deliberately;
+6. never claim that deleting a GitHub file or rotating an API credential revokes already-distributed cryptographic trust.
+
+### Recovery
+
+Recovery material must be protected to the same or stronger standard as the primary production private key. A convenient plaintext backup would nullify hardware/offline custody benefits.
+
+These rules define behavior but do not authorize creation of the production key.
+
+## 8. Release verification model
 
 A consumer should ultimately need only:
 
@@ -124,7 +187,7 @@ The verifier can then establish that the trusted release key signed a manifest n
 
 This is stronger than an unsigned SHA-256 displayed beside a download because an attacker cannot replace both the ISO and metadata without also possessing the trusted release private key.
 
-## 8. What M14 does not prove
+## 9. What M14 does not prove
 
 Authenticated release signing does not prove:
 
@@ -137,17 +200,20 @@ Authenticated release signing does not prove:
 
 Those remain later milestones.
 
-## 9. Acceptance gates
+## 10. Acceptance gates
 
 The non-secret M14 implementation can proceed automatically when:
 
 - canonical manifest generation exists;
+- one shared fail-closed manifest validator exists;
 - signing and independent verification tooling exists;
 - Ed25519 key/manifest fingerprint mismatch fails closed;
 - artifact tampering fails verification;
 - manifest tampering fails signature verification;
-- wrong-key verification fails;
-- CI self-test passes without using production secrets;
+- non-canonical/extra-field manifests fail validation;
+- wrong filename, wrong key, malformed signature and unsupported key types fail;
+- development self-tests pass without using production secrets;
+- CI self-test passes when GitHub Actions produces current-revision evidence;
 - documentation continues to distinguish release signing from Secure Boot signing.
 
 M14 cannot be considered production-complete until the release-signing key custody human gate is resolved and the selected trusted public key is deliberately published/pinned.
