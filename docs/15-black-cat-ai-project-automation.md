@@ -418,3 +418,21 @@ Future `blackcat-project init` should copy/version this profile, ask only the qu
 The future capability broker must treat the machine policy as an enforcement input, not as model prompt decoration. If the model, repository content and machine policy disagree, execution fails closed and surfaces the mismatch rather than letting the model choose the more permissive interpretation.
 
 This design scaffold remains inert in the current Prototype 1 runtime. It records and tests the architecture without adding a daemon, API key, listener, root capability or other new attack surface before M26.
+
+## 23. Modular runtime and external AI workshop
+
+The future AI subsystem now has an additional hard boundary: Black Cat should keep non-essential applications outside the immutable trusted core as pre-built ready-to-run modules, and AI-generated software should preferably be constructed in a separate disposable workshop rather than inside the trusted core.
+
+The detailed architecture is recorded in `docs/18-modular-runtime-and-ai-workshop.md`.
+
+The resulting three-zone model is:
+
+1. **Trusted core** — verifies and enforces boot, integrity, module trust and capabilities.
+2. **Selected session modules** — pre-built read-only functionality activated only for the current session when selected.
+3. **Untrusted AI workshop** — external/disposable environment that may design, compile and test software but cannot write the trusted core or possess production signing authority.
+
+A lightweight AI interface may eventually appear before the full desktop is assembled, but only after a minimal authenticated Black Cat environment has booted and the capability broker is active. This does not authorize firmware/pre-kernel LLM execution.
+
+The remote workshop is never considered trustworthy merely because it is isolated. Anything it returns is treated as potentially malicious and must cross an independent verification/capability gate before activation. Official Black Cat modules, locally generated user modules and unverified candidates must remain visibly distinct trust classes.
+
+This refinement preserves the original rule: **the AI may design and build, but it may not grant itself trust or authority.**
