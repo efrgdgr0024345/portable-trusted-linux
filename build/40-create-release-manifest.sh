@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+VALIDATOR="$ROOT_DIR/build/lib/validate-release-manifest.sh"
+
 usage() {
   echo "Usage: $0 <artifact> <ed25519-public-key.pem> <release-manifest.json>" >&2
   exit 2
@@ -14,13 +17,22 @@ OUTPUT="$3"
 : "${PTL_RELEASE_ID:?PTL_RELEASE_ID is required}"
 : "${PTL_SOURCE_COMMIT:?PTL_SOURCE_COMMIT is required}"
 
+[[ "$PTL_RELEASE_ID" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]] || {
+  echo 'PTL_RELEASE_ID contains unsupported characters or length' >&2
+  exit 1
+}
+[[ "$PTL_SOURCE_COMMIT" =~ ^[A-Fa-f0-9]{40}$ ]] || {
+  echo 'PTL_SOURCE_COMMIT must be a 40-character Git commit' >&2
+  exit 1
+}
 [[ -f "$ARTIFACT" ]] || { echo "Artifact not found: $ARTIFACT" >&2; exit 1; }
+[[ -s "$ARTIFACT" ]] || { echo 'Artifact must not be empty' >&2; exit 1; }
 [[ -f "$PUBLIC_KEY" ]] || { echo "Public key not found: $PUBLIC_KEY" >&2; exit 1; }
-[[ "$PTL_SOURCE_COMMIT" =~ ^[A-Fa-f0-9]{40}$ ]] || { echo "PTL_SOURCE_COMMIT must be a 40-character Git commit" >&2; exit 1; }
-command -v jq >/dev/null || { echo 'jq is required' >&2; exit 1; }
-command -v openssl >/dev/null || { echo 'openssl is required' >&2; exit 1; }
-command -v sha256sum >/dev/null || { echo 'sha256sum is required' >&2; exit 1; }
-command -v stat >/dev/null || { echo 'stat is required' >&2; exit 1; }
+
+for cmd in jq openssl sha256sum stat; do
+  command -v "$cmd" >/dev/null || { echo "$cmd is required" >&2; exit 1; }
+done
+[[ -x "$VALIDATOR" ]] || { echo "Manifest validator missing: $VALIDATOR" >&2; exit 1; }
 
 if ! openssl pkey -pubin -in "$PUBLIC_KEY" -text -noout 2>&1 | grep -qi 'ED25519'; then
   echo 'Release public key must be Ed25519' >&2
@@ -28,6 +40,10 @@ if ! openssl pkey -pubin -in "$PUBLIC_KEY" -text -noout 2>&1 | grep -qi 'ED25519
 fi
 
 artifact_name="$(basename "$ARTIFACT")"
+[[ "$artifact_name" != *$'\n'* && "$artifact_name" != *$'\r'* ]] || {
+  echo 'Artifact filename contains control characters' >&2
+  exit 1
+}
 artifact_size="$(stat -c '%s' "$ARTIFACT")"
 artifact_sha256="$(sha256sum "$ARTIFACT" | awk '{print $1}')"
 public_key_fingerprint="$(openssl pkey -pubin -in "$PUBLIC_KEY" -outform DER 2>/dev/null | sha256sum | awk '{print $1}')"
@@ -35,8 +51,20 @@ created_utc="${PTL_RELEASE_CREATED_UTC:-$(date -u '+%Y-%m-%dT%H:%M:%SZ')}"
 source_ref="${PTL_SOURCE_REF:-unknown}"
 build_run="${PTL_BUILD_RUN:-unknown}"
 
-mkdir -p "$(dirname "$OUTPUT")"
+[[ "$created_utc" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$ ]] || {
+  echo 'PTL_RELEASE_CREATED_UTC must be UTC YYYY-MM-DDTHH:MM:SSZ' >&2
+  exit 1
+}
+[[ -n "$source_ref" && ${#source_ref} -le 255 ]] || {
+  echo 'PTL_SOURCE_REF must be non-empty and at most 255 characters' >&2
+  exit 1
+}
+[[ -n "$build_run" && ${#build_run} -le 128 ]] || {
+  echo 'PTL_BUILD_RUN must be non-empty and at most 128 characters' >&2
+  exit 1
+}
 
+mkdir -p "$(dirname "$OUTPUT")"
 tmp="$(mktemp "${OUTPUT}.tmp.XXXXXX")"
 trap 'rm -f "$tmp"' EXIT
 
@@ -76,21 +104,11 @@ jq -nS -c \
     }
   }' > "$tmp"
 
-jq -e '
-  .schema == "blackcat-release-manifest-v0.1" and
-  (.release_id | type == "string" and length > 0) and
-  (.artifact.filename | type == "string" and length > 0) and
-  (.artifact.size_bytes | type == "number" and . > 0) and
-  (.artifact.sha256 | test("^[a-f0-9]{64}$")) and
-  (.source.commit | test("^[a-f0-9]{40}$")) and
-  .signing.algorithm == "Ed25519" and
-  (.signing.key_fingerprint_sha256 | test("^[a-f0-9]{64}$"))
-' "$tmp" >/dev/null
-
+bash "$VALIDATOR" "$tmp" >/dev/null
 mv "$tmp" "$OUTPUT"
 trap - EXIT
 
-echo "BLACK CAT RELEASE MANIFEST: CREATED"
+echo 'BLACK CAT RELEASE MANIFEST: CREATED'
 echo "Manifest: $OUTPUT"
 echo "Artifact SHA-256: $artifact_sha256"
 echo "Release key fingerprint: $public_key_fingerprint"
