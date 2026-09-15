@@ -7,6 +7,7 @@ on:
       - 'build/40-create-release-manifest.sh'
       - 'build/41-sign-release-manifest.sh'
       - 'build/42-verify-release.sh'
+      - 'build/lib/validate-release-manifest.sh'
       - 'tests/01-release-signing-check.sh'
       - 'docs/16-authenticated-release-signing.md'
       - '.github/workflows/release-signing-self-test.yml'
@@ -43,6 +44,7 @@ jobs:
         shell: bash
         run: |
           set -Eeuo pipefail
+          bash -n build/lib/validate-release-manifest.sh
           bash -n build/40-create-release-manifest.sh
           bash -n build/41-sign-release-manifest.sh
           bash -n build/42-verify-release.sh
