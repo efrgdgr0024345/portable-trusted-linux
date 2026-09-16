@@ -150,13 +150,17 @@ def observe(work, env, qemu, tess, code, variables, toolroot, mode):
             def click(x, y, pause=0.8):
                 # The guest framebuffer is 1280x800. A USB tablet gives stable
                 # absolute coordinates under headless QEMU.
-                events = [
+                position = [
                     {'type': 'abs', 'data': {'axis': 'x', 'value': round(x * 32767 / 1279)}},
                     {'type': 'abs', 'data': {'axis': 'y', 'value': round(y * 32767 / 799)}},
-                    {'type': 'btn', 'data': {'button': 'left', 'down': True}},
-                    {'type': 'btn', 'data': {'button': 'left', 'down': False}},
                 ]
-                mon.command('input-send-event', {'events': events})
+                mon.command('input-send-event', {'events': position})
+                time.sleep(0.2)
+                mon.command('input-send-event', {'events': [
+                    {'type': 'btn', 'data': {'button': 'left', 'down': True}}]})
+                time.sleep(0.2)
+                mon.command('input-send-event', {'events': [
+                    {'type': 'btn', 'data': {'button': 'left', 'down': False}}]})
                 time.sleep(pause)
 
             start = time.monotonic()
@@ -233,13 +237,17 @@ def main():
         with tempfile.TemporaryDirectory(prefix='bcvm-') as d:
             work = Path(d)
             root, env, qemu, tess, code, variables = tools_local(work)
-            for mode in ['gui', 'check']:
+            modes = [m.strip() for m in os.environ.get('BLACKCAT_EVIDENCE_MODES', 'gui,check').split(',') if m.strip()]
+            if not modes or any(m not in {'gui', 'check'} for m in modes):
+                raise RuntimeError('BLACKCAT_EVIDENCE_MODES must contain gui and/or check')
+            for mode in modes:
                 report[mode] = observe(work, env, qemu, tess, code, variables, root, mode)
     finally:
         (OUT / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
         print('BOOT_REPORT=' + json.dumps(report), flush=True)
         print('EVIDENCE_DIR=' + str(OUT), flush=True)
-    if report['gui']['status'] != 'GUI_INTERACTIONS_OBSERVED' or report['check']['status'] != 'QUICK_CHECK_SETTLED_PROMPT_OBSERVED':
+    if ('gui' in report and report['gui']['status'] != 'GUI_INTERACTIONS_OBSERVED') or \
+       ('check' in report and report['check']['status'] != 'QUICK_CHECK_SETTLED_PROMPT_OBSERVED'):
         raise SystemExit(1)
 
 
