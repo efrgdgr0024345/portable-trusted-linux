@@ -33,6 +33,13 @@ jobs:
           echo "KERNEL=$(uname -sr)"
           echo "WORKSPACE=$GITHUB_WORKSPACE"
 
+      - name: Run repository static checks
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bash tests/00-static-check.sh
+          bash tests/10-blackcat-console-static.sh
+
       - name: Run first real builder report
         shell: bash
         run: |
