@@ -1,14 +1,15 @@
 <?php
 /**
  * Black Cat Console MVP
- * Mobile-first project brain + AI coaching interface.
+ * Mobile-first project brain + AI coaching + API spend visibility.
  *
- * Server requirements: PHP 8.1+, cURL, writable app directory.
- * Optional environment variables:
- *   OPENAI_API_KEY
- *   BLACKCAT_CONSOLE_PASSWORD
- *   BLACKCAT_COACH_MODEL   (default gpt-5.6-terra)
- *   BLACKCAT_CHAT_MODEL    (default gpt-5.6-sol)
+ * Server requirements: PHP 8.1+, cURL, writable private data directory.
+ * Environment variables:
+ *   BLACKCAT_CONSOLE_PASSWORD   required
+ *   OPENAI_API_KEY              optional until remote AI is enabled
+ *   BLACKCAT_COACH_MODEL        default gpt-5.6-terra
+ *   BLACKCAT_CHAT_MODEL         default gpt-5.6-sol
+ *   BLACKCAT_MONTHLY_API_BUDGET default 30 (USD, display/soft warning only)
  */
 declare(strict_types=1);
 
@@ -21,6 +22,8 @@ header("Permissions-Policy: camera=(), geolocation=(), microphone=(self)");
 const APP_NAME = 'Black Cat Console';
 const DATA_DIR = __DIR__ . '/data';
 const PROJECTS_DIR = DATA_DIR . '/projects';
+const USAGE_FILE = DATA_DIR . '/api-usage.jsonl';
+const PRICING_VERSION = '2026-09-16';
 
 function envv(string $name, string $default = ''): string {
     $v = getenv($name);
@@ -76,8 +79,8 @@ function seed_project(): void {
         'DECISIONS.md' => "# Decisions\n\n- Local-first project state; remote AI is optional.\n- Human-readable Markdown is the durable project brain.\n- Deep-review mode is read-only by default.\n",
         'LESSONS_LEARNED.md' => "# Lessons Learned\n\n",
         'EVIDENCE.md' => "# Evidence\n\nClaims should be labelled VERIFIED, ATTESTED, OBSERVED, WARNING, UNKNOWN, NOT VERIFIABLE, or FAILED where applicable.\n",
-        'BACKLOG.md' => "# Backlog\n\n- GitHub synchronisation\n- Deep-review workflow\n- Local model routing\n- Explicit outbound-data preview\n",
-        'AI_RULES.md' => "# AI Rules\n\n1. Diagnose before rewriting.\n2. Preserve known-working behaviour.\n3. Separate facts, evidence, assumptions and suggestions.\n4. Prefer the smallest useful next action.\n5. Do not change production code during a review unless explicitly authorised.\n",
+        'BACKLOG.md' => "# Backlog\n\n- GitHub synchronisation\n- Deep-review workflow\n- Local model routing\n- Explicit outbound-data preview\n- Browser worker\n",
+        'AI_RULES.md' => "# AI Rules\n\n1. Diagnose before rewriting.\n2. Preserve known-working behaviour.\n3. Separate facts, evidence, assumptions and suggestions.\n4. Prefer the smallest useful next action.\n5. Do not change production code during a review unless explicitly authorised.\n6. Prefer the lowest-cost model that can reliably do the job.\n",
     ];
     foreach ($files as $name => $body) write_text($d . '/' . $name, $body);
 }
@@ -106,13 +109,128 @@ function extract_output_text(array $r): string {
     $parts = [];
     foreach (($r['output'] ?? []) as $item) {
         if (($item['type'] ?? '') !== 'message') continue;
-        foreach (($item['content'] ?? []) as $c) if (($c['type'] ?? '') === 'output_text' && isset($c['text'])) $parts[] = (string)$c['text'];
+        foreach (($item['content'] ?? []) as $c) {
+            if (($c['type'] ?? '') === 'output_text' && isset($c['text'])) $parts[] = (string)$c['text'];
+        }
     }
     return trim(implode("\n", $parts));
 }
-function openai(array $payload): array {
+
+/*
+ * Token pricing is intentionally kept separate from raw usage records.
+ * Rates are USD per 1M text tokens, based on OpenAI public pricing on PRICING_VERSION.
+ * Raw usage is retained so estimates can be recalculated if prices change.
+ */
+function model_pricing(string $model): array {
+    $m = strtolower($model);
+    if (str_starts_with($m, 'gpt-6-astra')) return ['input'=>10.00,'cached'=>1.00,'output'=>50.00,'name'=>'GPT-6 Astra'];
+    if (str_starts_with($m, 'gpt-5.6-sol') || $m === 'gpt-5.6') return ['input'=>4.00,'cached'=>0.40,'output'=>20.00,'name'=>'GPT-5.6 Sol'];
+    if (str_starts_with($m, 'gpt-5.6-terra')) return ['input'=>2.00,'cached'=>0.20,'output'=>12.00,'name'=>'GPT-5.6 Terra'];
+    if (str_starts_with($m, 'gpt-5.6-luna')) return ['input'=>0.20,'cached'=>0.02,'output'=>1.20,'name'=>'GPT-5.6 Luna'];
+    return ['input'=>0.0,'cached'=>0.0,'output'=>0.0,'name'=>$model ?: 'Unknown','unknown'=>true];
+}
+function usage_record(array $r, string $projectId, string $taskType, string $requestedModel): array {
+    $u = is_array($r['usage'] ?? null) ? $r['usage'] : [];
+    $model = (string)($r['model'] ?? $requestedModel);
+    $input = (int)($u['input_tokens'] ?? 0);
+    $cached = (int)($u['input_tokens_details']['cached_tokens'] ?? 0);
+    $cached = max(0, min($cached, $input));
+    $uncached = max(0, $input - $cached);
+    $output = (int)($u['output_tokens'] ?? 0);
+    $reasoning = (int)($u['output_tokens_details']['reasoning_tokens'] ?? 0);
+    $p = model_pricing($model);
+
+    $inputMultiplier = 1.0;
+    $outputMultiplier = 1.0;
+    $longContext = false;
+    if ($input > 272000 && str_starts_with(strtolower($model), 'gpt-5.6')) {
+        $inputMultiplier = 2.0;
+        $outputMultiplier = 1.5;
+        $longContext = true;
+    }
+
+    $cost = (($uncached / 1000000) * $p['input'] * $inputMultiplier)
+          + (($cached / 1000000) * $p['cached'] * $inputMultiplier)
+          + (($output / 1000000) * $p['output'] * $outputMultiplier);
+
+    return [
+        'time'=>date(DATE_ATOM),
+        'project_id'=>$projectId,
+        'task_type'=>$taskType,
+        'provider'=>'openai',
+        'model'=>$model,
+        'requested_model'=>$requestedModel,
+        'input_tokens'=>$input,
+        'uncached_input_tokens'=>$uncached,
+        'cached_input_tokens'=>$cached,
+        'output_tokens'=>$output,
+        'reasoning_tokens'=>$reasoning,
+        'total_tokens'=>(int)($u['total_tokens'] ?? ($input + $output)),
+        'estimated_cost_usd'=>round($cost, 8),
+        'pricing_version'=>PRICING_VERSION,
+        'long_context_multiplier_applied'=>$longContext,
+        'pricing_known'=>empty($p['unknown']),
+        'response_id'=>(string)($r['id'] ?? ''),
+    ];
+}
+function log_usage(array $record): void {
+    file_put_contents(USAGE_FILE, json_encode($record, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE)."\n", FILE_APPEND|LOCK_EX);
+}
+function read_usage_rows(): array {
+    if (!is_file(USAGE_FILE)) return [];
+    $rows = [];
+    $fh = fopen(USAGE_FILE, 'rb');
+    if (!$fh) return [];
+    while (($line = fgets($fh)) !== false) {
+        $j = json_decode(trim($line), true);
+        if (is_array($j)) $rows[] = $j;
+    }
+    fclose($fh);
+    return $rows;
+}
+function usage_summary(?string $projectId = null): array {
+    $rows = read_usage_rows();
+    $now = new DateTimeImmutable('now');
+    $today = $now->format('Y-m-d');
+    $month = $now->format('Y-m');
+    $budget = max(0.0, (float)envv('BLACKCAT_MONTHLY_API_BUDGET','30'));
+    $sum = [
+        'today'=>['cost'=>0.0,'tokens'=>0,'calls'=>0],
+        'month'=>['cost'=>0.0,'tokens'=>0,'calls'=>0],
+        'all'=>['cost'=>0.0,'tokens'=>0,'calls'=>0],
+        'models'=>[], 'projects'=>[], 'recent'=>[],
+        'budget_usd'=>$budget,
+        'pricing_version'=>PRICING_VERSION,
+    ];
+    foreach ($rows as $row) {
+        if ($projectId !== null && ($row['project_id'] ?? '') !== $projectId) continue;
+        $cost = (float)($row['estimated_cost_usd'] ?? 0);
+        $tokens = (int)($row['total_tokens'] ?? 0);
+        $time = (string)($row['time'] ?? '');
+        $model = (string)($row['model'] ?? 'unknown');
+        $pid = (string)($row['project_id'] ?? 'unknown');
+        foreach (['all'] as $scope) { $sum[$scope]['cost'] += $cost; $sum[$scope]['tokens'] += $tokens; $sum[$scope]['calls']++; }
+        if (str_starts_with($time, $today)) { $sum['today']['cost'] += $cost; $sum['today']['tokens'] += $tokens; $sum['today']['calls']++; }
+        if (str_starts_with($time, $month)) { $sum['month']['cost'] += $cost; $sum['month']['tokens'] += $tokens; $sum['month']['calls']++; }
+        if (!isset($sum['models'][$model])) $sum['models'][$model] = ['cost'=>0.0,'tokens'=>0,'calls'=>0];
+        $sum['models'][$model]['cost'] += $cost; $sum['models'][$model]['tokens'] += $tokens; $sum['models'][$model]['calls']++;
+        if (!isset($sum['projects'][$pid])) $sum['projects'][$pid] = ['cost'=>0.0,'tokens'=>0,'calls'=>0];
+        $sum['projects'][$pid]['cost'] += $cost; $sum['projects'][$pid]['tokens'] += $tokens; $sum['projects'][$pid]['calls']++;
+    }
+    foreach (['today','month','all'] as $scope) $sum[$scope]['cost'] = round($sum[$scope]['cost'], 6);
+    foreach (['models','projects'] as $group) foreach ($sum[$group] as &$v) $v['cost'] = round($v['cost'], 6);
+    unset($v);
+    $recent = array_slice(array_reverse($rows), 0, 20);
+    if ($projectId !== null) $recent = array_values(array_filter($recent, fn($r)=>(string)($r['project_id']??'')===$projectId));
+    $sum['recent'] = array_slice($recent, 0, 10);
+    $sum['month']['budget_percent'] = $budget > 0 ? round(($sum['month']['cost'] / $budget) * 100, 1) : 0;
+    $sum['month']['remaining'] = $budget > 0 ? round(max(0, $budget - $sum['month']['cost']), 4) : null;
+    return $sum;
+}
+function openai(array $payload, string $projectId, string $taskType): array {
     $key = envv('OPENAI_API_KEY');
     if ($key === '') throw new RuntimeException('OPENAI_API_KEY is not configured on the server.');
+    $requestedModel = (string)($payload['model'] ?? '');
     $ch = curl_init('https://api.openai.com/v1/responses');
     curl_setopt_array($ch, [
         CURLOPT_POST => true,
@@ -129,6 +247,9 @@ function openai(array $payload): array {
     $j = json_decode($raw, true);
     if (!is_array($j)) throw new RuntimeException('OpenAI returned invalid JSON.');
     if ($code >= 400) throw new RuntimeException((string)($j['error']['message'] ?? ('OpenAI HTTP ' . $code)));
+    $record = usage_record($j, $projectId, $taskType, $requestedModel);
+    log_usage($record);
+    $j['_blackcat_usage'] = $record;
     return $j;
 }
 function local_coach(string $text): array {
@@ -140,7 +261,8 @@ function local_coach(string $text): array {
         'success' => 'Define an observable result that proves the task is complete.',
         'improved_prompt' => "Goal: {$text}\n\nBefore acting, identify the current state, important constraints, the smallest useful next action, and the observable result that would prove success. Preserve known-working behaviour and clearly label assumptions.",
         'coaching_notes' => ['You stated the request naturally.', 'Adding current state, constraints and a success condition will make the AI easier to steer.'],
-        'mode' => 'local-fallback'
+        'mode' => 'local-fallback',
+        'spend' => ['estimated_cost_usd'=>0,'total_tokens'=>0,'provider'=>'local']
     ];
 }
 function coach(string $id, string $text): array {
@@ -158,20 +280,22 @@ function coach(string $id, string $text): array {
         ],
         'required'=>['intent','goal','current_state','constraints','success','improved_prompt','coaching_notes']
     ];
+    $model = envv('BLACKCAT_COACH_MODEL','gpt-5.6-terra');
     $r = openai([
-        'model'=>envv('BLACKCAT_COACH_MODEL','gpt-5.6-terra'),
+        'model'=>$model,
         'store'=>false,
         'reasoning'=>['effort'=>'medium'],
         'instructions'=>'You are the Black Cat AI Coach. Improve the user instruction without changing their intent. Extract Goal, Current State, Constraints and Success. Keep advice practical. Do not invent project facts. If information is missing, say so. The improved prompt should ask the downstream AI to preserve working behaviour, distinguish evidence from assumptions, and finish with a concrete next action when appropriate.',
         'input'=>"PROJECT CONTEXT:\n{$context}\n\nUSER INPUT:\n{$text}",
         'text'=>['format'=>['type'=>'json_schema','name'=>'blackcat_coach','strict'=>true,'schema'=>$schema]],
         'prompt_cache_key'=>'blackcat-coach-' . $id,
-    ]);
+    ], $id, 'coach');
     $parsed = json_decode(extract_output_text($r), true);
     if (!is_array($parsed)) throw new RuntimeException('Coach returned an unreadable result.');
     $parsed['mode'] = 'ai';
     $parsed['usage'] = $r['usage'] ?? null;
-    add_history($id, 'coach', ['input'=>$text,'improved_prompt'=>$parsed['improved_prompt'] ?? '','usage'=>$parsed['usage']]);
+    $parsed['spend'] = $r['_blackcat_usage'] ?? null;
+    add_history($id, 'coach', ['input'=>$text,'improved_prompt'=>$parsed['improved_prompt'] ?? '','spend'=>$parsed['spend']]);
     return $parsed;
 }
 function chat(string $id, string $prompt): array {
@@ -183,13 +307,14 @@ function chat(string $id, string $prompt): array {
         'model'=>$model,
         'store'=>false,
         'reasoning'=>['effort'=>'high'],
-        'instructions'=>'You are Black Cat Project AI. Work from the supplied project brain. Preserve user agency. Distinguish known facts, evidence, assumptions, risks and suggestions. Prefer the smallest useful next action. Do not claim tests were run unless evidence is supplied. Do not silently rewrite project goals.',
+        'instructions'=>'You are Black Cat Project AI. Work from the supplied project brain. Preserve user agency. Distinguish known facts, evidence, assumptions, risks and suggestions. Prefer the smallest useful next action. Do not claim tests were run unless evidence is supplied. Do not silently rewrite project goals. Prefer efficient context use and flag when a higher-cost deep review would genuinely add value.',
         'input'=>"PROJECT BRAIN:\n{$context}\n\nAPPROVED USER REQUEST:\n{$prompt}",
         'prompt_cache_key'=>'blackcat-project-' . $id,
-    ]);
+    ], $id, 'project-chat');
     $answer = extract_output_text($r);
-    add_history($id, 'chat', ['prompt'=>$prompt,'answer'=>$answer,'model'=>$model,'usage'=>$r['usage'] ?? null]);
-    return ['answer'=>$answer,'model'=>$model,'usage'=>$r['usage'] ?? null];
+    $spend = $r['_blackcat_usage'] ?? null;
+    add_history($id, 'chat', ['prompt'=>$prompt,'answer'=>$answer,'model'=>$model,'spend'=>$spend]);
+    return ['answer'=>$answer,'model'=>$model,'usage'=>$r['usage'] ?? null,'spend'=>$spend];
 }
 
 try { ensure_dirs(); seed_project(); } catch (Throwable $e) { http_response_code(500); echo 'Black Cat Console setup error: ' . htmlspecialchars($e->getMessage()); exit; }
@@ -214,8 +339,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api'])) {
     $in = json_decode((string)file_get_contents('php://input'), true) ?: [];
     try {
         $action = (string)($in['action'] ?? '');
-        if ($action === 'list') json_out(['ok'=>true,'projects'=>list_projects()]);
-        if ($action === 'get') json_out(['ok'=>true,'project'=>get_project((string)$in['id'])]);
+        if ($action === 'list') json_out(['ok'=>true,'projects'=>list_projects(),'usage'=>usage_summary()]);
+        if ($action === 'get') json_out(['ok'=>true,'project'=>get_project((string)$in['id']),'usage'=>usage_summary((string)$in['id'])]);
+        if ($action === 'usage') json_out(['ok'=>true,'usage'=>usage_summary(isset($in['id'])?(string)$in['id']:null)]);
         if ($action === 'coach') json_out(['ok'=>true,'result'=>coach((string)$in['id'],(string)$in['text'])]);
         if ($action === 'chat') json_out(['ok'=>true,'result'=>chat((string)$in['id'],(string)$in['prompt'])]);
         if ($action === 'create') {
@@ -224,7 +350,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api'])) {
             $id = slug($name); $d = project_dir($id); if (is_dir($d)) throw new RuntimeException('Project already exists'); mkdir($d,0700,true);
             $meta=['id'=>$id,'name'=>$name,'status'=>'New project','next'=>'Define goal and first success condition','repo'=>'','created'=>date(DATE_ATOM),'updated'=>date(DATE_ATOM)];
             write_text($d.'/meta.json',json_encode($meta,JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
-            foreach(['PROJECT.md'=>'# Project\n\nDefine the goal.\n','STATE.md'=>'# Current State\n\nNew project.\n','PLAN.md'=>'# Plan\n\n','DECISIONS.md'=>'# Decisions\n\n','LESSONS_LEARNED.md'=>'# Lessons Learned\n\n','EVIDENCE.md'=>'# Evidence\n\n','BACKLOG.md'=>'# Backlog\n\n','AI_RULES.md'=>'# AI Rules\n\n1. Preserve working behaviour.\n2. Separate evidence from assumptions.\n'] as $f=>$body) write_text($d.'/'.$f,str_replace('\\n',"\n",$body));
+            foreach(['PROJECT.md'=>'# Project\n\nDefine the goal.\n','STATE.md'=>'# Current State\n\nNew project.\n','PLAN.md'=>'# Plan\n\n','DECISIONS.md'=>'# Decisions\n\n','LESSONS_LEARNED.md'=>'# Lessons Learned\n\n','EVIDENCE.md'=>'# Evidence\n\n','BACKLOG.md'=>'# Backlog\n\n','AI_RULES.md'=>'# AI Rules\n\n1. Preserve working behaviour.\n2. Separate evidence from assumptions.\n3. Prefer the lowest-cost model that can reliably do the job.\n'] as $f=>$body) write_text($d.'/'.$f,str_replace('\\n',"\n",$body));
             json_out(['ok'=>true,'project'=>$meta]);
         }
         throw new RuntimeException('Unknown action');
@@ -233,24 +359,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api'])) {
 ?>
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#050805"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="?manifest=1"><title><?=htmlspecialchars(APP_NAME)?></title>
 <style>
-:root{color-scheme:dark;--bg:#050805;--panel:#0a100b;--line:#163b20;--green:#64ff8a;--muted:#8ba493;--text:#ecfff0;--warn:#ffd166}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#0b1b0f,var(--bg) 38%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}.app{max-width:760px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 14px calc(40px + env(safe-area-inset-bottom))}h1{font-size:24px;margin:0}.brand{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.tag{font-size:12px;color:var(--green);letter-spacing:.14em}.card{background:rgba(10,16,11,.94);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 12px 30px #0006}.project{cursor:pointer}.project:active{transform:scale(.99)}.name{font-weight:750;font-size:18px}.meta,.small{color:var(--muted);font-size:13px;margin-top:6px}.next{margin-top:10px}.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}button,input,textarea{font:inherit}button{border:1px solid #245d31;background:#102617;color:var(--text);border-radius:12px;padding:11px 14px;font-weight:700}button.primary{background:var(--green);color:#041007;border-color:var(--green)}button.ghost{background:transparent}button.warn{border-color:#735f25;color:var(--warn)}textarea,input[type=text],input[type=password]{width:100%;background:#050805;border:1px solid #285635;color:var(--text);border-radius:14px;padding:13px;outline:none}textarea{min-height:130px;resize:vertical}.mic{width:64px;height:64px;border-radius:50%;font-size:26px}.mic.on{box-shadow:0 0 0 8px #64ff8a22;background:#183c22}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.kv{background:#071009;border:1px solid #15371d;padding:11px;border-radius:12px}.kv b{display:block;color:var(--green);font-size:11px;letter-spacing:.08em;margin-bottom:5px}.note{border-left:3px solid var(--green);padding-left:10px;color:#c9e9d0}.hidden{display:none!important}.topback{margin-bottom:10px}pre.answer{white-space:pre-wrap;font-family:inherit;line-height:1.5}.status{font-size:12px;color:var(--muted);margin:8px 0}.locked{max-width:460px;margin:12vh auto}.error{color:#ff9d9d}.warning{color:var(--warn)}
+:root{color-scheme:dark;--bg:#050805;--panel:#0a100b;--line:#163b20;--green:#64ff8a;--muted:#8ba493;--text:#ecfff0;--warn:#ffd166;--danger:#ff9d9d}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#0b1b0f,var(--bg) 38%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}.app{max-width:760px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 14px calc(40px + env(safe-area-inset-bottom))}h1{font-size:24px;margin:0}h2{font-size:18px}.brand{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.tag{font-size:12px;color:var(--green);letter-spacing:.14em}.card{background:rgba(10,16,11,.94);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 12px 30px #0006}.project{cursor:pointer}.project:active{transform:scale(.99)}.name{font-weight:750;font-size:18px}.meta,.small{color:var(--muted);font-size:13px;margin-top:6px}.next{margin-top:10px}.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}button,input,textarea{font:inherit}button{border:1px solid #245d31;background:#102617;color:var(--text);border-radius:12px;padding:11px 14px;font-weight:700}button.primary{background:var(--green);color:#041007;border-color:var(--green)}button.ghost{background:transparent}button.warn{border-color:#735f25;color:var(--warn)}textarea,input[type=text],input[type=password]{width:100%;background:#050805;border:1px solid #285635;color:var(--text);border-radius:14px;padding:13px;outline:none}textarea{min-height:130px;resize:vertical}.mic{width:64px;height:64px;border-radius:50%;font-size:26px}.mic.on{box-shadow:0 0 0 8px #64ff8a22;background:#183c22}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.kv{background:#071009;border:1px solid #15371d;padding:11px;border-radius:12px}.kv b{display:block;color:var(--green);font-size:11px;letter-spacing:.08em;margin-bottom:5px}.note{border-left:3px solid var(--green);padding-left:10px;color:#c9e9d0}.hidden{display:none!important}.topback{margin-bottom:10px}pre.answer{white-space:pre-wrap;font-family:inherit;line-height:1.5}.status{font-size:12px;color:var(--muted);margin:8px 0}.locked{max-width:460px;margin:12vh auto}.error{color:var(--danger)}.warning{color:var(--warn)}.spendgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.spendbox{background:#071009;border:1px solid #15371d;border-radius:12px;padding:10px}.spendbox .num{font-weight:800;font-size:18px;color:var(--green)}.spendbox .lbl{font-size:11px;color:var(--muted)}.bar{height:9px;background:#101a12;border-radius:999px;overflow:hidden;margin-top:10px}.bar>div{height:100%;background:var(--green);width:0}.callcost{display:inline-block;margin-top:8px;padding:5px 8px;border-radius:999px;background:#071009;border:1px solid #245d31;color:var(--green);font-size:12px}.usageRow{display:flex;justify-content:space-between;gap:10px;border-top:1px solid #14291a;padding:9px 0;font-size:12px}.usageRow:first-child{border-top:0}@media(max-width:480px){.spendgrid{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
 </style></head><body><main class="app">
 <?php if ($locked): ?><div class="card locked"><h1>Black Cat Console</h1><p class="warning">Setup locked.</p><p>Set the server environment variable <code>BLACKCAT_CONSOLE_PASSWORD</code> before exposing this app. Optionally set <code>OPENAI_API_KEY</code> for AI coaching and project chat.</p><p class="small">No secrets should be placed in this PHP file or committed to GitHub.</p></div>
 <?php elseif (!$authed): ?><form class="card locked" method="post"><h1>Black Cat Console</h1><p class="small">Private project control plane</p><?php if(!empty($login_error)):?><p class="error"><?=htmlspecialchars($login_error)?></p><?php endif;?><input type="password" name="login_password" placeholder="Console password" autocomplete="current-password"><div class="btns"><button class="primary" type="submit">Unlock</button></div></form>
 <?php else: ?><div class="brand"><div><div class="tag">STEALTH · INTELLIGENCE · INDEPENDENCE</div><h1>Black Cat Console</h1></div><a href="?logout=1" class="small">Lock</a></div>
-<section id="home"><div id="projects"></div><button onclick="newProject()">+ New project</button></section>
-<section id="project" class="hidden"><button class="ghost topback" onclick="showHome()">← Projects</button><div class="card"><div class="name" id="pname"></div><div class="meta" id="pstatus"></div><div class="next" id="pnext"></div></div><div class="card"><h2>Talk to Black Cat</h2><p class="small">Speak naturally. The coach will improve the instruction before anything is sent to the project AI.</p><textarea id="input" placeholder="What are you thinking about, trying to build, fix, research, or decide?"></textarea><div class="btns"><button id="mic" class="mic" onclick="toggleMic()">🎤</button><button class="primary" onclick="runCoach()">Improve my request</button></div><div id="status" class="status"></div></div><div id="coach" class="card hidden"><h2>AI Coach</h2><div class="grid"><div class="kv"><b>GOAL</b><span id="goal"></span></div><div class="kv"><b>CURRENT STATE</b><span id="state"></span></div><div class="kv"><b>SUCCESS</b><span id="success"></span></div><div class="kv"><b>INTENT</b><span id="intent"></span></div></div><p><b>Improved request</b></p><textarea id="improved"></textarea><div id="coachnotes"></div><div class="btns"><button class="primary" onclick="sendImproved()">Send improved</button><button onclick="sendOriginal()">Send original</button><button class="ghost" onclick="document.getElementById('improved').focus()">Edit</button></div></div><div id="reply" class="card hidden"><h2>Project AI</h2><pre id="answer" class="answer"></pre></div><div class="card"><h2>Project brain</h2><div class="btns"><button onclick="showBrain('STATE.md')">State</button><button onclick="showBrain('PLAN.md')">Plan</button><button onclick="showBrain('EVIDENCE.md')">Evidence</button><button onclick="showBrain('LESSONS_LEARNED.md')">Lessons</button><button onclick="showBrain('BACKLOG.md')">Backlog</button></div><pre id="brain" class="answer small"></pre></div></section>
+<section id="home"><div class="card"><h2>AI spend</h2><div class="spendgrid"><div class="spendbox"><div class="num" id="todayCost">$0.00</div><div class="lbl">TODAY</div></div><div class="spendbox"><div class="num" id="monthCost">$0.00</div><div class="lbl">THIS MONTH</div></div><div class="spendbox"><div class="num" id="monthTokens">0</div><div class="lbl">MONTH TOKENS</div></div></div><div class="bar"><div id="budgetBar"></div></div><div class="small" id="budgetText">Loading budget…</div><div class="btns"><button class="ghost" onclick="toggleUsage()">Usage details</button></div><div id="usageDetails" class="hidden"></div></div><div id="projects"></div><button onclick="newProject()">+ New project</button></section>
+<section id="project" class="hidden"><button class="ghost topback" onclick="showHome()">← Projects</button><div class="card"><div class="name" id="pname"></div><div class="meta" id="pstatus"></div><div class="next" id="pnext"></div><div class="small" id="projectSpend"></div></div><div class="card"><h2>Talk to Black Cat</h2><p class="small">Speak naturally. The coach will improve the instruction before anything is sent to the project AI.</p><textarea id="input" placeholder="What are you thinking about, trying to build, fix, research, or decide?"></textarea><div class="btns"><button id="mic" class="mic" onclick="toggleMic()">🎤</button><button class="primary" onclick="runCoach()">Improve my request</button></div><div id="status" class="status"></div></div><div id="coach" class="card hidden"><h2>AI Coach</h2><div class="grid"><div class="kv"><b>GOAL</b><span id="goal"></span></div><div class="kv"><b>CURRENT STATE</b><span id="state"></span></div><div class="kv"><b>SUCCESS</b><span id="success"></span></div><div class="kv"><b>INTENT</b><span id="intent"></span></div></div><p><b>Improved request</b></p><textarea id="improved"></textarea><div id="coachnotes"></div><div id="coachCost"></div><div class="btns"><button class="primary" onclick="sendImproved()">Send improved</button><button onclick="sendOriginal()">Send original</button><button class="ghost" onclick="document.getElementById('improved').focus()">Edit</button></div></div><div id="reply" class="card hidden"><h2>Project AI</h2><pre id="answer" class="answer"></pre><div id="replyCost"></div></div><div class="card"><h2>Project brain</h2><div class="btns"><button onclick="showBrain('STATE.md')">State</button><button onclick="showBrain('PLAN.md')">Plan</button><button onclick="showBrain('EVIDENCE.md')">Evidence</button><button onclick="showBrain('LESSONS_LEARNED.md')">Lessons</button><button onclick="showBrain('BACKLOG.md')">Backlog</button></div><pre id="brain" class="answer small"></pre></div></section>
 <script>
-let current=null,brain={},recognition=null;
+let current=null,brain={},recognition=null,globalUsage=null;
 async function api(body){const r=await fetch('?api=1',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!j.ok)throw new Error(j.error||'Request failed');return j}
 function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-async function load(){try{const j=await api({action:'list'});projects.innerHTML=j.projects.map(p=>`<div class="card project" onclick="openProject('${p.id}')"><div class="name">${esc(p.name)}</div><div class="meta">${esc(p.status)}</div><div class="next"><b>Next:</b> ${esc(p.next)}</div></div>`).join('')}catch(e){projects.innerHTML='<p class="error">'+esc(e.message)+'</p>'}}
-async function openProject(id){const j=await api({action:'get',id});current=id;brain=j.project.brain;pname.textContent=j.project.meta.name;pstatus.textContent=j.project.meta.status;pnext.innerHTML='<b>Next:</b> '+esc(j.project.meta.next);home.classList.add('hidden');project.classList.remove('hidden');coach.classList.add('hidden');reply.classList.add('hidden');brainEl('STATE.md')}
+function money(n){return '$'+Number(n||0).toFixed(Number(n||0)<0.01?4:2)}
+function tokens(n){n=Number(n||0);if(n>=1000000)return (n/1000000).toFixed(2)+'M';if(n>=1000)return (n/1000).toFixed(1)+'K';return String(n)}
+function spendChip(s){if(!s)return '';return `<span class="callcost">${esc(s.model||s.provider||'AI')} · ${tokens(s.total_tokens)} tokens · ${money(s.estimated_cost_usd)}</span>`}
+function renderUsage(u){globalUsage=u;todayCost.textContent=money(u.today.cost);monthCost.textContent=money(u.month.cost);monthTokens.textContent=tokens(u.month.tokens);const pct=Math.min(100,Number(u.month.budget_percent||0));budgetBar.style.width=pct+'%';budgetText.textContent=`${money(u.month.cost)} of ${money(u.budget_usd)} monthly planning budget · ${Number(u.month.budget_percent||0).toFixed(1)}% · estimated API token spend`;const models=Object.entries(u.models||{}).sort((a,b)=>b[1].cost-a[1].cost);const recent=(u.recent||[]).map(r=>`<div class="usageRow"><span>${esc(r.task_type)} · ${esc(r.model)}</span><span>${tokens(r.total_tokens)} · ${money(r.estimated_cost_usd)}</span></div>`).join('');usageDetails.innerHTML=`<p class="small">Raw token usage is retained. Dollar values are estimates using pricing reference ${esc(u.pricing_version)} and may differ from the provider invoice or tool-call charges.</p>${models.map(([m,v])=>`<div class="usageRow"><span>${esc(m)} · ${v.calls} calls</span><span>${tokens(v.tokens)} · ${money(v.cost)}</span></div>`).join('')}<h3>Recent calls</h3>${recent||'<p class="small">No paid calls logged yet.</p>'}`}
+function toggleUsage(){usageDetails.classList.toggle('hidden')}
+async function refreshUsage(){try{const j=await api({action:'usage'});renderUsage(j.usage)}catch(e){console.warn(e)}}
+async function load(){try{const j=await api({action:'list'});renderUsage(j.usage);projects.innerHTML=j.projects.map(p=>`<div class="card project" onclick="openProject('${p.id}')"><div class="name">${esc(p.name)}</div><div class="meta">${esc(p.status)}</div><div class="next"><b>Next:</b> ${esc(p.next)}</div></div>`).join('')}catch(e){projects.innerHTML='<p class="error">'+esc(e.message)+'</p>'}}
+async function openProject(id){const j=await api({action:'get',id});current=id;brain=j.project.brain;pname.textContent=j.project.meta.name;pstatus.textContent=j.project.meta.status;pnext.innerHTML='<b>Next:</b> '+esc(j.project.meta.next);projectSpend.textContent=`This project: ${money(j.usage.all.cost)} estimated API spend · ${tokens(j.usage.all.tokens)} tokens · ${j.usage.all.calls} calls`;home.classList.add('hidden');project.classList.remove('hidden');coach.classList.add('hidden');reply.classList.add('hidden');brainEl('STATE.md')}
 function showHome(){project.classList.add('hidden');home.classList.remove('hidden');load()}
-function brainEl(f){document.getElementById('brain').textContent=brain[f]||''} function showBrain(f){brainEl(f)}
-async function runCoach(){const text=input.value.trim();if(!text)return;status.textContent='Improving your request…';try{const j=await api({action:'coach',id:current,text});const r=j.result;goal.textContent=r.goal;state.textContent=r.current_state;success.textContent=r.success;intent.textContent=r.intent;improved.value=r.improved_prompt;coachnotes.innerHTML=(r.coaching_notes||[]).map(n=>'<p class="note">'+esc(n)+'</p>').join('');coach.classList.remove('hidden');status.textContent=r.mode==='local-fallback'?'Local coaching used — OpenAI key is not configured.':'AI coaching complete.'}catch(e){status.textContent=e.message}}
-async function sendPrompt(prompt){reply.classList.remove('hidden');answer.textContent='Thinking…';try{const j=await api({action:'chat',id:current,prompt});answer.textContent=j.result.answer}catch(e){answer.textContent='Error: '+e.message}}
-function sendImproved(){sendPrompt(improved.value)} function sendOriginal(){sendPrompt(input.value)}
+function brainEl(f){document.getElementById('brain').textContent=brain[f]||''}function showBrain(f){brainEl(f)}
+async function runCoach(){const text=input.value.trim();if(!text)return;status.textContent='Improving your request…';try{const j=await api({action:'coach',id:current,text});const r=j.result;goal.textContent=r.goal;state.textContent=r.current_state;success.textContent=r.success;intent.textContent=r.intent;improved.value=r.improved_prompt;coachnotes.innerHTML=(r.coaching_notes||[]).map(n=>'<p class="note">'+esc(n)+'</p>').join('');coachCost.innerHTML=spendChip(r.spend);coach.classList.remove('hidden');status.textContent=r.mode==='local-fallback'?'Local coaching used — $0 API spend.':'AI coaching complete.';refreshUsage()}catch(e){status.textContent=e.message}}
+async function sendPrompt(prompt){reply.classList.remove('hidden');answer.textContent='Thinking…';replyCost.innerHTML='';try{const j=await api({action:'chat',id:current,prompt});answer.textContent=j.result.answer;replyCost.innerHTML=spendChip(j.result.spend);refreshUsage()}catch(e){answer.textContent='Error: '+e.message}}
+function sendImproved(){sendPrompt(improved.value)}function sendOriginal(){sendPrompt(input.value)}
 function toggleMic(){if(!('webkitSpeechRecognition'in window||'SpeechRecognition'in window)){status.textContent='Live browser transcription is not available here. You can still use the keyboard microphone/dictation.';return}if(recognition){recognition.stop();return}const SR=window.SpeechRecognition||window.webkitSpeechRecognition;recognition=new SR();recognition.continuous=true;recognition.interimResults=true;recognition.lang='en-AU';let finalText=input.value?input.value+' ':'';recognition.onstart=()=>{mic.classList.add('on');status.textContent='Listening…'};recognition.onresult=e=>{let interim='';for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)finalText+=e.results[i][0].transcript+' ';else interim+=e.results[i][0].transcript}input.value=finalText+interim};recognition.onend=()=>{mic.classList.remove('on');recognition=null;status.textContent='Voice captured. Review it, then improve the request.'};recognition.onerror=e=>{status.textContent='Microphone: '+e.error};recognition.start()}
 async function newProject(){const name=prompt('Project name');if(!name)return;try{const j=await api({action:'create',name});await load();openProject(j.project.id)}catch(e){alert(e.message)}}
 load();
