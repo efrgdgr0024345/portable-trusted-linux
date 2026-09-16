@@ -110,6 +110,7 @@ def observe(work, env, qemu, tess, code, variables, toolroot, mode):
             '-drive', 'if=pflash,format=raw,readonly=on,file=' + str(code),
             '-drive', 'if=pflash,format=raw,file=' + str(vardisk),
             '-cdrom', str(ISO), '-boot', 'd', '-nic', 'none', '-display', 'none',
+            '-vga', 'none', '-device', 'VGA,romfile=' + str(toolroot / 'usr/share/seabios/vgabios-stdvga.bin'),
             '-serial', 'file:' + str(serial), '-qmp', 'unix:' + str(qmp) + ',server=on,wait=off',
             '-no-reboot', '-L', str(toolroot / 'usr/share/qemu')]
     last = None
