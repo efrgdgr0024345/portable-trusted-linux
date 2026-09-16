@@ -3,17 +3,20 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 APP="$ROOT/apps/blackcat-console/index.php"
+FOCUS="$ROOT/apps/blackcat-console/focus.php"
 
 [[ -f "$APP" ]] || { echo "FAIL: missing $APP"; exit 1; }
+[[ -f "$FOCUS" ]] || { echo "FAIL: missing $FOCUS"; exit 1; }
 
 if command -v php >/dev/null 2>&1; then
   php -l "$APP"
+  php -l "$FOCUS"
 else
   echo "WARN: php not installed on this test host; syntax check skipped"
 fi
 
 # Repository source must reference server-side secret names, never embed a live OpenAI key.
-if grep -Eq 'sk-(proj-)?[A-Za-z0-9_-]{20,}' "$APP"; then
+if grep -Eq 'sk-(proj-)?[A-Za-z0-9_-]{20,}' "$APP" "$FOCUS"; then
   echo "FAIL: possible hard-coded API key found in Black Cat Console source"
   exit 1
 fi
@@ -31,10 +34,18 @@ grep -q 'estimated_cost_usd' "$APP" || { echo "FAIL: estimated cost accounting m
 grep -q 'BLACKCAT_MONTHLY_API_BUDGET' "$APP" || { echo "FAIL: monthly budget control missing"; exit 1; }
 grep -q 'PRICING_VERSION' "$APP" || { echo "FAIL: pricing-version metadata missing"; exit 1; }
 
+# Focus Tracker hard rules: one focus, backlog-only ideas, blocker tracking.
+grep -q 'Scope lock' "$FOCUS" || { echo "FAIL: focus tracker scope-lock UI missing"; exit 1; }
+grep -q 'BACKLOG.md' "$FOCUS" || { echo "FAIL: focus tracker backlog storage missing"; exit 1; }
+grep -q "action.*idea\|action' value='idea\|value=\"idea\"" "$FOCUS" || { echo "FAIL: focus tracker idea parking missing"; exit 1; }
+grep -q 'milestone' "$FOCUS" || { echo "FAIL: focus tracker milestone field missing"; exit 1; }
+grep -q 'blocker' "$FOCUS" || { echo "FAIL: focus tracker blocker field missing"; exit 1; }
+grep -q 'Choose the next smallest action' "$FOCUS" || { echo "FAIL: focus tracker done-state guard missing"; exit 1; }
+
 # Browser clients may read summaries but never raw API keys.
 if grep -Eq "OPENAI_API_KEY[^\n]*(localStorage|sessionStorage|document\.|window\.)" "$APP"; then
   echo "FAIL: API key appears to be exposed to browser-side state"
   exit 1
 fi
 
-echo "PASS: Black Cat Console static checks"
+echo "PASS: Black Cat Console + Focus Tracker static checks"
