@@ -400,3 +400,22 @@ M13 remains current but blocked on cleaning the unexpected systemd-boot host int
 
 ### Evidence classification
 **OBSERVED / VERIFIED ON `ptl-builder-01`.** GitHub Actions run `35048351446`, job `104643052976`, recorded the systemd-boot preflight failure on Debian 13.7.
+
+---
+
+## 2026-09-16 — The first useful project automation should reduce scope, not increase it
+
+### What was attempted
+Turn the broad Black Cat Console concept into something immediately useful for tracking real projects without creating another autonomous layer that can generate more work than it finishes.
+
+### What happened
+A deliberately narrow `focus.php` tracker was added. Each project has one current milestone, one next action and one blocker. Completing work is recorded in project state and activity history. New ideas are written to `BACKLOG.md` but cannot change active focus. Only an explicit focus edit can change the milestone or next action. Existing API-spend data remains visible without requiring any new AI calls.
+
+### Why it matters
+The user's main risk is not lack of ideas; it is allowing useful new ideas to interrupt unfinished work. Automation that freely promotes backlog items or rewrites plans would amplify project creep. A constrained state machine creates compounding project memory while keeping human control over priority changes.
+
+### Decision / change
+Treat focus discipline as the first project-automation primitive. AI advice may be added later, but plan changes remain user-approved. Browser automation, advanced routing and autonomous implementation stay outside this tracker milestone until the basic focus workflow is used and validated.
+
+### Evidence classification
+**SOURCE IMPLEMENTED / LOCALLY PHP-LINTED / NOT YET DEPLOYMENT-VERIFIED.** `apps/blackcat-console/focus.php` passed PHP 8.4 syntax checking in the development runtime before being committed. Repository static checks were expanded to cover the focus-lock, backlog, milestone, blocker and done-state guard requirements; those updated checks have not yet been rerun on `ptl-builder-01` in this session.
