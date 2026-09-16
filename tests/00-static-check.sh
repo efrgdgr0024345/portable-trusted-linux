@@ -332,10 +332,10 @@ else
   failures=1
 fi
 
-if grep -Fq "const GITHUB_BRANCH = 'codex/remove-chroot-systemd-boot';" "$viewer"; then
-  printf '[OK]      viewer is temporarily pinned to the authoritative M13B branch\n'
+if grep -Fq "const GITHUB_BRANCH = 'main';" "$viewer"; then
+  printf '[OK]      viewer targets main after approved integration\n'
 else
-  printf '[FAILED]  viewer is not pinned to the current authoritative M13B branch\n'
+  printf '[FAILED]  viewer must target reconciled main before deployment\n'
   failures=1
 fi
 

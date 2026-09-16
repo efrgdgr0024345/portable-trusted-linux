@@ -25,7 +25,9 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
 
       - name: Confirm runner identity
         shell: bash
@@ -37,6 +39,11 @@ jobs:
           echo "ARCH=$(uname -m)"
           echo "KERNEL=$(uname -sr)"
           echo "WORKSPACE=$GITHUB_WORKSPACE"
+
+      - name: Run repository static checks
+        run: |
+          bash tests/00-static-check.sh
+          bash tests/10-blackcat-console-static.sh
 
       - name: Run first real builder report
         shell: bash

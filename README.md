@@ -6,22 +6,26 @@ The project explores a portable, independently verifiable Linux environment for 
 
 Internal repository names, `PTL_` environment variables, workflow names and evidence identifiers remain unchanged for stability. The Black Cat change is branding, not a trust-model or protocol rename.
 
-## Current status
+## Current status — evidence review, 16 September 2026
 
-- Debian 13/trixie amd64 build baseline established.
-- First Debian Live hybrid ISO built successfully on the remote builder and physically booted from USB on real hardware.
-- **M13B is complete on the tested hardware/configuration.** The corrected no-typing System Check reached BLACK CAT - QUICK CHECK without the old report `Permission denied` errors.
-- Read-only `lsblk` evidence showed the 14.6G `sda` live USB mounted at `/run/live/medium`, while the 476.9G internal `nvme0n1` and partitions `nvme0n1p1` through `nvme0n1p4` had no mount points.
-- That result is **OBSERVED** on the tested configuration, not a universal guarantee or cryptographic attestation.
-- The exact completed M13B candidate remains `live-image-amd64.hybrid.iso`, 376,438,784 bytes, SHA-256 `cb14d25b7fd43e2b0e563efaada357d6ab196a42d717b016c4857f85968fe641`, source commit `c56389b71ecd96270bdd047369378f5a94d8bf93`, workflow run `34686464650`, artifact `10300658965` (`ptl-first-live-build-34686464650`).
-- That image remains **TEST CANDIDATE — NOT AN APPROVED RELEASE**. There is still no approved Black Cat ISO.
-- **M14 — authenticated release signing — is current.** Non-secret tooling now creates canonical release manifests, signs them with Ed25519, independently verifies signatures/key fingerprints/artifact identity, and has positive/negative development tests using ephemeral keys only.
-- Production release-signing private-key ownership/custody remains a human trust-policy gate. Production private keys are not committed to GitHub or placed on the general-purpose builder merely for convenience.
-- Release signing is deliberately separate from the later Secure Boot/UKI signing identity and path.
-- Black Cat branding is present on GRUB/UEFI and Syslinux/legacy menus using a compact repository-tracked splash. Branding is cosmetic only and cannot determine trust or boot eligibility.
-- The **Black Cat Automation Manifesto** and root **AI Autonomy Policy** are mandatory: safe, reversible, auditable work proceeds automatically until a genuine human gate is reached.
-- Chat/session continuity is recoverable through compact root `AI_WORK_STATE.md`, selective repository reload and an empirical GREEN/AMBER/RED context-health heuristic rather than repeatedly loading full project history.
-- A future post-core M26 milestone plans to build this repository-governed automation style directly into Black Cat Linux as a sandboxed, model-neutral user-space project system. The fail-closed reusable scaffold already lives under `templates/ai-project/` but grants no runtime privilege today.
+**Active outcome: demonstrate the exact graphical development candidate in a VM, retain System Check, then prepare a spare-USB physical test. No approved release exists.**
+
+| Capability | Evidence stage | Scope |
+| --- | --- | --- |
+| Graphical ISO construction | CI build observed | Source `86ddbb8eac1a0dbf912c035d5b916b70453dff88`, run `35095923202` |
+| Preserved ISO identity | Rehashed on builder | 770,703,360 bytes; SHA-256 `81f702cd9e59d4d7ba5654e6a69dbd655617968f92381049881930aef9b2fcb7`; recovery run `35107102698` |
+| Graphical boot and new-image System Check | VM verification in progress | See the current evidence report; no physical evidence for this new image |
+| Earlier M13B physical boot | Previously observed on one machine | Different 376,438,784-byte image `cb14d25b…`; never transfer that observation to this graphical image |
+| Release signing | Development implementation | Ephemeral-key tests; production key custody remains undecided |
+| Secure Boot / TPM attestation / dm-verity guarantees | Planned or incomplete | A successful build or attractive desktop does not verify them |
+| Black Cat Console / Focus | Source implemented | Preserved from main; deployment and phone validation remain unverified |
+
+- [Exact candidate evidence and next gates](docs/20-graphical-candidate-evidence.md)
+- [Canonical design folder and brand notes](design/README.md): **Stealth. Intelligence. Independence.**
+- [Compact working state](AI_WORK_STATE.md)
+- The integrated branch preserves both the USB development history and the parallel Console/Focus history. Merge to main requires approval under the existing autonomy policy.
+- The public viewer source now presents capability evidence instead of a single completion percentage. It is prepared for reconciled main; it has not been deployed in this session.
+- Artifact upload in the original build failed because GitHub Actions storage was full. Builder recovery worked; artifact publication, build success and boot success are separate facts.
 
 ## No-typing diagnostic path
 
@@ -196,3 +200,4 @@ A successful physical boot proves bootability on the tested configuration. An au
 ## Mandatory lessons-learned rule
 
 Every meaningful engineering/research session updates `docs/07-lessons-learned.md`, relevant technical/decision documents and the compact work-state checkpoint when materially affected, then updates `project_content.json` **last**. See `PROJECT_RULES.md`.
+

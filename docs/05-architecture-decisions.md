@@ -217,3 +217,63 @@ The existing deterministic `controller/state-machine.json` may remain as a non-n
 Natural-language tool creation may be offered through a Black Cat AI interface, but heavy/generated software construction should preferably occur in a separate disposable and explicitly untrusted workshop environment such as a VPS/VM. The workshop may design, compile and test software but does not receive trusted-core write authority, raw target-disk authority, user secrets by default, or Black Cat production release/Secure Boot signing keys. Anything returned by the workshop is treated as potentially malicious and must pass independent structural/digest/signature/capability verification before activation. Official, local-user and unverified-candidate modules remain distinct trust classes.
 
 A pre-desktop AI interface may run only after a minimal authenticated Black Cat environment and its capability broker are active; this does not authorize firmware/pre-kernel LLM execution. The detailed design and mandatory negative-test direction are documented in `docs/18-modular-runtime-and-ai-workshop.md`.
+
+---
+
+# Preserved parallel main-branch history
+
+The following entries were developed on main through e12b48fa15c586399c4a809e84114dadfa60283e. Historical identifiers in this section retain their original main-branch scope; dates do not imply evidence for the graphical candidate.
+
+## ADR-029 — Black Cat Console is the first application-layer prototype of Black Cat Core
+
+**Status:** Accepted / Prototype  
+**Decision:** The project/chat controller and chatbot are not treated as unrelated side products. They are interfaces over a common Black Cat Core concept: project state, AI routing, permissions, auditability and user-controlled privacy. The initial Console may run remotely for convenience, but its core state format and service boundaries must remain portable to the USB/local environment.
+
+## ADR-030 — Local project state is primary; remote AI and remote hosting are optional extensions
+
+**Status:** Accepted / Prototype  
+**Decision:** Human-readable project state must remain usable without a remote AI service. Remote models may provide coaching, planning and deep review, but the user must be able to inspect what project information is sent externally. The target design is local-first and must not make the Black Cat USB system dependent on the prototype cloud host.
+
+## ADR-031 — Reuse existing Black Cat remote infrastructure; keep the PTL builder isolated
+
+**Status:** Accepted / Transitional  
+**Decision:** The existing `blackcat-chatbot-01` server is the intended remote prototype host for Black Cat Console. `ptl-builder-01` remains a specialised build host and should not also become the general project-console/application server. No new droplet is required for the Console MVP.
+
+## ADR-032 — Durable project cognition is human-readable; operational metadata may be structured
+
+**Status:** Accepted / Prototype  
+**Decision:** Goals, state, plans, decisions, lessons, evidence, backlog and AI rules are stored as human-readable Markdown so they remain portable across implementations and AI providers. Operational metadata such as sessions, usage and interaction logs may use JSON/SQLite as the prototype matures.
+
+## ADR-033 — Browser execution is a separate Black Cat tool layer
+
+**Status:** Accepted / Prototype  
+**Decision:** Use a Black Cat-controlled browser worker, initially Playwright with Chromium, for website tasks that need a real browser. Browser execution is separated from reasoning so the same browser tool can be driven by OpenAI API models, a future local model, or another provider. Do not couple Black Cat to automating the private user interface of `chatgpt.com` as a substitute for model/API access.
+
+## ADR-034 — API reasoning, browser execution and ChatGPT Work are distinct routes
+
+**Status:** Accepted / Prototype  
+**Decision:** Current OpenAI flagship API models can provide high/max reasoning and computer-use capabilities, so the API is not classified as inherently lower-intelligence than ChatGPT. ChatGPT may still provide additional product-level orchestration through Work/Codex, memory, tools and browser harnesses. Black Cat therefore routes deliberately between direct API reasoning, its own Playwright browser executor, OpenAI computer-use tooling where useful, and an explicit user-directed ChatGPT Work handoff when the ChatGPT product harness itself is desired.
+
+## ADR-035 — Preserve raw AI usage separately from recalculable cost estimates
+
+**Status:** Accepted / Prototype  
+**Decision:** Every successful metered AI request should retain provider-returned model and token usage as durable runtime evidence. Estimated dollar spend is calculated separately using a versioned pricing table and must be labelled as an estimate rather than billing truth. This lets Black Cat recalculate historical spend after price changes, distinguish cached from uncached input, expose reasoning-token usage, and build routing/budget controls without rewriting the underlying usage history.
+
+## ADR-036 — Project automation starts with focus discipline, not autonomy
+
+**Status:** Accepted / Prototype  
+**Decision:** The first automated project tracker enforces one current milestone, one next action and at most one active blocker per project. New ideas are written to backlog and may not silently change active focus. Marking work complete records the event and deliberately leaves the next action needing an explicit choice rather than automatically promoting a backlog item. AI may advise on focus later, but it must not rewrite the active plan without user approval.
+
+
+
+## ADR-2026-09-16-EVIDENCE — Track capabilities against exact evidence
+
+**Status:** Accepted by the user's instruction to proceed with the high-level review.
+
+Replace a single project completion percentage with separately scoped capability stages: designed, implemented, tested and physically observed. Record source SHA, artifact SHA/size, run and test environment. Preserve unknowns. Building, publishing, booting and authenticating an image are separate outcomes. Keep a single active graphical verification milestone while preserving the signing/security roadmap and Console backlog.
+
+## ADR-2026-09-16-DESIGN — Use the supplied graphical design folder
+
+**Status:** User selected on 16 September 2026.
+
+`design/README.md` binds the repository to the folder **Graphical design for black cat project**, now under **linux usb project**. The source inventory preserves stable identities and hashes for all 18 files. The exact original cat and brand notes are copied into the repository. “Stealth. Intelligence. Independence.” controls new copy; “Freedom” embedded in the historical welcome image is not silently promoted to canonical wording. Keep the current ISO fixed while testing; later artwork changes produce a different build.

@@ -1,6 +1,6 @@
 # Graphical Black Cat Session UI — development prototype
 
-Status: SOURCE IMPLEMENTED; ISO REBUILD / GUI BOOT / HARDWARE TEST PENDING. This is not a security-enforcing module selector.
+Status: SOURCE IMPLEMENTED; EXACT ISO BUILT AND REHASHED; GUI/QUICK-CHECK VM VERIFICATION IN PROGRESS; HARDWARE RETEST PENDING. This is not a security-enforcing module selector.
 
 ## Scope
 
@@ -24,3 +24,11 @@ The panel shows icons and checkboxes for browser, networking, office/PDF, AI, de
 ## Limits and engineering risks
 
 The desktop increases package count and attack surface; it is a usability development profile, not the eventual minimal core. Tk emoji rendering varies by font and desktop. Debian Live session/login naming and graphical target behavior are not yet validated. GUI UI and hardware privilege controls must be kept separate; hiding or disabling a checkbox is not enforcement. Cloud workshop/chatbot remains paused and no new network listener, credential or production key was introduced.
+
+
+
+## 16 September integration update
+
+Use [the canonical design reference](../design/README.md) for subsequent UI artwork and layout changes. The supplied welcome-screen concept is a visual reference, not a screenshot of the existing Tk prototype. Its embedded “Freedom” wording predates the canonical “Independence” wording in the brand notes.
+
+[Candidate evidence](20-graphical-candidate-evidence.md) supersedes the earlier pending-build status. The recovered ISO remains tied to its original source commit and must not be described as containing later design or integration edits. GUI observation, interaction, System Check regression and physical testing each need separate evidence.

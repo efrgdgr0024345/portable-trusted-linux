@@ -1,0 +1,152 @@
+{
+  "folder_id": "6aa9de3e85348191a41378f44736d626",
+  "folder_path": "/linux usb project/Graphical design for black cat project",
+  "role": "canonical user-selected visual reference",
+  "recorded_utc": "2026-09-16",
+  "files": [
+    {
+      "name": "black_cat_linux_brand_notes_2026-09-16.txt",
+      "library_file_id": "libfile_13259099a74481918c74f6d56f49243a",
+      "file_id": "file_000000004f2481fa9b950e30a910ef99",
+      "original_size_bytes": 2917,
+      "sha256": "ec4e1569367207ded86bbac079b480eb30f40487bb92d50a3dd3db3f9edcaf85",
+      "size_bytes": 2917
+    },
+    {
+      "name": "Black Cat Linux Welcome Screen.png",
+      "library_file_id": "libfile_6219aac548008191a5b210ca14c41d9b",
+      "file_id": "file_000000004c7481fa8005e77df62c7112",
+      "original_size_bytes": 1828751,
+      "sha256": "28169f51e0027af6e1c0757c0bd59c4d6299c28e52f7eaf615d75fd6d6afc49a",
+      "size_bytes": 1828751
+    },
+    {
+      "name": "image-gen-9.png",
+      "library_file_id": "libfile_a5b424d7f01c8191895a5a4d7a5e386a",
+      "file_id": "file_000000009290820b93d39ba2d0cf9b0c",
+      "original_size_bytes": 1776117,
+      "sha256": "fbf3879d23be66cb502b39c78672d92fc264f847bab1957c9f846b5870850d20",
+      "size_bytes": 1776117
+    },
+    {
+      "name": "image-gen-8.png",
+      "library_file_id": "libfile_0002b49e7cac819189697d1b6638f097",
+      "file_id": "file_0000000018e881fa9920967ee384fae8",
+      "original_size_bytes": 1670435,
+      "sha256": "e60304f4dff25beed2424d71245a047dee9965c75876fdc7caea76bca6ef78e9",
+      "size_bytes": 1670435
+    },
+    {
+      "name": "image-gen-7.png",
+      "library_file_id": "libfile_15329a85ded48191bd3cacf344a0cee8",
+      "file_id": "file_000000000e4081fa8d8d0d5bb2546542",
+      "original_size_bytes": 1727538,
+      "sha256": "4e22bf6e7e5dd5e4976f84a1156f03d0b929ecba30144cb8406505bab4b73ae1",
+      "size_bytes": 1727538
+    },
+    {
+      "name": "image-gen-6(1).png",
+      "library_file_id": "libfile_23f93520ef4c8191b84d64460e628700",
+      "file_id": "file_0000000014d481fa9ba65e923677b7f0",
+      "original_size_bytes": 532652,
+      "sha256": "878ecc83bb0b2e34220ec9f3d777557dcb706bf6f9adf1c66dd2307e59b5343b",
+      "size_bytes": 532652
+    },
+    {
+      "name": "image-gen-5(1).png",
+      "library_file_id": "libfile_3610f974fc90819197f6487616becfe7",
+      "file_id": "file_00000000a6a081fa9ea020eb47177717",
+      "original_size_bytes": 1834499,
+      "sha256": "66b15ad264695c830f78baaca0c8f9003be3f4c0c330f5262244bce8f0ea6b89",
+      "size_bytes": 1834499
+    },
+    {
+      "name": "image-gen-4(1).png",
+      "library_file_id": "libfile_d1f370febb9c8191bc5445538be1f15b",
+      "file_id": "file_000000002b6481faa36f1b2373e0cb4d",
+      "original_size_bytes": 1558059,
+      "sha256": "d881a0331e3ef704e373ae8136b2f6203574734f7a621ea71b057a952c07b00b",
+      "size_bytes": 1558059
+    },
+    {
+      "name": "image-gen-3(1).png",
+      "library_file_id": "libfile_dad8ffff564081918712aa5442af5f2f",
+      "file_id": "file_000000005de081fab3f8567127775451",
+      "original_size_bytes": 1527231,
+      "sha256": "9110b3261aa3f8362dc28ea78e584923f939148ce6f94a4fa1817aa1fcd85483",
+      "size_bytes": 1527231
+    },
+    {
+      "name": "image-gen-2(1).png",
+      "library_file_id": "libfile_fded927104b881918a035a45d3cf99e2",
+      "file_id": "file_00000000122481fa84d90baaf759230a",
+      "original_size_bytes": 1439037,
+      "sha256": "d160a2a608884f9dab2b8bffb73765f164115eb13db8c5ab5ccd8ba3b79cd6df",
+      "size_bytes": 1439037
+    },
+    {
+      "name": "image-gen-1(1).png",
+      "library_file_id": "libfile_6259b7cd88408191b79bf22bd4c8cc4e",
+      "file_id": "file_00000000026881fabd080cbccf16c9f9",
+      "original_size_bytes": 1502273,
+      "sha256": "8afa48c21d2e143b0d335d7dfc7fbd0a6e7065bca5252a9f01b0a6961ab44946",
+      "size_bytes": 1502273
+    },
+    {
+      "name": "image-gen-6.png",
+      "library_file_id": "libfile_2fb4cb2de5d88191b71cf1e9e7b82f87",
+      "file_id": "file_000000002d1081fab4d5687c14f2ccd5",
+      "original_size_bytes": 1329077,
+      "sha256": "25b74013f74c477d98e5368613895d0171849d9c14bcf68210ce349065d72144",
+      "size_bytes": 1329077
+    },
+    {
+      "name": "image-gen-5.png",
+      "library_file_id": "libfile_768aaca5a4908191a5b6fc1f01848de1",
+      "file_id": "file_00000000904c81fa819cb1e33c9458c5",
+      "original_size_bytes": 1738473,
+      "sha256": "68554674d9ff18fdc6824c7f38f6e1b230f3a45ed7c162ec583643307cafae88",
+      "size_bytes": 1738473
+    },
+    {
+      "name": "image-gen-4.png",
+      "library_file_id": "libfile_5ba41eb4d5088191ba9dce40eaecbdc4",
+      "file_id": "file_0000000019fc81fa95389fa9b692d744",
+      "original_size_bytes": 1726552,
+      "sha256": "2879b0741769472023b679cefd33a3d48e03ac3073cd752f6bb08ef08211de17",
+      "size_bytes": 1726552
+    },
+    {
+      "name": "image-gen-3.png",
+      "library_file_id": "libfile_8202648c3fc48191ae4ec559fb4e73ee",
+      "file_id": "file_000000008a6c81fabbd7a2994517c788",
+      "original_size_bytes": 1788313,
+      "sha256": "ac0f74afac7ecc840f4e2f3f43993a98d12ed7aad09aef11be1ad51f719f95f1",
+      "size_bytes": 1788313
+    },
+    {
+      "name": "image-gen-2.png",
+      "library_file_id": "libfile_5845634fd6b081919767d07f54bda2e9",
+      "file_id": "file_00000000d15081faae2e50b9a23bb2d5",
+      "original_size_bytes": 1448461,
+      "sha256": "aa0bda84e02273e627fd061690c6caf4c612a8633539df2c7e1b3d3a71f8cd12",
+      "size_bytes": 1448461
+    },
+    {
+      "name": "image-gen-1.png",
+      "library_file_id": "libfile_2c3d850da860819194e9fab078f63e7b",
+      "file_id": "file_000000007484820b98dada5d7ad7e446",
+      "original_size_bytes": 1694541,
+      "sha256": "b9ae0e649e02c85b539d4826b36910830dcf34bc2746e79c90f1e0125b500f1d",
+      "size_bytes": 1694541
+    },
+    {
+      "name": "EA9CECE1-3D6B-4A22-A07B-496D942D0D54.jpeg",
+      "library_file_id": "libfile_3ecc631c5b0c81918446ed1221361e5f",
+      "file_id": "file_000000003ebc81fab761d8ce3716344e",
+      "original_size_bytes": 263481,
+      "sha256": "7f13913fcd6d3fe21661f2eb30505663e554721363112bad3b6b74eabe810521",
+      "size_bytes": 263481
+    }
+  ]
+}

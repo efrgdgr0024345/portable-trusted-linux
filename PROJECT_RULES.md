@@ -139,3 +139,11 @@ Context pressure itself is not a human gate. Checkpoint maintenance is `AUTO` wo
 `docs/13-ai-continuity-and-context-recovery.md` documents the reusable pattern for other projects. `docs/14-context-health-calibration-log.md` records real dropout/continuity events and future threshold changes. Unknown measurements remain `unknown`; never invent retrospective precision.
 
 When `AI_WORK_STATE.md` is materially refreshed during a work cycle, it must be written before the final `project_content.json` update so Rule 2 remains intact.
+
+
+
+## Rule 15 — Capability evidence and canonical design references
+
+Report progress per capability as designed, implemented, tested and physically observed, with the exact source/image identity, environment and evidence link. Never derive overall security assurance from a milestone count or a single completion percentage. Record unavailable evidence and failed harnesses separately from product failures. Historical evidence for a different image must stay attached to that image.
+
+For visual changes, consult `design/README.md`, `design/brand-notes-2026-09-16.txt` and the user-selected **Graphical design for black cat project** folder before implementation. Preserve source assets and the recognizable cat. The canonical tagline is **Stealth. Intelligence. Independence.** A design mockup neither implements nor proves security controls.

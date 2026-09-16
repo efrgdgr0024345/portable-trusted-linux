@@ -835,3 +835,143 @@ Add `docs/18-modular-runtime-and-ai-workshop.md`, extend the M26 design in `docs
 
 ### Evidence classification
 **ARCHITECTURE/DESIGN DECISION RECORDED / NO RUNTIME MODULE SYSTEM OR AI WORKSHOP DEPLOYED.**
+
+---
+
+# Preserved parallel main-branch history
+
+The following entries were developed on main through e12b48fa15c586399c4a809e84114dadfa60283e. Historical identifiers in this section retain their original main-branch scope; dates do not imply evidence for the graphical candidate.
+
+---
+
+## 2026-09-13 — SSH recovery must be documented without storing the secret
+
+### What was attempted
+Recover manual administrative SSH access to `ptl-builder-01` after the exact connection recipe had been forgotten.
+
+### What happened
+DigitalOcean still held the expected public SSH key and the cPanel host still held both `~/.ssh/ptl_digitalocean` and `~/.ssh/ptl_digitalocean.pub`. Plain SSH attempts failed because the cPanel SSH configuration only selected the GitHub key and therefore did not automatically present the PTL builder key. Explicitly selecting `~/.ssh/ptl_digitalocean` restored access.
+
+### Why it matters
+The key material had not been lost; the operational mapping between host, account and private-key path had been lost. A security control that depends on memory creates unnecessary recovery risk even when the underlying cryptography is sound.
+
+### Decision / change
+`docs/11-builder-access-runbook.md` now records the builder identity, DigitalOcean public-key fingerprint, cPanel private-key location, known-working SSH command, recommended SSH alias, verification steps and recovery procedure. GitHub may record public key material, fingerprints and the **path** to a private key, but never the private key contents, passphrases, API tokens or recovery codes. The current direct-root key remains explicitly classified as a temporary Prototype 1 bootstrap control to be replaced by a dedicated non-root administrative path and stronger credential custody.
+
+### Evidence classification
+**OBSERVED / RECOVERED / DOCUMENTED.** Administrative access was successfully restored using the existing cPanel-held private key; no secret key material was copied into GitHub.
+
+---
+
+## 2026-09-16 — Project coaching should become a Black Cat capability, not a separate throwaway chatbot
+
+### What was attempted
+Design a practical system that improves how the operator uses AI across multiple projects while remaining compatible with the longer-term Black Cat USB goal.
+
+### What happened
+The design converged on a mobile-first Black Cat Console with persistent per-project state, voice/text capture, a coaching step that converts natural input into clearer Goal / Current State / Constraints / Success instructions, and a separate project-AI step. The first source MVP now exists under `apps/blackcat-console/`. The existing `blackcat-chatbot-01` server is the intended remote prototype host, while `ptl-builder-01` stays isolated as a build machine.
+
+### Why it matters
+A standalone cloud-only project manager would create another system to maintain and later discard. Treating chatbot and project control as Black Cat Core interfaces means work done now can inform the eventual local USB implementation. Separating durable Markdown project state from remote model access also avoids making project memory dependent on one AI provider or server.
+
+### Decision / change
+Black Cat Console is now an application-layer prototype of Black Cat Core. Project cognition is stored in human-readable files; remote AI is optional; secrets remain server-side; deep review is intended to be read-only by default; and outbound project data should become explicitly inspectable before remote AI use. The Console reuses the existing Black Cat droplet rather than creating another server.
+
+### Evidence classification
+**IMPLEMENTED IN SOURCE / ARCHITECTURE ACCEPTED / NOT YET DEPLOYED OR DEVICE-VERIFIED.** The repository contains the MVP source, deployment guide and static-test script. No claim is made yet that the Console is running on the droplet or proven on iPhone hardware.
+
+---
+
+## 2026-09-16 — Browser execution and model reasoning should be separate layers
+
+### What was attempted
+Decide whether Black Cat should automate a browser, including whether it should drive the ChatGPT website to obtain stronger reasoning than the API.
+
+### What happened
+Current OpenAI documentation shows that GPT-5.6 Sol and GPT-6 Astra API models support reasoning levels through `max`, and Astra supports computer use and other agentic tools. The ChatGPT product can still behave differently because it adds a product-level agent harness, Work/Codex orchestration, memory and browser tooling around models. This means browser automation is valuable, but not as a workaround for an inherently weak API. A dedicated Black Cat browser worker using Playwright/Chromium is a cleaner abstraction than scripting `chatgpt.com` itself.
+
+### Why it matters
+Coupling Black Cat to one consumer website UI would be brittle, harder to secure and would mix reasoning with browser execution. Separating those layers allows the same browser executor to work with OpenAI API models, future local models or other providers, while ChatGPT Work remains an explicit optional handoff when its product-level harness is specifically useful.
+
+### Decision / change
+Playwright with Chromium is the preferred first Black Cat-owned browser worker. The design must run the worker unprivileged, isolate sessions, protect cookies/passwords from model prompts, audit consequential actions and require confirmation for irreversible operations. Direct API reasoning, Black Cat browser execution, OpenAI computer-use and ChatGPT Work are treated as distinct routes chosen per task.
+
+### Evidence classification
+**VERIFIED AGAINST CURRENT PUBLIC DOCUMENTATION / ARCHITECTURE ACCEPTED / NOT YET IMPLEMENTED ON HOST.**
+
+---
+
+## 2026-09-16 — Console deployment is blocked by host execution access, not by source readiness
+
+### What was attempted
+Deploy the Black Cat Console onto the existing `blackcat-chatbot-01` droplet without creating another server.
+
+### What happened
+The available DigitalOcean integration can inspect and manage droplet lifecycle resources but exposes no remote shell/exec function. No established SSH credential mapping for `blackcat-chatbot-01` was available through the current project records. External checks also found no currently reachable HTTP/HTTPS service on the droplet. Safe local-bootstrap and DNS-gated HTTPS publish scripts were added to the repository, but they have not been executed on the host.
+
+### Why it matters
+Source-code readiness is not evidence of deployment. Resetting, rebuilding or replacing the host merely to bypass an access-control gap would risk existing state and violate the project's evidence-first approach.
+
+### Decision / change
+Do not rebuild or reset `blackcat-chatbot-01` simply to force deployment. Establish a documented administrative shell path first, run the local-only bootstrap and validation, then expose HTTPS only after DNS and authentication checks pass.
+
+### Evidence classification
+**OBSERVED ACCESS LIMITATION / DEPLOYMENT NOT YET VERIFIED.**
+
+---
+
+## 2026-09-16 — AI spend should be visible without turning estimates into false billing evidence
+
+### What was attempted
+Make Black Cat suitable for substantially higher AI usage while keeping variable API cost understandable on a phone.
+
+### What happened
+The Console now records successful OpenAI calls in a private append-only `api-usage.jsonl` file with project, task type, returned model, input/cached/output/reasoning/total token usage, response ID, pricing-version metadata and an estimated USD cost. The mobile dashboard displays today/month totals, monthly token use, a configurable monthly planning budget, model totals, project totals, recent calls and per-call spend. Pricing is kept separate from raw usage so past calls can be recalculated when provider prices change.
+
+### Why it matters
+Per-request API pricing can become material as usage scales. Hiding spend encourages inefficient routing, while hard-coding a dollar figure into history would make old records misleading after price changes. Keeping raw provider usage as evidence and cost as a recalculable estimate supports later model routing and hard budget controls.
+
+### Decision / change
+Use `BLACKCAT_MONTHLY_API_BUDGET` as a soft planning budget in the MVP. Prefer the lowest-cost route that can reliably complete a task, and preserve raw token evidence independently of the current price table. Add hard refusal/downgrade thresholds only after real usage patterns are observed.
+
+### Evidence classification
+**SOURCE IMPLEMENTED / STATICALLY VERIFIED.** GitHub Actions run `35048351446`, job `104643052976`, passed the repository and Black Cat Console static checks against commit `164fd8a53f213bf6976ec3c781f5ae440df5c778`. The runner did not have PHP installed, so PHP syntax was not independently checked by that run; live API accounting remains NOT YET DEPLOYMENT-VERIFIED.
+
+---
+
+## 2026-09-16 — The current builder has a renewed preflight blocker: systemd-boot integration state
+
+### What was attempted
+Use the normal self-hosted builder workflow to validate the updated repository and Console checks.
+
+### What happened
+The workflow itself completed successfully, and both static-check scripts passed. However, the first real-builder report's host preflight returned `HOST_CHECK_EXIT=1` because the disposable builder currently retains systemd-boot host integration state `config-files`. The preflight explicitly requires that state to be purged before live-build while allowing `systemd-boot-efi` to remain installed.
+
+### Why it matters
+A green GitHub workflow does not mean every embedded engineering gate passed. The evidence collector intentionally records preflight failure without failing the whole reporting job. Treating workflow success as build readiness would therefore be incorrect.
+
+### Decision / change
+M13 remains current but blocked on cleaning the unexpected systemd-boot host integration state and rerunning preflight before the first live-build. This cleanup is separate from the Black Cat Console cost-tracking work and should be handled as an explicit builder-maintenance step.
+
+### Evidence classification
+**OBSERVED / VERIFIED ON `ptl-builder-01`.** GitHub Actions run `35048351446`, job `104643052976`, recorded the systemd-boot preflight failure on Debian 13.7.
+
+---
+
+## 2026-09-16 — The first useful project automation should reduce scope, not increase it
+
+### What was attempted
+Turn the broad Black Cat Console concept into something immediately useful for tracking real projects without creating another autonomous layer that can generate more work than it finishes.
+
+### What happened
+A deliberately narrow `focus.php` tracker was added. Each project has one current milestone, one next action and one blocker. Completing work is recorded in project state and activity history. New ideas are written to `BACKLOG.md` but cannot change active focus. Only an explicit focus edit can change the milestone or next action. Existing API-spend data remains visible without requiring any new AI calls.
+
+### Why it matters
+The user's main risk is not lack of ideas; it is allowing useful new ideas to interrupt unfinished work. Automation that freely promotes backlog items or rewrites plans would amplify project creep. A constrained state machine creates compounding project memory while keeping human control over priority changes.
+
+### Decision / change
+Treat focus discipline as the first project-automation primitive. AI advice may be added later, but plan changes remain user-approved. Browser automation, advanced routing and autonomous implementation stay outside this tracker milestone until the basic focus workflow is used and validated.
+
+### Evidence classification
+**SOURCE IMPLEMENTED / LOCALLY PHP-LINTED / NOT YET DEPLOYMENT-VERIFIED.** `apps/blackcat-console/focus.php` passed PHP 8.4 syntax checking in the development runtime before being committed. Repository static checks were expanded to cover the focus-lock, backlog, milestone, blocker and done-state guard requirements; those updated checks have not yet been rerun on `ptl-builder-01` in this session.
+
