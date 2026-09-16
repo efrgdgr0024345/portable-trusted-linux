@@ -176,3 +176,8 @@ This file records durable project decisions. Changes should be made by new commi
 
 **Status:** Accepted / Prototype  
 **Decision:** Every successful metered AI request should retain provider-returned model and token usage as durable runtime evidence. Estimated dollar spend is calculated separately using a versioned pricing table and must be labelled as an estimate rather than billing truth. This lets Black Cat recalculate historical spend after price changes, distinguish cached from uncached input, expose reasoning-token usage, and build routing/budget controls without rewriting the underlying usage history.
+
+## ADR-036 — Project automation starts with focus discipline, not autonomy
+
+**Status:** Accepted / Prototype  
+**Decision:** The first automated project tracker enforces one current milestone, one next action and at most one active blocker per project. New ideas are written to backlog and may not silently change active focus. Marking work complete records the event and deliberately leaves the next action needing an explicit choice rather than automatically promoting a backlog item. AI may advise on focus later, but it must not rewrite the active plan without user approval.
