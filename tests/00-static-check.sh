@@ -167,7 +167,7 @@ for script in \
 done
 
 profile_hook="${ROOT_DIR}/config/live-build/includes.chroot/etc/profile.d/blackcat-auto-check.sh"
-if grep -Eq '(^|[[:space:]])/usr/local/bin/blackcat-check([[:space:]]|$)' "$profile_hook"; then
+if sed '/^[[:space:]]*#/d' "$profile_hook" | grep -Eq '(^|[[:space:]])/usr/local/bin/blackcat-check([[:space:]]|$)'; then
   printf '[FAILED]  login hook must not execute blackcat-check; systemd is the sole report producer\n'
   failures=1
 else
@@ -202,7 +202,7 @@ else
   printf '[OK]      compact AI recovery/context-health checkpoint is mandatory\n'
 fi
 
-if ! grep -Fq 'If no genuine human-gate condition applies' "${ROOT_DIR}/docs/11-automation-manifesto.md"; then
+if ! grep -Fq 'If none of the genuine human-gate conditions apply' "${ROOT_DIR}/docs/11-automation-manifesto.md"; then
   printf '[FAILED]  Automation Manifesto is missing its no-routine-pause rule\n'
   failures=1
 else
