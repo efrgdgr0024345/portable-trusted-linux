@@ -36,11 +36,14 @@ def main():
 
     frame = tk.Frame(root, bg="#0c1110", padx=32, pady=22)
     frame.pack(fill="both", expand=True)
-    tk.Label(frame, text="BLACK CAT", bg="#0c1110", fg="#83efaa", font=("DejaVu Sans", 28, "bold")).pack(anchor="w")\n    tk.Label(frame, text="Stealth. Intelligence. Independence.", bg="#0c1110", fg="#83efaa", font=("DejaVu Sans", 11)).pack(anchor="w", pady=(0, 3))
+    tk.Label(frame, text="BLACK CAT", bg="#0c1110", fg="#83efaa", font=("DejaVu Sans", 28, "bold")).pack(anchor="w")
+    tk.Label(frame, text="Stealth. Intelligence. Independence.", bg="#0c1110", fg="#83efaa", font=("DejaVu Sans", 11)).pack(anchor="w", pady=(0, 3))
     tk.Label(frame, text="Choose your session · UI DEVELOPMENT PREVIEW", bg="#0c1110", fg="#e0eae2", font=("DejaVu Sans", 14)).pack(anchor="w", pady=(5, 12))
     tk.Label(frame, text="These checkboxes do not load or isolate software yet. No security state changes.", bg="#0c1110", fg="#ffda8b", wraplength=720, justify="left", font=("DejaVu Sans", 11)).pack(anchor="w", pady=(0, 13))
 
     selected = {}
+    icon_images = []
+    icon_dir = "/usr/share/blackcat/icons"
     for group in ("Web", "Work"):
         box = tk.LabelFrame(frame, text=group.upper(), bg="#15221c", fg="#83efaa", font=("DejaVu Sans", 11, "bold"), padx=14, pady=8)
         box.pack(fill="x", pady=5)
