@@ -305,3 +305,22 @@ The key material had not been lost; the operational mapping between host, accoun
 
 ### Evidence classification
 **OBSERVED / RECOVERED / DOCUMENTED.** Administrative access was successfully restored using the existing cPanel-held private key; no secret key material was copied into GitHub.
+
+---
+
+## 2026-09-16 — Project coaching should become a Black Cat capability, not a separate throwaway chatbot
+
+### What was attempted
+Design a practical system that improves how the operator uses AI across multiple projects while remaining compatible with the longer-term Black Cat USB goal.
+
+### What happened
+The design converged on a mobile-first Black Cat Console with persistent per-project state, voice/text capture, a coaching step that converts natural input into clearer Goal / Current State / Constraints / Success instructions, and a separate project-AI step. The first source MVP now exists under `apps/blackcat-console/`. The existing `blackcat-chatbot-01` server is the intended remote prototype host, while `ptl-builder-01` stays isolated as a build machine.
+
+### Why it matters
+A standalone cloud-only project manager would create another system to maintain and later discard. Treating chatbot and project control as Black Cat Core interfaces means work done now can inform the eventual local USB implementation. Separating durable Markdown project state from remote model access also avoids making project memory dependent on one AI provider or server.
+
+### Decision / change
+Black Cat Console is now an application-layer prototype of Black Cat Core. Project cognition is stored in human-readable files; remote AI is optional; secrets remain server-side; deep review is intended to be read-only by default; and outbound project data should become explicitly inspectable before remote AI use. The Console reuses the existing Black Cat droplet rather than creating another server.
+
+### Evidence classification
+**IMPLEMENTED IN SOURCE / ARCHITECTURE ACCEPTED / NOT YET DEPLOYED OR DEVICE-VERIFIED.** The repository contains the MVP source, deployment guide and static-test script. No claim is made yet that the Console is running on the droplet or proven on iPhone hardware.
