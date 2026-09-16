@@ -14,8 +14,9 @@ import tempfile
 import time
 import zlib
 
-ISO = Path('/home/github-runner/blackcat-builds/run-35095923202-attempt-1/live-image-amd64.hybrid.iso')
-SHA = '81f702cd9e59d4d7ba5654e6a69dbd655617968f92381049881930aef9b2fcb7'
+ISO = Path('/home/github-runner/blackcat-builds/run-35159417803-attempt-1/live-image-amd64.hybrid.iso')
+SHA = 'e579d11818acfe9e885a0c9c55ee2749b070a2154f96663e66db606fba5a0455'
+SOURCE = '3491587f7bacd04ab116e0fccc47ba9b9ea52e10'
 OUT = Path.home() / 'blackcat-evidence' / ('run-' + os.environ.get('GITHUB_RUN_ID', 'manual'))
 
 
@@ -147,6 +148,16 @@ def observe(work, env, qemu, tess, code, variables, toolroot, mode):
                 mon.command('human-monitor-command', {'command-line': 'sendkey ' + name})
                 time.sleep(pause)
 
+            def locate_word(png, target):
+                tsv = run([tess, str(png), 'stdout', '--psm', '6', 'tsv'],
+                          env=env, capture_output=True).stdout
+                for line in tsv.splitlines()[1:]:
+                    fields = line.split('\t')
+                    if len(fields) == 12 and fields[11].strip().casefold() == target.casefold():
+                        left, top, width, height = map(int, fields[6:10])
+                        return left + width // 2, top + height // 2
+                raise RuntimeError(f'Visible control word not located: {target}')
+
             def click(x, y, pause=0.8):
                 # The guest framebuffer is 1280x800. A USB tablet gives stable
                 # absolute coordinates under headless QEMU.
@@ -177,21 +188,22 @@ def observe(work, env, qemu, tess, code, variables, toolroot, mode):
                     # Tk traversal order is the six checkboxes followed by the
                     # two buttons. Prove each state from visible text/UI rather
                     # than treating successful key injection as evidence.
-                    click(120, 253)
+                    click(*locate_word(png, 'Browser'))
                     selected_png, selected_text = capture('selected')
                     evidence['selected'] = selected_png
                     if 'Requested (NOT activated): Browser' not in selected_text:
                         return {'status': 'GUI_INTERACTION_FAILED', 'frame': selected_png.name,
                                 'failure': 'checkbox summary did not show Browser'}
 
-                    click(555, 587)
+                    click(*locate_word(selected_png, 'CLEAR'))
                     clear_png, clear_text = capture('cleared')
                     evidence['cleared'] = clear_png
                     if 'Requested (NOT activated): none' not in clear_text:
                         return {'status': 'GUI_INTERACTION_FAILED', 'frame': clear_png.name,
                                 'failure': 'clear selection did not restore none'}
 
-                    click(730, 587, 1.5)
+                    x, y = locate_word(clear_png, 'OPEN')
+                    click(x, y, 1.5)
                     desktop_png, desktop_text = capture('desktop')
                     evidence['desktop'] = desktop_png
                     if 'DEVELOPMENT PREVIEW' in desktop_text or 'OPEN DESKTOP' in desktop_text:
@@ -232,7 +244,9 @@ def main():
     with ISO.open('rb') as f:
         if ISO.stat().st_size != 770703360 or hashlib.file_digest(f, 'sha256').hexdigest() != SHA:
             raise RuntimeError('Candidate identity mismatch; refuse boot')
-    report = {'iso_sha256': SHA, 'size_bytes': 770703360, 'network': 'no guest NIC', 'scope': 'development VM observations, no release approval'}
+    report = {'iso_sha256': SHA, 'size_bytes': 770703360, 'source_commit': SOURCE,
+              'build_run': 35159417803, 'network': 'no guest NIC',
+              'scope': 'development VM observations, no release approval'}
     try:
         with tempfile.TemporaryDirectory(prefix='bcvm-') as d:
             work = Path(d)

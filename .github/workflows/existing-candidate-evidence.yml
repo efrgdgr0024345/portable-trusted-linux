@@ -44,8 +44,6 @@ jobs:
           PY
       - name: Boot existing image if harness is present
         shell: bash
-        env:
-          BLACKCAT_EVIDENCE_MODES: gui
         run: |
           set -Eeuo pipefail
           if test -f tests/03-existing-candidate-boot.py; then
