@@ -111,6 +111,7 @@ def observe(work, env, qemu, tess, code, variables, toolroot, mode):
             '-drive', 'if=pflash,format=raw,file=' + str(vardisk),
             '-cdrom', str(ISO), '-boot', 'd', '-nic', 'none', '-display', 'none',
             '-vga', 'none', '-device', 'VGA,romfile=' + str(toolroot / 'usr/share/seabios/vgabios-stdvga.bin'),
+            '-device', 'qemu-xhci,id=xhci', '-device', 'usb-tablet,bus=xhci.0',
             '-serial', 'file:' + str(serial), '-qmp', 'unix:' + str(qmp) + ',server=on,wait=off',
             '-no-reboot', '-L', str(toolroot / 'usr/share/qemu')]
     last = None
@@ -146,6 +147,18 @@ def observe(work, env, qemu, tess, code, variables, toolroot, mode):
                 mon.command('human-monitor-command', {'command-line': 'sendkey ' + name})
                 time.sleep(pause)
 
+            def click(x, y, pause=0.8):
+                # The guest framebuffer is 1280x800. A USB tablet gives stable
+                # absolute coordinates under headless QEMU.
+                events = [
+                    {'type': 'abs', 'data': {'axis': 'x', 'value': round(x * 32767 / 1279)}},
+                    {'type': 'abs', 'data': {'axis': 'y', 'value': round(y * 32767 / 799)}},
+                    {'type': 'btn', 'data': {'button': 'left', 'down': True}},
+                    {'type': 'btn', 'data': {'button': 'left', 'down': False}},
+                ]
+                mon.command('input-send-event', {'events': events})
+                time.sleep(pause)
+
             start = time.monotonic()
             selected = mode == 'gui'
             schedule = [5, 10, 20, 40, 80, 140, 220, 320] if mode == 'gui' else [5, 10, 20, 40, 80, 140, 220, 320, 400, 480]
@@ -160,25 +173,21 @@ def observe(work, env, qemu, tess, code, variables, toolroot, mode):
                     # Tk traversal order is the six checkboxes followed by the
                     # two buttons. Prove each state from visible text/UI rather
                     # than treating successful key injection as evidence.
-                    key('tab')
-                    key('spc')
+                    click(120, 253)
                     selected_png, selected_text = capture('selected')
                     evidence['selected'] = selected_png
                     if 'Requested (NOT activated): Browser' not in selected_text:
                         return {'status': 'GUI_INTERACTION_FAILED', 'frame': selected_png.name,
                                 'failure': 'checkbox summary did not show Browser'}
 
-                    for _ in range(6):
-                        key('tab', 0.15)
-                    key('spc')
+                    click(555, 587)
                     clear_png, clear_text = capture('cleared')
                     evidence['cleared'] = clear_png
                     if 'Requested (NOT activated): none' not in clear_text:
                         return {'status': 'GUI_INTERACTION_FAILED', 'frame': clear_png.name,
                                 'failure': 'clear selection did not restore none'}
 
-                    key('tab')
-                    key('spc', 1.5)
+                    click(730, 587, 1.5)
                     desktop_png, desktop_text = capture('desktop')
                     evidence['desktop'] = desktop_png
                     if 'DEVELOPMENT PREVIEW' in desktop_text or 'OPEN DESKTOP' in desktop_text:
