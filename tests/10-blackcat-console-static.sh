@@ -23,4 +23,18 @@ grep -q 'OPENAI_API_KEY' "$APP" || { echo "FAIL: OpenAI server-side configuratio
 grep -q 'store.*false' "$APP" || { echo "FAIL: OpenAI request storage should be explicitly disabled in MVP"; exit 1; }
 grep -q 'portable-trusted-linux' "$APP" || { echo "FAIL: initial PTL project seed missing"; exit 1; }
 
+# Spend visibility is part of the control plane: preserve raw usage and pricing metadata.
+grep -q 'api-usage.jsonl' "$APP" || { echo "FAIL: append-only API usage file missing"; exit 1; }
+grep -q 'cached_input_tokens' "$APP" || { echo "FAIL: cached token accounting missing"; exit 1; }
+grep -q 'reasoning_tokens' "$APP" || { echo "FAIL: reasoning token visibility missing"; exit 1; }
+grep -q 'estimated_cost_usd' "$APP" || { echo "FAIL: estimated cost accounting missing"; exit 1; }
+grep -q 'BLACKCAT_MONTHLY_API_BUDGET' "$APP" || { echo "FAIL: monthly budget control missing"; exit 1; }
+grep -q 'PRICING_VERSION' "$APP" || { echo "FAIL: pricing-version metadata missing"; exit 1; }
+
+# Browser clients may read summaries but never raw API keys.
+if grep -Eq "OPENAI_API_KEY[^\n]*(localStorage|sessionStorage|document\.|window\.)" "$APP"; then
+  echo "FAIL: API key appears to be exposed to browser-side state"
+  exit 1
+fi
+
 echo "PASS: Black Cat Console static checks"
