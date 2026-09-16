@@ -45,6 +45,7 @@ def tools_local(work):
         run(['dpkg-deb', '-x', str(deb), str(root)], timeout=30)
     env = os.environ.copy()
     env['LD_LIBRARY_PATH'] = ':'.join(str(root / p) for p in ['usr/lib/x86_64-linux-gnu', 'lib/x86_64-linux-gnu'])
+    env['QEMU_MODULE_DIR'] = str(root / 'usr/lib/x86_64-linux-gnu/qemu')
     def exe(name):
         local = root / 'usr/bin' / name
         return str(local) if local.exists() else shutil.which(name)
@@ -117,12 +118,17 @@ def observe(work, env, qemu, tess, code, variables, toolroot, mode):
         mon = None
         try:
             for _ in range(30):
-                if qmp.exists():
-                    break
                 if proc.poll() is not None:
                     raise RuntimeError('QEMU exited: ' + (OUT / (mode + '-qemu.log')).read_text())
+                if qmp.exists():
+                    try:
+                        mon = Monitor(qmp)
+                        break
+                    except (ConnectionRefusedError, FileNotFoundError):
+                        pass
                 time.sleep(1)
-            mon = Monitor(qmp)
+            if mon is None:
+                raise RuntimeError('QEMU monitor never became ready')
             start = time.monotonic()
             selected = mode == 'gui'
             for elapsed in [5, 10, 20, 40, 80, 140, 220, 320]:
@@ -155,6 +161,7 @@ def observe(work, env, qemu, tess, code, variables, toolroot, mode):
             except subprocess.TimeoutExpired:
                 proc.terminate()
                 proc.wait(timeout=10)
+            print('QEMU_LOG ' + mode + ' ' + (OUT / (mode + '-qemu.log')).read_text(), flush=True)
             if last:
                 # Only the isolated guest framebuffer, never host files/secrets.
                 print('FRAME_PNG_BASE64 ' + mode + ' ' + base64.b64encode(last.read_bytes()).decode(), flush=True)
