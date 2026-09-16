@@ -324,3 +324,41 @@ Black Cat Console is now an application-layer prototype of Black Cat Core. Proje
 
 ### Evidence classification
 **IMPLEMENTED IN SOURCE / ARCHITECTURE ACCEPTED / NOT YET DEPLOYED OR DEVICE-VERIFIED.** The repository contains the MVP source, deployment guide and static-test script. No claim is made yet that the Console is running on the droplet or proven on iPhone hardware.
+
+---
+
+## 2026-09-16 — Browser execution and model reasoning should be separate layers
+
+### What was attempted
+Decide whether Black Cat should automate a browser, including whether it should drive the ChatGPT website to obtain stronger reasoning than the API.
+
+### What happened
+Current OpenAI documentation shows that GPT-5.6 Sol and GPT-6 Astra API models support reasoning levels through `max`, and Astra supports computer use and other agentic tools. The ChatGPT product can still behave differently because it adds a product-level agent harness, Work/Codex orchestration, memory and browser tooling around models. This means browser automation is valuable, but not as a workaround for an inherently weak API. A dedicated Black Cat browser worker using Playwright/Chromium is a cleaner abstraction than scripting `chatgpt.com` itself.
+
+### Why it matters
+Coupling Black Cat to one consumer website UI would be brittle, harder to secure and would mix reasoning with browser execution. Separating those layers allows the same browser executor to work with OpenAI API models, future local models or other providers, while ChatGPT Work remains an explicit optional handoff when its product-level harness is specifically useful.
+
+### Decision / change
+Playwright with Chromium is the preferred first Black Cat-owned browser worker. The design must run the worker unprivileged, isolate sessions, protect cookies/passwords from model prompts, audit consequential actions and require confirmation for irreversible operations. Direct API reasoning, Black Cat browser execution, OpenAI computer-use and ChatGPT Work are treated as distinct routes chosen per task.
+
+### Evidence classification
+**VERIFIED AGAINST CURRENT PUBLIC DOCUMENTATION / ARCHITECTURE ACCEPTED / NOT YET IMPLEMENTED ON HOST.**
+
+---
+
+## 2026-09-16 — Console deployment is blocked by host execution access, not by source readiness
+
+### What was attempted
+Deploy the Black Cat Console onto the existing `blackcat-chatbot-01` droplet without creating another server.
+
+### What happened
+The available DigitalOcean integration can inspect and manage droplet lifecycle resources but exposes no remote shell/exec function. No established SSH credential mapping for `blackcat-chatbot-01` was available through the current project records. External checks also found no currently reachable HTTP/HTTPS service on the droplet. Safe local-bootstrap and DNS-gated HTTPS publish scripts were added to the repository, but they have not been executed on the host.
+
+### Why it matters
+Source-code readiness is not evidence of deployment. Resetting, rebuilding or replacing the host merely to bypass an access-control gap would risk existing state and violate the project's evidence-first approach.
+
+### Decision / change
+Do not rebuild or reset `blackcat-chatbot-01` simply to force deployment. Establish a documented administrative shell path first, run the local-only bootstrap and validation, then expose HTTPS only after DNS and authentication checks pass.
+
+### Evidence classification
+**OBSERVED ACCESS LIMITATION / DEPLOYMENT NOT YET VERIFIED.**
