@@ -2,7 +2,7 @@ name: Black Cat Integration Source Checks
 on:
   push:
     branches: [codex/graphical-evidence-review]
-    paths: ['web/**', 'tests/**', 'design/**', 'project_content.json', '.github/workflows/integration-source-checks.yml']
+    paths: ['build/**', 'web/**', 'tests/**', 'design/**', 'project_content.json', '.github/workflows/integration-source-checks.yml']
 permissions:
   contents: read
 concurrency:
@@ -24,3 +24,4 @@ jobs:
           bash tests/10-blackcat-console-static.sh
       - name: Lint and test viewer with local fixtures
         run: python3 tests/04-review-source.py
+
