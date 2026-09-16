@@ -141,3 +141,23 @@ This file records durable project decisions. Changes should be made by new commi
 
 **Status:** Accepted / Transitional  
 **Decision:** During Prototype 1 engineering, GitHub Actions is the primary auditable command path into the disposable remote builder. The runner initially operates as the unprivileged `github-runner` account. Any later elevation needed for package installation or live-image build operations must be explicit, bounded and recorded under the progressive-hardening rule rather than silently granting permanent root-equivalent workflow access.
+
+## ADR-029 — Black Cat Console is the first application-layer prototype of Black Cat Core
+
+**Status:** Accepted / Prototype  
+**Decision:** The project/chat controller and chatbot are not treated as unrelated side products. They are interfaces over a common Black Cat Core concept: project state, AI routing, permissions, auditability and user-controlled privacy. The initial Console may run remotely for convenience, but its core state format and service boundaries must remain portable to the USB/local environment.
+
+## ADR-030 — Local project state is primary; remote AI and remote hosting are optional extensions
+
+**Status:** Accepted / Prototype  
+**Decision:** Human-readable project state must remain usable without a remote AI service. Remote models may provide coaching, planning and deep review, but the user must be able to inspect what project information is sent externally. The target design is local-first and must not make the Black Cat USB system dependent on the prototype cloud host.
+
+## ADR-031 — Reuse existing Black Cat remote infrastructure; keep the PTL builder isolated
+
+**Status:** Accepted / Transitional  
+**Decision:** The existing `blackcat-chatbot-01` server is the intended remote prototype host for Black Cat Console. `ptl-builder-01` remains a specialised build host and should not also become the general project-console/application server. No new droplet is required for the Console MVP.
+
+## ADR-032 — Durable project cognition is human-readable; operational metadata may be structured
+
+**Status:** Accepted / Prototype  
+**Decision:** Goals, state, plans, decisions, lessons, evidence, backlog and AI rules are stored as human-readable Markdown so they remain portable across implementations and AI providers. Operational metadata such as sessions, usage and interaction logs may use JSON/SQLite as the prototype matures.
