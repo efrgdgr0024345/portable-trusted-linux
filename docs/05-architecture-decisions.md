@@ -171,3 +171,8 @@ This file records durable project decisions. Changes should be made by new commi
 
 **Status:** Accepted / Prototype  
 **Decision:** Current OpenAI flagship API models can provide high/max reasoning and computer-use capabilities, so the API is not classified as inherently lower-intelligence than ChatGPT. ChatGPT may still provide additional product-level orchestration through Work/Codex, memory, tools and browser harnesses. Black Cat therefore routes deliberately between direct API reasoning, its own Playwright browser executor, OpenAI computer-use tooling where useful, and an explicit user-directed ChatGPT Work handoff when the ChatGPT product harness itself is desired.
+
+## ADR-035 — Preserve raw AI usage separately from recalculable cost estimates
+
+**Status:** Accepted / Prototype  
+**Decision:** Every successful metered AI request should retain provider-returned model and token usage as durable runtime evidence. Estimated dollar spend is calculated separately using a versioned pricing table and must be labelled as an estimate rather than billing truth. This lets Black Cat recalculate historical spend after price changes, distinguish cached from uncached input, expose reasoning-token usage, and build routing/budget controls without rewriting the underlying usage history.
