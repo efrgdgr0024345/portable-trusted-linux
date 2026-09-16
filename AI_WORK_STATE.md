@@ -1,118 +1,62 @@
 # Black Cat AI Work State
 
-This is the compact recovery/checkpoint file for AI-assisted work on Black Cat / Portable Trusted Linux.
-
-**Purpose:** a fresh or recovering AI session reads this file first instead of bulk-loading the repository. Full history remains in GitHub and is retrieved only when the next action requires it.
+Compact, first-read recovery checkpoint. GitHub is the authoritative history; selectively load documents only when relevant.
 
 ## Current project state
 
-- State revision: 9
-- Last checkpoint: 2026-09-15
-- Current milestone: M14 — implement authenticated release signing
-- Active branch: `codex/remove-chroot-systemd-boot`
-- Pull request: #6 (unmerged)
-- Project progress: 80%
-- Approved release: none
-- M13B status: COMPLETE on the tested hardware/configuration
-- Current blocker: production release-signing key ownership/custody is a human trust-policy gate; non-secret M14 mechanics are hardened and local development self-tests pass
-- Current-revision GitHub Actions evidence for M14: still pending/not observed
-- M15 status: planned, with safe pre-implementation design prepared using ephemeral development keys only
-- Future roadmap: M26 will integrate repository-governed AI project automation into Black Cat user space after M25, now extended with pre-built session modules and an external untrusted AI build workshop
+- State revision: 10; checkpoint 2026-09-16.
+- Branch: `codex/remove-chroot-systemd-boot`; PR #6 remains unmerged.
+- Milestone: M14 release signing is current; M15 signed UKI planned; M26 modular AI runtime future.
+- Project index previously 80% (not recalculated). Approved release: NONE.
+- M13B: complete on ONE tested hardware/configuration, not globally attested.
+- M14: closed canonical Ed25519 manifest and local development self-tests implemented; current-head CI evidence not yet verified; production release signing-key custody HUMAN_GATE.
+- GUI session prototype source newly committed: packages, Tkinter selector, XFCE autostart, special-boot LightDM condition, static test/workflow, `docs/19-graphical-session-prototype.md`.
+- GUI source is NOT a validated new ISO, active module loader, working permission broker or verified graphical boot. No new candidate has been promoted.
+- Supplemental UI lesson: `docs/07-lessons-learned-ui-2026-09-16.md`. Mandatory lossless append to `docs/07-lessons-learned.md` and project JSON synchronization remain outstanding until completed; never claim otherwise.
+
+## Current exact test candidate
+
+- Status: TEST CANDIDATE, NOT APPROVED RELEASE; physical M13B evidence only.
+- ISO: `live-image-amd64.hybrid.iso`; size 376438784 bytes.
+- SHA-256: `cb14d25b7fd43e2b0e563efaada357d6ab196a42d717b016c4857f85968fe641`.
+- Source: `c56389b71ecd96270bdd047369378f5a94d8bf93`; run `34686464650`; artifact `10300658965`.
+- This ISO PREDATES the new UI code. Never say it contains the graphical selector.
 
 ## M13B physical evidence
 
-- Corrected candidate physically reached **BLACK CAT - QUICK CHECK**.
-- Earlier ACPI `AE_NOT_FOUND` firmware messages were non-fatal and boot continued.
-- Previous `/run/blackcat/quick-check.txt` / `.json` `Permission denied` errors were absent.
-- Quick-check observations: UEFI; Secure Boot ENABLED; TPM DEVICE_FOUND; TCG event log FOUND; dm-verity root NOT_ACTIVE; no active network link observed; kernel `6.12.107+deb13-amd64`; architecture `x86_64`.
-- Read-only `lsblk -o NAME,SIZE,TYPE,MOUNTPOINTS` showed the 14.6G `sda` live USB with `sda1` mounted at `/run/live/medium` and `loop0` as the live squashfs.
-- The 476.9G internal `nvme0n1` and partitions `nvme0n1p1` through `nvme0n1p4` showed no mount points.
-- Result remains **OBSERVED on one tested configuration**, not a universal guarantee or attestation.
+- Black Cat Quick Check booted without old Permission denied errors; UEFI, Secure Boot enabled, TPM device/event-log observed, dm-verity NOT_ACTIVE, no active network link observed.
+- Read-only lsblk showed live USB mounted and internal 476.9G NVMe plus four partitions unmounted by default. One-machine OBSERVED evidence only.
 
-## M14 non-secret implementation
+## M14 / M15 boundaries
 
-- `docs/16-authenticated-release-signing.md` defines the release-authenticity format, strict schema, key lifecycle baseline and trust boundary.
-- ADR-041 records canonical Ed25519-signed release metadata and separate release-signing authority.
-- `build/lib/validate-release-manifest.sh` is the shared fail-closed canonical/schema validator.
-- `build/40-create-release-manifest.sh` creates canonical compact JSON binding release ID/time, artifact filename/size/SHA-256, source/build identity and trusted release-public-key fingerprint.
-- `build/41-sign-release-manifest.sh` validates the manifest first, signs exact canonical bytes and refuses a private key whose derived public fingerprint does not match the manifest.
-- `build/42-verify-release.sh` independently verifies canonical form, exact closed schema, key fingerprint, detached Ed25519 signature and optional exact artifact identity.
-- `tests/01-release-signing-check.sh` now requires failure for artifact tampering, manifest tampering, non-canonical JSON, unexpected fields, wrong filename, malformed signature, wrong key, key/fingerprint mismatch, non-Ed25519 keys and invalid release IDs.
-- Equivalent updated scripts/tests were run in an isolated local shell and passed. This is local development evidence, not current-revision GitHub CI evidence.
-- `.github/workflows/release-signing-self-test.yml` includes the shared validator and still uses no production secret.
-- Release signing remains separate from later Secure Boot/UKI signing.
+- M14 scripts use shared strict canonical schema validation, Ed25519 detached signature, fingerprint and exact artifact checks; local development tests passed with ephemeral keys.
+- Do not claim current-head CI success until exact run/log evidence is inspected.
+- M15 `docs/17-signed-uki-development-plan.md` permits only ephemeral DEVELOPMENT ONLY signing tests; no firmware enrollment or production Secure Boot key provisioning.
+- Release-signing and Secure Boot key authority are distinct.
 
-## M15 safe preparation
+## Future modules and AI workshop
 
-- `docs/17-signed-uki-development-plan.md` defines the next UKI/Secure Boot engineering path without creating production authority.
-- Debian 13/trixie `systemd-ukify` 257-series is the intended toolchain.
-- Initial UKI plan binds kernel, initrd, command line, OS release, uname and SBAT metadata.
-- Development tests may use ephemeral DEVELOPMENT ONLY Secure Boot keys.
-- No automated firmware enrollment, target-disk writes or production Secure Boot key creation is authorized.
-- M14 release-signing identity and M15 Secure Boot signing identity remain distinct.
-
-## Future modular runtime / AI workshop direction
-
-- `docs/18-modular-runtime-and-ai-workshop.md` defines a future three-zone architecture: trusted Black Cat core, selected ready-to-run session modules, and an external/disposable untrusted AI build workshop.
-- ADR-042 records that non-essential software should remain outside the immutable core and be activated only when selected for the session.
-- Future modules should be pre-built rather than installed or dependency-resolved during boot.
-- Module selection should also drive least-privilege capability grants enforced independently by the operating system.
-- Official Black Cat modules, local user modules and unverified candidates must remain visibly distinct trust classes.
-- AI-generated software should preferably be built outside the trusted core; the workshop gets no trusted-core write authority or production signing keys.
-- A pre-desktop AI interface may eventually exist only after a minimal authenticated Black Cat environment and capability broker are active; no firmware/pre-kernel LLM execution is authorized.
-- This is design/roadmap work only and does not change the current M14–M25 implementation priority.
+- `docs/18-modular-runtime-and-ai-workshop.md`, ADR-042: small immutable core, independently verified ready-made optional modules and an untrusted external workshop; future M26 after first usable core.
+- The new GUI checkbox selection is VISUAL DEMO ONLY. No signed module images, sandbox or capability broker exists yet.
+- Separate chatbot droplet configuration remains on hold: no runtime, listener, key or new deployment authorized by this UI task.
 
 ## Next automatic actions
 
-1. Inspect the latest branch/PR and current-revision M14 workflow evidence when available.
-2. If the signing self-test fails for a bounded implementation defect, diagnose and repair automatically.
-3. Continue non-secret M15 preparation where it does not create persistent signing authority or touch firmware/hardware trust ownership.
-4. Preserve the modular-runtime/workshop architecture for M26 without expanding the current trusted core prematurely.
-5. Preserve exact evidence and keep Approved Release state closed.
-6. Stop before production release-key generation/provisioning, production Secure Boot key ownership/enrollment, protected merge or release promotion.
+1. Verify GUI source and static test, inspect hosted workflow result if any; fix bounded defects.
+2. Build new ISO in disposable CI; record source SHA, ISO size/SHA and preserve artifacts; distinguish builder failure from ISO failure.
+3. Verify graphical login, XFCE autostart/check boxes and close-to-desktop in a graphical VM with framebuffer/screenshot evidence.
+4. Independently verify `blackcat.check=1` retains the photograph-friendly text report with no graphical takeover.
+5. Append supplemental UI lesson LOSSLESSLY to canonical lessons; update affected docs and `project_content.json` LAST. Do not delete historical JSON links/evidence to simplify the edit.
+6. Continue non-secret M14/M15 work; no release promotion, merge or USB write.
 
 ## Next genuine human gate
 
-Choose/approve the production release-signing key ownership and custody model.
-
-The decision must cover where the private key is generated/held, backup/recovery, revocation/replacement, public-key/fingerprint distribution, compromise response and whether signing may ever be automated.
-
-No production private signing key may be committed to GitHub or placed on the general-purpose builder merely for convenience.
-
-A later separate HUMAN_GATE will cover real Secure Boot key ownership/enrollment policy; M15 development work must not assume that decision.
+Production release signing-key ownership/custody, including independent public-key distribution, backup, rotation and compromise response. Separately, actual USB write and firmware/Secure Boot enrollment require explicit human authorization. No production key belongs on CI or general builder.
 
 ## Context health
 
-- Checkpoint revision: 9
-- Estimated context pressure: AMBER
-- Confidence: medium-low (initial calibration)
-- Confirmed continuity/dropout events since checkpoint: 0
-- Calibration version: v0.1 (provisional)
-- Reason for AMBER: long repository/tool-heavy conversation; compact checkpoint now captures M14 hardening, M15 preparation and the future modular-runtime/external-workshop design.
-
-Context pressure itself is never a human-approval gate.
+AMBER heuristic, no exact meter. Checkpoint rev 10. Context pressure itself is never a human-approval gate.
 
 ## Recovery sequence
 
-1. Read `AI_WORK_STATE.md` only.
-2. Verify the active branch/PR and latest M14 signing self-test status.
-3. Load autonomy/master rules only when a policy boundary is touched.
-4. Load M14/M15 design/scripts/lessons selectively if diagnosis or implementation requires them.
-5. Load `docs/18-modular-runtime-and-ai-workshop.md` only when future M26/module/workshop design is relevant.
-6. Do not bulk-load project history merely to reconstruct state.
-7. Continue automatically through bounded non-secret work until a production key/trust-ownership HUMAN_GATE is reached.
-
-## Durable references
-
-- Master rules: `PROJECT_RULES.md`
-- Continue/stop decision table: `AI_AUTONOMY_POLICY.md`
-- Build specification: `docs/06-prototype-build-specification-v0.1.md`
-- M14 design: `docs/16-authenticated-release-signing.md`
-- M15 preparation: `docs/17-signed-uki-development-plan.md`
-- Full lessons/history: `docs/07-lessons-learned.md`
-- Continuity design/calibration: `docs/13-ai-continuity-and-context-recovery.md`, `docs/14-context-health-calibration-log.md`
-- Future native project system: `docs/15-black-cat-ai-project-automation.md`
-- Future modular runtime / AI workshop: `docs/18-modular-runtime-and-ai-workshop.md`
-- Living project index: `project_content.json`
-
-Keep this file compact. It is a handoff/checkpoint, not a replacement for durable technical documentation.
+Read this file first. Verify PR head, UI/test CI and M14 CI state. Load `docs/19-graphical-session-prototype.md` for GUI work; `docs/16`/`17` for signing; `docs/18` only for future module design. Do not bulk-load history. Preserve safety and genuine human gates.
