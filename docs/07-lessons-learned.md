@@ -362,3 +362,41 @@ Do not rebuild or reset `blackcat-chatbot-01` simply to force deployment. Establ
 
 ### Evidence classification
 **OBSERVED ACCESS LIMITATION / DEPLOYMENT NOT YET VERIFIED.**
+
+---
+
+## 2026-09-16 — AI spend should be visible without turning estimates into false billing evidence
+
+### What was attempted
+Make Black Cat suitable for substantially higher AI usage while keeping variable API cost understandable on a phone.
+
+### What happened
+The Console now records successful OpenAI calls in a private append-only `api-usage.jsonl` file with project, task type, returned model, input/cached/output/reasoning/total token usage, response ID, pricing-version metadata and an estimated USD cost. The mobile dashboard displays today/month totals, monthly token use, a configurable monthly planning budget, model totals, project totals, recent calls and per-call spend. Pricing is kept separate from raw usage so past calls can be recalculated when provider prices change.
+
+### Why it matters
+Per-request API pricing can become material as usage scales. Hiding spend encourages inefficient routing, while hard-coding a dollar figure into history would make old records misleading after price changes. Keeping raw provider usage as evidence and cost as a recalculable estimate supports later model routing and hard budget controls.
+
+### Decision / change
+Use `BLACKCAT_MONTHLY_API_BUDGET` as a soft planning budget in the MVP. Prefer the lowest-cost route that can reliably complete a task, and preserve raw token evidence independently of the current price table. Add hard refusal/downgrade thresholds only after real usage patterns are observed.
+
+### Evidence classification
+**SOURCE IMPLEMENTED / STATICALLY VERIFIED.** GitHub Actions run `35048351446`, job `104643052976`, passed the repository and Black Cat Console static checks against commit `164fd8a53f213bf6976ec3c781f5ae440df5c778`. The runner did not have PHP installed, so PHP syntax was not independently checked by that run; live API accounting remains NOT YET DEPLOYMENT-VERIFIED.
+
+---
+
+## 2026-09-16 — The current builder has a renewed preflight blocker: systemd-boot integration state
+
+### What was attempted
+Use the normal self-hosted builder workflow to validate the updated repository and Console checks.
+
+### What happened
+The workflow itself completed successfully, and both static-check scripts passed. However, the first real-builder report's host preflight returned `HOST_CHECK_EXIT=1` because the disposable builder currently retains systemd-boot host integration state `config-files`. The preflight explicitly requires that state to be purged before live-build while allowing `systemd-boot-efi` to remain installed.
+
+### Why it matters
+A green GitHub workflow does not mean every embedded engineering gate passed. The evidence collector intentionally records preflight failure without failing the whole reporting job. Treating workflow success as build readiness would therefore be incorrect.
+
+### Decision / change
+M13 remains current but blocked on cleaning the unexpected systemd-boot host integration state and rerunning preflight before the first live-build. This cleanup is separate from the Black Cat Console cost-tracking work and should be handled as an explicit builder-maintenance step.
+
+### Evidence classification
+**OBSERVED / VERIFIED ON `ptl-builder-01`.** GitHub Actions run `35048351446`, job `104643052976`, recorded the systemd-boot preflight failure on Debian 13.7.
