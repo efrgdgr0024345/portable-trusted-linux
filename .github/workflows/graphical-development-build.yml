@@ -6,8 +6,13 @@ on:
   push:
     branches:
       - build/graphical-iso-2026-09-16
+      - codex/graphical-evidence-review
     paths:
       - .github/workflows/graphical-development-build.yml
+      - build/**
+      - config/**
+      - assets/design/**
+      - design/**
   workflow_dispatch:
 
 permissions:

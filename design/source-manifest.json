@@ -148,5 +148,54 @@
       "sha256": "7f13913fcd6d3fe21661f2eb30505663e554721363112bad3b6b74eabe810521",
       "size_bytes": 263481
     }
-  ]
+  ],
+  "build_derivatives": {
+    "recorded_utc": "2026-09-17",
+    "purpose": "First build-stage use of the canonical design folder",
+    "wallpaper": {
+      "source": "image-gen-8.png",
+      "repository_source": "assets/design/blackcat-design-wallpaper.jpg.b64",
+      "format_change": "JPEG quality 84; visual content unchanged",
+      "sha256": "8d5b81b1c103a256f7aaa77a75559a44ec762ca8410d44754fb30bab0f5c63d7"
+    },
+    "icons": [
+      {
+        "label": "Browser",
+        "source": "image-gen-9.png",
+        "repository_file": "browser.png",
+        "sha256": "4d2c5e99807009bdf2b8ce8b501ce39eef0f4b24564c4ce46d89f946c9152159"
+      },
+      {
+        "label": "Network access",
+        "source": "image-gen-3.png",
+        "repository_file": "network.png",
+        "sha256": "51e42791d12eaeda6d7675926e24a26c2b7d7397ee961082b4829567391fc247"
+      },
+      {
+        "label": "Office / PDF",
+        "source": "image-gen-6.png",
+        "repository_file": "office.png",
+        "sha256": "82a540fe42aade67f517d3b0420a473e9cf0d66acff37a5e1a31aa6901a2bdd9"
+      },
+      {
+        "label": "AI assistant",
+        "source": "image-gen-5.png",
+        "repository_file": "ai.png",
+        "sha256": "40fabf8912638d79f66a02e4b3ea6e095bfe80ac18af319d5da1e388a3cf8180"
+      },
+      {
+        "label": "Developer tools",
+        "source": "image-gen-2.png",
+        "repository_file": "developer.png",
+        "sha256": "63ae07a805f7321529c7b60fe217bdd25b2e5a57f916aa5c903a14e36114ac83"
+      },
+      {
+        "label": "Security tools",
+        "source": "image-gen-3(1).png",
+        "repository_file": "security.png",
+        "sha256": "44946505ca058d50ebbde72b86424caa0bb36d877cb3d7381363b6d8335f888c"
+      }
+    ],
+    "tagline": "Stealth. Intelligence. Independence."
+  }
 }

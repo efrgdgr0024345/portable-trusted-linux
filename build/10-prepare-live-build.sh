@@ -82,6 +82,33 @@ if [[ "$splash_sha" != "$BOOT_SPLASH_SHA256" ]]; then
 fi
 log "Black Cat boot splash verified: ${splash_sha}"
 
+# Canonical design-folder derivatives. These are repository-tracked, compact
+# build inputs; no network fetch or generative step occurs during construction.
+DESIGN_ASSET_DIR="${PTL_ROOT}/assets/design"
+DESIGN_CHROOT_DIR="config/includes.chroot/usr/share/blackcat"
+mkdir -p "${DESIGN_CHROOT_DIR}/icons" "config/includes.chroot/usr/share/backgrounds/blackcat"
+
+decode_design_asset() {
+  local source="$1" destination="$2" expected="$3" observed
+  base64 --decode "${DESIGN_ASSET_DIR}/${source}.b64" > "$destination"
+  observed="$(sha256sum "$destination" | awk '{print $1}')"
+  if [[ "$observed" != "$expected" ]]; then
+    echo "Black Cat design asset checksum mismatch: $source" >&2
+    exit 1
+  fi
+}
+
+decode_design_asset blackcat-design-wallpaper.jpg \
+  config/includes.chroot/usr/share/backgrounds/blackcat/blackcat-design-wallpaper.jpg \
+  8d5b81b1c103a256f7aaa77a75559a44ec762ca8410d44754fb30bab0f5c63d7
+decode_design_asset browser.png "${DESIGN_CHROOT_DIR}/icons/browser.png" 4d2c5e99807009bdf2b8ce8b501ce39eef0f4b24564c4ce46d89f946c9152159
+decode_design_asset network.png "${DESIGN_CHROOT_DIR}/icons/network.png" 51e42791d12eaeda6d7675926e24a26c2b7d7397ee961082b4829567391fc247
+decode_design_asset office.png "${DESIGN_CHROOT_DIR}/icons/office.png" 82a540fe42aade67f517d3b0420a473e9cf0d66acff37a5e1a31aa6901a2bdd9
+decode_design_asset ai.png "${DESIGN_CHROOT_DIR}/icons/ai.png" 40fabf8912638d79f66a02e4b3ea6e095bfe80ac18af319d5da1e388a3cf8180
+decode_design_asset developer.png "${DESIGN_CHROOT_DIR}/icons/developer.png" 63ae07a805f7321529c7b60fe217bdd25b2e5a57f916aa5c903a14e36114ac83
+decode_design_asset security.png "${DESIGN_CHROOT_DIR}/icons/security.png" 44946505ca058d50ebbde72b86424caa0bb36d877cb3d7381363b6d8335f888c
+log "Canonical Black Cat wallpaper and six interface icons verified"
+
 # GitHub's contents API stores new text files without executable mode metadata.
 # Apply runtime modes explicitly during preparation so the generated image does
 # not depend on repository file-mode transport.

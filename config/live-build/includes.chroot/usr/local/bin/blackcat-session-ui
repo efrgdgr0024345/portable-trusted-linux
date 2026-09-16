@@ -7,12 +7,12 @@ from tkinter import ttk
 # Deliberately no shell, root, mounting, network, device or policy operations.
 # These choices are previews only until authenticated module loading exists.
 MODULES = (
-    ("Web", "🌐", "Browser", "Not packaged"),
-    ("Web", "📡", "Network access", "Not controlled"),
-    ("Work", "📄", "Office / PDF", "Not packaged"),
-    ("Work", "🤖", "AI assistant", "Not connected"),
-    ("Work", "🧰", "Developer tools", "Not packaged"),
-    ("Work", "🔍", "Security tools", "Not packaged"),
+    ("Web", "browser.png", "Browser", "Not packaged"),
+    ("Web", "network.png", "Network access", "Not controlled"),
+    ("Work", "office.png", "Office / PDF", "Not packaged"),
+    ("Work", "ai.png", "AI assistant", "Not connected"),
+    ("Work", "developer.png", "Developer tools", "Not packaged"),
+    ("Work", "security.png", "Security tools", "Not packaged"),
 )
 
 
@@ -36,7 +36,7 @@ def main():
 
     frame = tk.Frame(root, bg="#0c1110", padx=32, pady=22)
     frame.pack(fill="both", expand=True)
-    tk.Label(frame, text="BLACK CAT", bg="#0c1110", fg="#83efaa", font=("DejaVu Sans", 28, "bold")).pack(anchor="w")
+    tk.Label(frame, text="BLACK CAT", bg="#0c1110", fg="#83efaa", font=("DejaVu Sans", 28, "bold")).pack(anchor="w")\n    tk.Label(frame, text="Stealth. Intelligence. Independence.", bg="#0c1110", fg="#83efaa", font=("DejaVu Sans", 11)).pack(anchor="w", pady=(0, 3))
     tk.Label(frame, text="Choose your session · UI DEVELOPMENT PREVIEW", bg="#0c1110", fg="#e0eae2", font=("DejaVu Sans", 14)).pack(anchor="w", pady=(5, 12))
     tk.Label(frame, text="These checkboxes do not load or isolate software yet. No security state changes.", bg="#0c1110", fg="#ffda8b", wraplength=720, justify="left", font=("DejaVu Sans", 11)).pack(anchor="w", pady=(0, 13))
 
@@ -44,14 +44,20 @@ def main():
     for group in ("Web", "Work"):
         box = tk.LabelFrame(frame, text=group.upper(), bg="#15221c", fg="#83efaa", font=("DejaVu Sans", 11, "bold"), padx=14, pady=8)
         box.pack(fill="x", pady=5)
-        for category, icon, label, status in MODULES:
+        for category, icon_file, label, status in MODULES:
             if category != group:
                 continue
             row = tk.Frame(box, bg="#15221c")
             row.pack(fill="x", pady=3)
             state = tk.BooleanVar(value=False)
             selected[label] = state
-            ttk.Checkbutton(row, text=f"{icon}  {label}", variable=state, style="Black.TCheckbutton").pack(side="left")
+            icon_path = os.path.join(icon_dir, icon_file)
+            options = {"text": "  " + label, "variable": state, "style": "Black.TCheckbutton"}
+            if os.path.isfile(icon_path):
+                icon_image = tk.PhotoImage(file=icon_path)
+                icon_images.append(icon_image)
+                options.update(image=icon_image, compound="left")
+            ttk.Checkbutton(row, **options).pack(side="left")
             tk.Label(row, text=status, bg="#15221c", fg="#b5c1bb", font=("DejaVu Sans", 10)).pack(side="right")
 
     summary = tk.StringVar(value="No modules selected. Core preview only.")
