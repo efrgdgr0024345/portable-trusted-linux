@@ -161,3 +161,13 @@ This file records durable project decisions. Changes should be made by new commi
 
 **Status:** Accepted / Prototype  
 **Decision:** Goals, state, plans, decisions, lessons, evidence, backlog and AI rules are stored as human-readable Markdown so they remain portable across implementations and AI providers. Operational metadata such as sessions, usage and interaction logs may use JSON/SQLite as the prototype matures.
+
+## ADR-033 — Browser execution is a separate Black Cat tool layer
+
+**Status:** Accepted / Prototype  
+**Decision:** Use a Black Cat-controlled browser worker, initially Playwright with Chromium, for website tasks that need a real browser. Browser execution is separated from reasoning so the same browser tool can be driven by OpenAI API models, a future local model, or another provider. Do not couple Black Cat to automating the private user interface of `chatgpt.com` as a substitute for model/API access.
+
+## ADR-034 — API reasoning, browser execution and ChatGPT Work are distinct routes
+
+**Status:** Accepted / Prototype  
+**Decision:** Current OpenAI flagship API models can provide high/max reasoning and computer-use capabilities, so the API is not classified as inherently lower-intelligence than ChatGPT. ChatGPT may still provide additional product-level orchestration through Work/Codex, memory, tools and browser harnesses. Black Cat therefore routes deliberately between direct API reasoning, its own Playwright browser executor, OpenAI computer-use tooling where useful, and an explicit user-directed ChatGPT Work handoff when the ChatGPT product harness itself is desired.
