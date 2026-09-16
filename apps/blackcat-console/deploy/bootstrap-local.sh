@@ -50,6 +50,7 @@ cat > "$ENV_FILE" <<EOF
 BLACKCAT_CONSOLE_PASSWORD=${BLACKCAT_CONSOLE_PASSWORD}
 BLACKCAT_COACH_MODEL=${BLACKCAT_COACH_MODEL:-gpt-5.6-terra}
 BLACKCAT_CHAT_MODEL=${BLACKCAT_CHAT_MODEL:-gpt-5.6-sol}
+BLACKCAT_MONTHLY_API_BUDGET=${BLACKCAT_MONTHLY_API_BUDGET:-30}
 EOF
 if [[ -n "${OPENAI_API_KEY:-}" ]]; then
   printf 'OPENAI_API_KEY=%s\n' "$OPENAI_API_KEY" >> "$ENV_FILE"
@@ -80,7 +81,6 @@ sed -i "/${BEGIN_MARK}/,/${END_MARK}/d" "$POOL_FILE"
   echo "$BEGIN_MARK"
   while IFS='=' read -r k v; do
     [[ -z "$k" ]] && continue
-    # Escape backslashes, quotes and dollar signs for FPM env syntax.
     esc="${v//\\/\\\\}"
     esc="${esc//\"/\\\"}"
     printf 'env[%s] = "%s"\n' "$k" "$esc"
@@ -88,7 +88,12 @@ sed -i "/${BEGIN_MARK}/,/${END_MARK}/d" "$POOL_FILE"
   echo "$END_MARK"
 } >> "$POOL_FILE"
 
-systemctl restart "$(systemctl list-units --type=service --all --no-legend | awk '/php.*fpm.service/{print $1; exit}')"
+FPM_SERVICE="$(systemctl list-units --type=service --all --no-legend | awk '/php.*fpm.service/{print $1; exit}')"
+if [[ -z "$FPM_SERVICE" ]]; then
+  echo "ERROR: PHP-FPM systemd service not found." >&2
+  exit 1
+fi
+systemctl restart "$FPM_SERVICE"
 
 cat > "$NGINX_SITE" <<EOF
 server {
@@ -140,6 +145,7 @@ Installed repository: $INSTALL_ROOT/portable-trusted-linux
 Application root:     $APP_ROOT
 Private data:         /var/lib/blackcat-console
 Environment file:     $ENV_FILE
+Monthly API budget:   ${BLACKCAT_MONTHLY_API_BUDGET:-30} USD (soft planning budget)
 Local URL only:       http://127.0.0.1:8080/
 
 The Console is NOT publicly exposed yet.
