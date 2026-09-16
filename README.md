@@ -14,7 +14,7 @@ Internal repository names, `PTL_` environment variables, workflow names and evid
 | --- | --- | --- |
 | Graphical ISO construction | CI build observed | Source `86ddbb8eac1a0dbf912c035d5b916b70453dff88`, run `35095923202` |
 | Preserved ISO identity | Rehashed on builder | 770,703,360 bytes; SHA-256 `81f702cd9e59d4d7ba5654e6a69dbd655617968f92381049881930aef9b2fcb7`; recovery run `35107102698` |
-| Graphical boot and new-image System Check | VM verification in progress | See the current evidence report; no physical evidence for this new image |
+| Graphical boot and new-image System Check | VM panel/report observed; interaction/settling pending | See the current evidence report; no physical evidence for this new image |
 | Earlier M13B physical boot | Previously observed on one machine | Different 376,438,784-byte image `cb14d25b…`; never transfer that observation to this graphical image |
 | Release signing | Development implementation | Ephemeral-key tests; production key custody remains undecided |
 | Secure Boot / TPM attestation / dm-verity guarantees | Planned or incomplete | A successful build or attractive desktop does not verify them |

@@ -975,3 +975,53 @@ Treat focus discipline as the first project-automation primitive. AI advice may 
 ### Evidence classification
 **SOURCE IMPLEMENTED / LOCALLY PHP-LINTED / NOT YET DEPLOYMENT-VERIFIED.** `apps/blackcat-console/focus.php` passed PHP 8.4 syntax checking in the development runtime before being committed. Repository static checks were expanded to cover the focus-lock, backlog, milestone, blocker and done-state guard requirements; those updated checks have not yet been rerun on `ptl-builder-01` in this session.
 
+
+
+---
+
+# Preserved original graphical prototype lesson
+
+The following original entry is appended losslessly. Its pending states describe the earlier session; the dated evidence review below supersedes them.
+
+# Black Cat Lessons Learned — graphical session prototype (2026-09-16)
+
+This is a supplemental lesson record. The canonical `docs/07-lessons-learned.md` remains unchanged pending a lossless append through a repository-capable editor. Do not claim the mandated canonical register has been updated until it has.
+
+## What was attempted
+Implement an actual graphical boot-session selector instead of repeatedly promising an interface without creating source code.
+
+## What happened
+The previous package seed contained no explicit Xfce/Xorg/LightDM GUI. The development branch now adds those packages plus Python Tk, a locally packaged GUI selector and XFCE autostart. The UI renders module-labelled icon/checkbox previews but intentionally does NOT activate modules, enable networking, mount disks, grant capabilities or certify trust. A `lightdm.service` kernel-command-line condition retains the `blackcat.check=1` text-only path. A static test and hosted workflow were added. No rebuilt ISO or graphical boot evidence exists yet.
+
+## Why it matters
+A visually plausible tick-box security screen can mislead users unless demo controls are clearly identified and the runtime remains incapable of granting unimplemented permissions. Installing a desktop also increases software/attack surface and may regress the previously proven no-typing hardware diagnostics; each boot path requires separate VM/physical verification. Source implementation is not boot evidence.
+
+## Decision/change
+Treat the UI as a reversible, explicitly marked development profile. Keep the trusted-core/minimal-module architecture a later engineering milestone. Preserve the previously frozen M13B candidate. Verify UI boot, quick-check boot and module-enforcement behavior independently before making stronger claims.
+
+## Evidence classification
+SOURCE IMPLEMENTED / STATIC TEST AVAILABLE / CI, GUI BOOT AND PHYSICAL RETEST PENDING. No production key, listener, credential, chatbot runtime or device write was introduced.
+
+
+
+## 2026-09-16 — Evidence review, recovered graphical ISO and design integration
+
+### Attempt and observed result
+Reviewed diverged main/USB records, recovered the existing 770,703,360-byte graphical ISO and independently reran its digest on the same builder. Original build run 35095923202 succeeded but artifact publication failed on storage quota. Identity run 35107102698 matched SHA-256 81f702cd9e59d4d7ba5654e6a69dbd655617968f92381049881930aef9b2fcb7.
+
+The builder lacked QEMU. Authenticated Debian packages were downloaded and extracted into a temporary user-owned directory without installing system packages, running maintainer scripts or acquiring new privilege. Two harness attempts failed before guest boot because the task-local VGA ROM path was unresolved; run 35107884622 then observed the actual Xfce/Black Cat panel and, in a separate UEFI boot, the Quick Check report. No guest NIC or host disk was attached. The screenshots show missing icon glyphs and a Plymouth wait still running on the diagnostic capture. GUI interaction and the settled photo-screen remain untested; a successful marker test must not hide those gaps.
+
+Integrated main's Console/Focus additions and both branches' appended documentation into the review branch, retaining both Git parents. Fixed static-check false positives: a comment naming the collector was mistaken for execution, and the manifesto wording differed from a hardcoded phrase. Production runtime/policy was not changed to satisfy these checks.
+
+The user-selected design folder was found with 18 files and moved intact under linux usb project. Repository design references preserve file identities/hashes, exact original cat bytes and brand notes. The welcome concept's older “Freedom” text differs from the authoritative “Independence” tagline; originals remain unchanged.
+
+### Why it matters and decision
+Separate design, implementation, image construction, publication, VM observation, physical evidence and release authenticity. Replace the misleading aggregate progress number with scoped capabilities. Never transfer old-image physical observations to a new image or call a screenshot an interaction test. All future visual work uses design/README.md; the existing candidate remains byte-for-byte unchanged for reproducible diagnosis.
+
+### Evidence classification
+BUILD AND SAME-BUILDER IDENTITY OBSERVED / GUI PANEL AND QUICK-CHECK REPORT OBSERVED IN VM / INTERACTION, SETTLED DIAGNOSTIC SCREEN AND PHYSICAL RETEST PENDING / NO APPROVED RELEASE. See docs/20-graphical-candidate-evidence.md and evidence/2026-09-16-graphical/report.json.
+
+
+### Source validation follow-through
+
+Run 35155024291 passed at a1a9afc3d2fba6d5c81ace22019493f4a951ec32 after the false-positive fixes and restoration of the shared signing validator's executable bit. Positive and negative Ed25519 development tests, static guards, PHP 8.4.24 lint and viewer fixtures all passed. The tracked executable-bit defect was a real tooling failure distinct from the two false positives; no production signing key was created. The handoff records the still-pending VM interactions, diagnostic settling, physical test and deployment boundaries.

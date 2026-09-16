@@ -16,3 +16,9 @@ Treat the UI as a reversible, explicitly marked development profile. Keep the tr
 
 ## Evidence classification
 SOURCE IMPLEMENTED / STATIC TEST AVAILABLE / CI, GUI BOOT AND PHYSICAL RETEST PENDING. No production key, listener, credential, chatbot runtime or device write was introduced.
+
+
+
+## 16 September reconciliation
+
+The original entry above has now been appended losslessly to the canonical lessons register. Its historical pending states are superseded by docs/20-graphical-candidate-evidence.md.

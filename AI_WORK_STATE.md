@@ -1,62 +1,44 @@
 # Black Cat AI Work State
 
-Compact, first-read recovery checkpoint. GitHub is the authoritative history; selectively load documents only when relevant.
+Compact handoff for a lighter coding model. Read this first, then only the named evidence and relevant source. This is a plan-ready handoff, not a claim that the product is finished.
 
 ## Current project state
 
-- State revision: 10; checkpoint 2026-09-16.
-- Branch: `codex/remove-chroot-systemd-boot`; PR #6 remains unmerged.
-- Milestone: M14 release signing is current; M15 signed UKI planned; M26 modular AI runtime future.
-- Project index previously 80% (not recalculated). Approved release: NONE.
-- M13B: complete on ONE tested hardware/configuration, not globally attested.
-- M14: closed canonical Ed25519 manifest and local development self-tests implemented; current-head CI evidence not yet verified; production release signing-key custody HUMAN_GATE.
-- GUI session prototype source newly committed: packages, Tkinter selector, XFCE autostart, special-boot LightDM condition, static test/workflow, `docs/19-graphical-session-prototype.md`.
-- GUI source is NOT a validated new ISO, active module loader, working permission broker or verified graphical boot. No new candidate has been promoted.
-- Supplemental UI lesson: `docs/07-lessons-learned-ui-2026-09-16.md`. Mandatory lossless append to `docs/07-lessons-learned.md` and project JSON synchronization remain outstanding until completed; never claim otherwise.
+- Review branch: `codex/graphical-evidence-review`; main is NOT merged. Both USB and Console histories are preserved on the review branch.
+- Active outcome: finish the exact graphical candidate's interaction and settled System Check tests before physical testing. No scope expansion.
+- Design authority: `design/README.md`; original folder is `/linux usb project/Graphical design for black cat project`, 18 files. Canonical tagline: Stealth. Intelligence. Independence.
+- The design folder is integrated as a reference; the existing ISO predates that work and is still the earlier graphical prototype.
+- Source checks passed in run `35155024291` at source `a1a9afc3d2fba6d5c81ace22019493f4a951ec32`: static guards, negative signing tests and PHP viewer fixtures. Inspect the latest Integration Source Checks run for the current head; never transfer a past pass to a changed source revision.
+- Production signing key custody remains undecided; no approved release, new droplet, public listener, Console deployment, production viewer deployment or USB write occurred.
 
 ## Current exact test candidate
 
-- Status: TEST CANDIDATE, NOT APPROVED RELEASE; physical M13B evidence only.
-- ISO: `live-image-amd64.hybrid.iso`; size 376438784 bytes.
-- SHA-256: `cb14d25b7fd43e2b0e563efaada357d6ab196a42d717b016c4857f85968fe641`.
-- Source: `c56389b71ecd96270bdd047369378f5a94d8bf93`; run `34686464650`; artifact `10300658965`.
-- This ISO PREDATES the new UI code. Never say it contains the graphical selector.
-
-## M13B physical evidence
-
-- Black Cat Quick Check booted without old Permission denied errors; UEFI, Secure Boot enabled, TPM device/event-log observed, dm-verity NOT_ACTIVE, no active network link observed.
-- Read-only lsblk showed live USB mounted and internal 476.9G NVMe plus four partitions unmounted by default. One-machine OBSERVED evidence only.
-
-## M14 / M15 boundaries
-
-- M14 scripts use shared strict canonical schema validation, Ed25519 detached signature, fingerprint and exact artifact checks; local development tests passed with ephemeral keys.
-- Do not claim current-head CI success until exact run/log evidence is inspected.
-- M15 `docs/17-signed-uki-development-plan.md` permits only ephemeral DEVELOPMENT ONLY signing tests; no firmware enrollment or production Secure Boot key provisioning.
-- Release-signing and Secure Boot key authority are distinct.
-
-## Future modules and AI workshop
-
-- `docs/18-modular-runtime-and-ai-workshop.md`, ADR-042: small immutable core, independently verified ready-made optional modules and an untrusted external workshop; future M26 after first usable core.
-- The new GUI checkbox selection is VISUAL DEMO ONLY. No signed module images, sandbox or capability broker exists yet.
-- Separate chatbot droplet configuration remains on hold: no runtime, listener, key or new deployment authorized by this UI task.
+- Development specimen: `live-image-amd64.hybrid.iso`, 770703360 bytes.
+- SHA-256: `81f702cd9e59d4d7ba5654e6a69dbd655617968f92381049881930aef9b2fcb7`.
+- Source: `86ddbb8eac1a0dbf912c035d5b916b70453dff88`; construction run `35095923202`.
+- Builder copy: `/home/github-runner/blackcat-builds/run-35095923202-attempt-1/live-image-amd64.hybrid.iso`.
+- Rehash run `35107102698` matched. Original GitHub artifact upload failed on quota.
+- Boot run `35107884622` observed the actual Xfce/Black Cat panel and, in a separate UEFI boot, the Quick Check report. Screens and exact report are in `evidence/2026-09-16-graphical/`.
+- GUI capture: missing icon glyphs; interactions NOT tested. Diagnostic capture: Plymouth wait still running; final photo prompt NOT established.
+- Earlier physical M13B observations belong to a different 376438784-byte image (`cb14d25b…`), not this candidate.
 
 ## Next automatic actions
 
-1. Verify GUI source and static test, inspect hosted workflow result if any; fix bounded defects.
-2. Build new ISO in disposable CI; record source SHA, ISO size/SHA and preserve artifacts; distinguish builder failure from ISO failure.
-3. Verify graphical login, XFCE autostart/check boxes and close-to-desktop in a graphical VM with framebuffer/screenshot evidence.
-4. Independently verify `blackcat.check=1` retains the photograph-friendly text report with no graphical takeover.
-5. Append supplemental UI lesson LOSSLESSLY to canonical lessons; update affected docs and `project_content.json` LAST. Do not delete historical JSON links/evidence to simplify the edit.
-6. Continue non-secret M14/M15 work; no release promotion, merge or USB write.
+1. Read `docs/20-graphical-candidate-evidence.md` and `tests/03-existing-candidate-boot.py`.
+2. Verify the current review-branch SHA and latest source-check result; fix a bounded failure if present.
+3. Extend the existing VM harness to exercise a checkbox, CLEAR SELECTION and OPEN DESKTOP, and wait for the settled System Check photo prompt with a bounded timeout. Retain before/after screenshots and failure evidence.
+4. Use existing Actions runner via `.github/workflows/existing-candidate-evidence.yml`. Pushes touching this workflow or its test script on this branch trigger it. It rehashes the fixed candidate and uses temporary unprivileged QEMU tools, no guest network or host disks.
+5. Diagnose the Plymouth wait if the final prompt fails to appear. Do not label the early report marker a complete pass. Rebuild only for a confirmed source change, with a new exact identity.
+6. Record lessons and evidence, refresh this checkpoint, and update `project_content.json` LAST. Review branch changes are automatic; main merge is a separate gate.
 
 ## Next genuine human gate
 
-Production release signing-key ownership/custody, including independent public-key distribution, backup, rotation and compromise response. Separately, actual USB write and firmware/Secure Boot enrollment require explicit human authorization. No production key belongs on CI or general builder.
+After automated gates: explicit spare-USB target/physical write authorization. Separately, main merge and production release/Secure Boot key ownership remain gated by existing policy. No production secrets on the builder. No release promotion.
 
 ## Context health
 
-AMBER heuristic, no exact meter. Checkpoint rev 10. Context pressure itself is never a human-approval gate.
+Checkpoint refreshed for deliberate handoff. GREEN operational heuristic; no exact hidden context percentage. Context pressure itself is never a human-approval gate.
 
 ## Recovery sequence
 
-Read this file first. Verify PR head, UI/test CI and M14 CI state. Load `docs/19-graphical-session-prototype.md` for GUI work; `docs/16`/`17` for signing; `docs/18` only for future module design. Do not bulk-load history. Preserve safety and genuine human gates.
+Read this file, verify current branch/run metadata, then read docs/20 and the named test. Consult design/README before visual work. Do not reload all history or restart planning. Use a stronger review for new trust-policy decisions or ambiguous security findings; routine bounded implementation may continue on a lighter model.

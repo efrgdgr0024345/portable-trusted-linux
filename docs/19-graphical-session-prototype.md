@@ -1,6 +1,6 @@
 # Graphical Black Cat Session UI — development prototype
 
-Status: SOURCE IMPLEMENTED; EXACT ISO BUILT AND REHASHED; GUI/QUICK-CHECK VM VERIFICATION IN PROGRESS; HARDWARE RETEST PENDING. This is not a security-enforcing module selector.
+Status: SOURCE IMPLEMENTED; EXACT ISO BUILT AND REHASHED; GUI PANEL / QUICK-CHECK REPORT OBSERVED IN VM; INTERACTION AND SETTLING PENDING; HARDWARE RETEST PENDING. This is not a security-enforcing module selector.
 
 ## Scope
 
