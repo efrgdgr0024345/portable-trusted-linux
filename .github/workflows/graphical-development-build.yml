@@ -32,6 +32,7 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ github.sha }}
+
       - name: Verify source identity and static UI
         shell: bash
         run: |
@@ -41,12 +42,14 @@ jobs:
           echo "SOURCE_REF=$PTL_SOURCE_REF"
           bash tests/02-session-ui-check.sh
           bash build/00-host-check.sh
+
       - name: Build development-only ISO
         shell: bash
         run: |
           set -Eeuo pipefail
           bash build/20-build-live.sh
           bash build/30-artifact-manifest.sh
+
       - name: Report resulting identity or failure
         if: always()
         shell: bash
@@ -58,8 +61,36 @@ jobs:
           echo '--- build manifest ---'
           cat out/build-manifest.json 2>/dev/null || true
           echo 'DEVELOPMENT BUILD ONLY; NOT VERIFIED OR APPROVED'
-      - name: Preserve test artifact and evidence
+
+      # The runner is self-hosted and persistent. Keep a local recovery copy
+      # before attempting GitHub artifact upload so an account quota problem
+      # cannot discard an otherwise successful development build.
+      - name: Preserve local builder recovery copy
         if: always()
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          retain="$HOME/blackcat-builds/run-${GITHUB_RUN_ID}-attempt-${GITHUB_RUN_ATTEMPT}"
+          mkdir -p "$retain"
+          if [ -d out ]; then
+            cp -a out/. "$retain/"
+          fi
+          if compgen -G 'artifacts/*/prepare.json' >/dev/null; then
+            mkdir -p "$retain/prepare-evidence"
+            cp -a artifacts/*/prepare.json "$retain/prepare-evidence/" || true
+          fi
+          printf '%s\n' "$PTL_SOURCE_COMMIT" > "$retain/source-commit.txt"
+          printf '%s\n' "$PTL_SOURCE_REF" > "$retain/source-ref.txt"
+          echo "LOCAL_RECOVERY_DIR=$retain"
+          du -sh "$retain" || true
+
+      # GitHub-hosted artifact storage is useful but not part of the build's
+      # correctness. A quota failure is reported as an upload problem rather
+      # than relabelling a successfully built ISO as a failed ISO build.
+      - name: Preserve GitHub test artifact and evidence
+        id: github_artifact_upload
+        if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: blackcat-graphical-development-${{ github.run_id }}
@@ -69,3 +100,21 @@ jobs:
           if-no-files-found: warn
           compression-level: 0
           retention-days: 1
+
+      - name: Classify artifact publication result
+        if: always()
+        shell: bash
+        env:
+          UPLOAD_OUTCOME: ${{ steps.github_artifact_upload.outcome }}
+        run: |
+          {
+            echo '## Black Cat development build publication'
+            echo
+            echo "GitHub artifact upload outcome: **${UPLOAD_OUTCOME:-unknown}**"
+            if [ "${UPLOAD_OUTCOME:-unknown}" != success ]; then
+              echo
+              echo '> WARNING: GitHub artifact publication failed or was skipped. This does not change the result of the ISO construction step. A recovery copy was written on the self-hosted builder under `$HOME/blackcat-builds/`.'
+            fi
+            echo
+            echo 'DEVELOPMENT BUILD ONLY — NOT VERIFIED OR APPROVED.'
+          } >> "$GITHUB_STEP_SUMMARY"
