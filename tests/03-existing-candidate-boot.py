@@ -114,6 +114,7 @@ def observe(work, env, qemu, tess, code, variables, toolroot, mode):
             '-serial', 'file:' + str(serial), '-qmp', 'unix:' + str(qmp) + ',server=on,wait=off',
             '-no-reboot', '-L', str(toolroot / 'usr/share/qemu')]
     last = None
+    evidence = {}
     with (OUT / (mode + '-qemu.log')).open('w') as log:
         proc = subprocess.Popen(args, stdout=log, stderr=log, env=env)
         mon = None
@@ -130,25 +131,68 @@ def observe(work, env, qemu, tess, code, variables, toolroot, mode):
                 time.sleep(1)
             if mon is None:
                 raise RuntimeError('QEMU monitor never became ready')
-            start = time.monotonic()
-            selected = mode == 'gui'
-            for elapsed in [5, 10, 20, 40, 80, 140, 220, 320]:
-                time.sleep(max(0, elapsed - (time.monotonic() - start)))
-                ppm, png = OUT / f'{mode}-{elapsed}.ppm', OUT / f'{mode}-{elapsed}.png'
+            def capture(label):
+                nonlocal last
+                ppm, png = OUT / f'{mode}-{label}.ppm', OUT / f'{mode}-{label}.png'
                 mon.command('screendump', {'filename': str(ppm)})
                 png_from_ppm(ppm, png)
                 last = png
-                text = run([tess, str(png), 'stdout'], env=env, capture_output=True).stdout
-                (OUT / f'{mode}-{elapsed}.txt').write_text(text)
-                print(f'FRAME_OCR {mode} {elapsed}: ' + json.dumps(text), flush=True)
+                observed = run([tess, str(png), 'stdout'], env=env, capture_output=True).stdout
+                (OUT / f'{mode}-{label}.txt').write_text(observed)
+                print(f'FRAME_OCR {mode} {label}: ' + json.dumps(observed), flush=True)
+                return png, observed
+
+            def key(name, pause=0.35):
+                mon.command('human-monitor-command', {'command-line': 'sendkey ' + name})
+                time.sleep(pause)
+
+            start = time.monotonic()
+            selected = mode == 'gui'
+            schedule = [5, 10, 20, 40, 80, 140, 220, 320] if mode == 'gui' else [5, 10, 20, 40, 80, 140, 220, 320, 400, 480]
+            for elapsed in schedule:
+                time.sleep(max(0, elapsed - (time.monotonic() - start)))
+                png, text = capture(str(elapsed))
                 if mode == 'check' and not selected and 'System Check' in text:
-                    mon.command('human-monitor-command', {'command-line': 'sendkey down'})
-                    mon.command('human-monitor-command', {'command-line': 'sendkey ret'})
+                    key('down')
+                    key('ret')
                     selected = True
                 if mode == 'gui' and 'DEVELOPMENT PREVIEW' in text:
-                    return {'status': 'GUI_PREVIEW_OBSERVED', 'frame': png.name, 'interaction': 'NOT_TESTED'}
-                if mode == 'check' and 'QUICK CHECK' in text:
-                    return {'status': 'QUICK_CHECK_OBSERVED', 'frame': png.name, 'selected_menu': selected}
+                    # Tk traversal order is the six checkboxes followed by the
+                    # two buttons. Prove each state from visible text/UI rather
+                    # than treating successful key injection as evidence.
+                    key('tab')
+                    key('spc')
+                    selected_png, selected_text = capture('selected')
+                    evidence['selected'] = selected_png
+                    if 'Requested (NOT activated): Browser' not in selected_text:
+                        return {'status': 'GUI_INTERACTION_FAILED', 'frame': selected_png.name,
+                                'failure': 'checkbox summary did not show Browser'}
+
+                    for _ in range(6):
+                        key('tab', 0.15)
+                    key('spc')
+                    clear_png, clear_text = capture('cleared')
+                    evidence['cleared'] = clear_png
+                    if 'Requested (NOT activated): none' not in clear_text:
+                        return {'status': 'GUI_INTERACTION_FAILED', 'frame': clear_png.name,
+                                'failure': 'clear selection did not restore none'}
+
+                    key('tab')
+                    key('spc', 1.5)
+                    desktop_png, desktop_text = capture('desktop')
+                    evidence['desktop'] = desktop_png
+                    if 'DEVELOPMENT PREVIEW' in desktop_text or 'OPEN DESKTOP' in desktop_text:
+                        return {'status': 'GUI_INTERACTION_FAILED', 'frame': desktop_png.name,
+                                'failure': 'preview remained after open desktop'}
+                    return {'status': 'GUI_INTERACTIONS_OBSERVED',
+                            'frames': {name: frame.name for name, frame in evidence.items()},
+                            'checkbox': 'Browser summary observed',
+                            'clear': 'none summary observed',
+                            'open_desktop': 'preview closed'}
+                if mode == 'check' and 'PHOTO THIS SCREEN' in text and 'Press Enter' in text:
+                    evidence['settled'] = png
+                    return {'status': 'QUICK_CHECK_SETTLED_PROMPT_OBSERVED', 'frame': png.name,
+                            'selected_menu': selected, 'elapsed_seconds': elapsed}
             return {'status': 'EXPECTED_SCREEN_NOT_OBSERVED', 'frame': last.name if last else None}
         finally:
             if mon:
@@ -163,9 +207,11 @@ def observe(work, env, qemu, tess, code, variables, toolroot, mode):
                 proc.terminate()
                 proc.wait(timeout=10)
             print('QEMU_LOG ' + mode + ' ' + (OUT / (mode + '-qemu.log')).read_text(), flush=True)
-            if last:
-                # Only the isolated guest framebuffer, never host files/secrets.
-                print('FRAME_PNG_BASE64 ' + mode + ' ' + base64.b64encode(last.read_bytes()).decode(), flush=True)
+            if last and not evidence:
+                evidence['last'] = last
+            for label, frame in evidence.items():
+                # Only isolated guest framebuffers, never host files/secrets.
+                print('FRAME_PNG_BASE64 ' + mode + '-' + label + ' ' + base64.b64encode(frame.read_bytes()).decode(), flush=True)
 
 
 def main():
@@ -184,7 +230,7 @@ def main():
         (OUT / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
         print('BOOT_REPORT=' + json.dumps(report), flush=True)
         print('EVIDENCE_DIR=' + str(OUT), flush=True)
-    if report['gui']['status'] != 'GUI_PREVIEW_OBSERVED' or report['check']['status'] != 'QUICK_CHECK_OBSERVED':
+    if report['gui']['status'] != 'GUI_INTERACTIONS_OBSERVED' or report['check']['status'] != 'QUICK_CHECK_SETTLED_PROMPT_OBSERVED':
         raise SystemExit(1)
 
 
