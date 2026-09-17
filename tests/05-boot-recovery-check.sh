@@ -44,7 +44,7 @@ grep -Fq 'blackcat-basic-graphics' "$ROOT/config/live-build/bootloaders/syslinux
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 BLACKCAT_DIAGNOSTICS_DIR="$tmp/diagnostics" BLACKCAT_COLLECTOR_TIMEOUT=0.2 \
-  "$DIAG" --reason source-test > "$tmp/path.txt"
+  bash "$DIAG" --reason source-test > "$tmp/path.txt"
 report_dir="$(cat "$tmp/path.txt")"
 test -s "$report_dir/report.json"
 test -s "$report_dir/report-envelope.json"
