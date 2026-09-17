@@ -1,23 +1,25 @@
 {
   "title": "Black Cat",
-  "version": "3.0",
+  "version": "3.0.1",
   "phase": "Prototype 1 Engineering",
   "progress": 80,
-  "updated": "2026-09-15",
+  "updated": "2026-09-17",
   "summary": "M13B remains complete on the tested real-hardware configuration. M14 authenticated release signing remains current, with strict closed-schema canonical validation and local development self-tests using ephemeral keys; current-revision GitHub CI evidence is still not observed and production release-key ownership/custody remains a HUMAN_GATE. Safe M15 signed-UKI preparation also remains design-only with DEVELOPMENT ONLY keys. A future Black Cat runtime architecture is now recorded for M26: the trusted core stays deliberately small and immutable, non-essential software is delivered as pre-built ready-to-run session modules selected by icon/checkbox-style choices, module activation is coupled to least-privilege capabilities, and natural-language AI tool creation should preferably build in a separate disposable untrusted VPS/VM workshop. Anything returned by that workshop is treated as potentially malicious and must cross an independent verification/capability gate; the workshop receives no trusted-core write authority or production signing keys. This future design does not change the current M14–M25 implementation priority and there is still no approved Black Cat release.",
   "candidate": {
     "status": "test",
-    "channel": "m13b-physical-test",
+    "channel": "graphical-physical-test",
     "filename": "live-image-amd64.hybrid.iso",
-    "size_bytes": 376438784,
-    "sha256": "cb14d25b7fd43e2b0e563efaada357d6ab196a42d717b016c4857f85968fe641",
-    "source_commit": "c56389b71ecd96270bdd047369378f5a94d8bf93",
-    "build_run": "34686464650",
-    "artifact_id": "10300658965",
-    "artifact_name": "ptl-first-live-build-34686464650",
+    "size_bytes": 770703360,
+    "sha256": "f498776780c543013e437161a878e22ca4fc40a66f47fc271d6fd6a964c29d75",
+    "source_commit": "ed5d80ac09c3f1650d67594242643d27efcf15e9",
+    "build_run": "35179377345",
+    "artifact_id": "10480220416",
+    "artifact_name": "blackcat-graphical-development-35179377345",
     "smoke_test": "passed",
-    "download_url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/34686464650/artifacts/10300658965",
-    "note": "TEST CANDIDATE — NOT AN APPROVED RELEASE. This exact candidate completed the M13B physical gates on the tested hardware/configuration. It remains development evidence while M14 adds authenticated release metadata and signing authority."
+    "physical_hardware_validation": "pending",
+    "vm_evidence_run": "35180150392",
+    "download_url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/35179377345/artifacts/10480220416",
+    "note": "TEST CANDIDATE — NOT AN APPROVED RELEASE. Exact artwork-enabled candidate passed bounded VM interaction and System Check gates. Physical hardware validation remains pending."
   },
   "release": {
     "status": "none",
@@ -33,144 +35,712 @@
     "note": "No Black Cat ISO is currently an approved release. M14 signing mechanics are implemented and locally development-tested, but current-revision GitHub CI evidence and a deliberately selected production release-signing key/custody model are still absent."
   },
   "documents": [
-    {"type":"Project rules","title":"Mandatory Project Rules","description":"Hardcoded development rules including mandatory lessons learned, JSON-last updates, progressive hardening, the Automation Manifesto pre-pause check, root AI autonomy decision table and compact AI work-state/context-health recovery rule.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/PROJECT_RULES.md"},
-    {"type":"AI operating policy","title":"AI Autonomy Policy","description":"Root-level canonical continue/stop decision table classifying project actions as AUTO, AUTO_WITH_CHECKS, HUMAN_GATE or FORBIDDEN_BY_DEFAULT.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/AI_AUTONOMY_POLICY.md"},
-    {"type":"AI continuity state","title":"AI Work State","description":"Compact root recovery checkpoint with M13B evidence, hardened M14 implementation state, M15 safe-preparation state, future modular-runtime/workshop direction, next automatic actions and production signing-key human gate.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/AI_WORK_STATE.md"},
-    {"type":"Operating manifesto","title":"Black Cat Automation Manifesto","description":"Proceed-by-default operating rationale up to genuine human gates.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/11-automation-manifesto.md"},
-    {"type":"M14 security design","title":"Authenticated Release Signing — M14","description":"Canonical Ed25519 release-manifest/signature/verification design, strict closed-schema validation, key lifecycle baseline, development self-test and explicit production key-custody human gate.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/16-authenticated-release-signing.md"},
-    {"type":"M15 preparation","title":"Signed UKI Development Plan — M15 Preparation","description":"Debian 13/systemd-ukify development path binding kernel/initrd/cmdline/OS metadata with ephemeral DEVELOPMENT ONLY Secure Boot keys and no firmware enrollment or production authority.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/17-signed-uki-development-plan.md"},
-    {"type":"Future modular runtime architecture","title":"Modular Runtime and Untrusted AI Workshop","description":"Three-zone future design: tiny trusted core, pre-built ready-to-run session modules selected per boot/session, and a separate disposable untrusted AI workshop whose outputs must pass independent verification and capability gates.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/18-modular-runtime-and-ai-workshop.md"},
-    {"type":"AI continuity guide","title":"AI Continuity and Context Recovery Pattern","description":"Reusable compact-checkpoint/selective-recovery/context-health methodology.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/13-ai-continuity-and-context-recovery.md"},
-    {"type":"Calibration record","title":"Context Health Calibration Log","description":"Empirical GREEN/AMBER/RED continuity calibration record.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/14-context-health-calibration-log.md"},
-    {"type":"Future Linux AI architecture","title":"Black Cat AI Project Automation — Future Linux Integration","description":"Post-core M26 native repository-governed project automation design, now explicitly extended with modular session software and an external untrusted AI build-workshop boundary.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/15-black-cat-ai-project-automation.md"},
-    {"type":"Reusable AI project template","title":"Black Cat AI Project Template Guide","description":"Provider-neutral fail-closed seed for repository-governed AI projects.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/templates/ai-project/README.md"},
-    {"type":"AI capability policy","title":"AI Project Policy Template","description":"Fail-closed sample machine capability policy.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/templates/ai-project/project-policy.json"},
-    {"type":"AI policy schema","title":"AI Project Capability Policy Schema","description":"JSON Schema for the future capability-broker policy.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/schema/ai-project-policy.schema.json"},
-    {"type":"Automation architecture","title":"High-Security Automation Architecture","description":"Zero-new-inbound-surface automation direction.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/12-high-security-controller-architecture.md"},
-    {"type":"Project index","title":"Black Cat Repository README","description":"Current M14 status, completed M13B physical evidence, signing design and wider roadmap.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/README.md"},
-    {"type":"Brand asset","title":"Black Cat Boot Splash Source","description":"Digest-pinned cosmetic boot splash.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/assets/blackcat-boot-160x120.png.b64"},
-    {"type":"Overview","title":"Black Cat Project Overview","description":"Project objective, assurance levels and claim boundaries.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/01-project-overview.md"},
-    {"type":"Learning guide","title":"Beginner-to-Technical Learning Bridge","description":"Hashes, signatures, UEFI, Secure Boot, TPM, PCRs, attestation and dm-verity.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/02-learning-bridge.md"},
-    {"type":"Threat model","title":"Trust Chain & Threat Model v0.1","description":"Core threats, boundaries and acceptance gates.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/03-trust-chain-threat-model-v0.1.md"},
-    {"type":"Architecture","title":"External Evidence Anchoring","description":"Future evidence hashing/signatures/history anchoring design.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/04-external-evidence-anchoring.md"},
-    {"type":"Decision record","title":"Architecture Decision Register","description":"Durable decisions through ADR-042, including M14 canonical Ed25519 release signing and the future modular-runtime/external-workshop trust boundary.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/05-architecture-decisions.md"},
-    {"type":"Build specification","title":"Prototype Build Specification v0.1","description":"Prototype trust-chain specification including separate release-signing and Secure Boot signing identities.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/06-prototype-build-specification-v0.1.md"},
-    {"type":"Engineering record","title":"Lessons Learned Register","description":"Mandatory engineering record including M13B closure, M14/M15 hardening/preparation and the modular-runtime/untrusted-workshop design lesson.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/07-lessons-learned.md"},
-    {"type":"Paused research","title":"Community Compute Commons Feasibility Study","description":"Preserved paused research.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/08-compute-commons-feasibility-study.md"},
-    {"type":"Paused research","title":"Community Compute Commons Architecture","description":"Preserved future architecture.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/09-community-compute-commons-architecture.md"},
-    {"type":"Paused research","title":"Community Compute Commons Threat Extension","description":"Preserved future threat extension.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/10-threat-model-extension-community-compute-v0.1.md"},
-    {"type":"Build guide","title":"Black Cat Prototype 1 Build Scaffold","description":"Build pipeline including the M14 release-signing layer.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/build/README.md"},
-    {"type":"Build library","title":"Strict Release Manifest Validator","description":"Shared fail-closed validator enforcing exact canonical JSON bytes and the closed blackcat-release-manifest-v0.1 field/schema contract.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/build/lib/validate-release-manifest.sh"},
-    {"type":"Build script","title":"Create Release Manifest","description":"Creates canonical signed metadata binding exact artifact identity, source/build provenance and trusted Ed25519 public-key fingerprint, then passes it through the shared validator.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/build/40-create-release-manifest.sh"},
-    {"type":"Build script","title":"Sign Release Manifest","description":"Validates and signs exact canonical manifest bytes while refusing private-key/public-fingerprint mismatch.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/build/41-sign-release-manifest.sh"},
-    {"type":"Verifier","title":"Verify Authenticated Release","description":"Independently verifies closed canonical manifest schema, Ed25519 key fingerprint/signature and optional exact artifact filename/size/SHA-256.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/build/42-verify-release.sh"},
-    {"type":"Test","title":"Release Signing Positive/Negative Test","description":"Uses an ephemeral development keypair and rejects tampering, non-canonical JSON, unexpected fields, wrong filenames, malformed signatures, wrong keys, unsupported key types and invalid release IDs.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/tests/01-release-signing-check.sh"},
-    {"type":"Automation","title":"Release Signing Self-Test Workflow","description":"GitHub-hosted, read-only, no-production-secret workflow for M14 signing mechanics including the shared strict validator.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/.github/workflows/release-signing-self-test.yml"},
-    {"type":"Runtime diagnostic","title":"Black Cat Quick Check","description":"Root-owned no-typing runtime evidence collector.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/config/live-build/includes.chroot/usr/local/bin/blackcat-check"},
-    {"type":"Build script","title":"Artifact Manifest Generator","description":"Unsigned build-provenance generator, intentionally distinct from M14 release authenticity.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/build/30-artifact-manifest.sh"},
-    {"type":"Test","title":"Static Project Checks","description":"Existing repository/static safety checks.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/tests/00-static-check.sh"},
-    {"type":"Automation","title":"Black Cat Boot Smoke Test","description":"Hosted UEFI/QEMU/live-userspace smoke test for the ISO path.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/.github/workflows/blackcat-boot-smoke.yml"},
-    {"type":"Automation","title":"PTL First Live Build","description":"Self-hosted ISO build/fingerprint plus hosted smoke gate.","url":"https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/.github/workflows/ptl-live-build.yml"},
-    {"type":"Live page","title":"Public Living Project Page","description":"Public viewer driven by this GitHub index with candidate/release separation and project documentation.","url":"https://easyai.com.au/USB/project.php"}
+    {
+      "type": "Project rules",
+      "title": "Mandatory Project Rules",
+      "description": "Hardcoded development rules including mandatory lessons learned, JSON-last updates, progressive hardening, the Automation Manifesto pre-pause check, root AI autonomy decision table and compact AI work-state/context-health recovery rule.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/PROJECT_RULES.md"
+    },
+    {
+      "type": "AI operating policy",
+      "title": "AI Autonomy Policy",
+      "description": "Root-level canonical continue/stop decision table classifying project actions as AUTO, AUTO_WITH_CHECKS, HUMAN_GATE or FORBIDDEN_BY_DEFAULT.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/AI_AUTONOMY_POLICY.md"
+    },
+    {
+      "type": "AI continuity state",
+      "title": "AI Work State",
+      "description": "Compact root recovery checkpoint with M13B evidence, hardened M14 implementation state, M15 safe-preparation state, future modular-runtime/workshop direction, next automatic actions and production signing-key human gate.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/AI_WORK_STATE.md"
+    },
+    {
+      "type": "Operating manifesto",
+      "title": "Black Cat Automation Manifesto",
+      "description": "Proceed-by-default operating rationale up to genuine human gates.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/11-automation-manifesto.md"
+    },
+    {
+      "type": "M14 security design",
+      "title": "Authenticated Release Signing — M14",
+      "description": "Canonical Ed25519 release-manifest/signature/verification design, strict closed-schema validation, key lifecycle baseline, development self-test and explicit production key-custody human gate.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/16-authenticated-release-signing.md"
+    },
+    {
+      "type": "M15 preparation",
+      "title": "Signed UKI Development Plan — M15 Preparation",
+      "description": "Debian 13/systemd-ukify development path binding kernel/initrd/cmdline/OS metadata with ephemeral DEVELOPMENT ONLY Secure Boot keys and no firmware enrollment or production authority.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/17-signed-uki-development-plan.md"
+    },
+    {
+      "type": "Future modular runtime architecture",
+      "title": "Modular Runtime and Untrusted AI Workshop",
+      "description": "Three-zone future design: tiny trusted core, pre-built ready-to-run session modules selected per boot/session, and a separate disposable untrusted AI workshop whose outputs must pass independent verification and capability gates.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/18-modular-runtime-and-ai-workshop.md"
+    },
+    {
+      "type": "AI continuity guide",
+      "title": "AI Continuity and Context Recovery Pattern",
+      "description": "Reusable compact-checkpoint/selective-recovery/context-health methodology.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/13-ai-continuity-and-context-recovery.md"
+    },
+    {
+      "type": "Calibration record",
+      "title": "Context Health Calibration Log",
+      "description": "Empirical GREEN/AMBER/RED continuity calibration record.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/14-context-health-calibration-log.md"
+    },
+    {
+      "type": "Future Linux AI architecture",
+      "title": "Black Cat AI Project Automation — Future Linux Integration",
+      "description": "Post-core M26 native repository-governed project automation design, now explicitly extended with modular session software and an external untrusted AI build-workshop boundary.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/15-black-cat-ai-project-automation.md"
+    },
+    {
+      "type": "Reusable AI project template",
+      "title": "Black Cat AI Project Template Guide",
+      "description": "Provider-neutral fail-closed seed for repository-governed AI projects.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/templates/ai-project/README.md"
+    },
+    {
+      "type": "AI capability policy",
+      "title": "AI Project Policy Template",
+      "description": "Fail-closed sample machine capability policy.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/templates/ai-project/project-policy.json"
+    },
+    {
+      "type": "AI policy schema",
+      "title": "AI Project Capability Policy Schema",
+      "description": "JSON Schema for the future capability-broker policy.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/schema/ai-project-policy.schema.json"
+    },
+    {
+      "type": "Automation architecture",
+      "title": "High-Security Automation Architecture",
+      "description": "Zero-new-inbound-surface automation direction.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/12-high-security-controller-architecture.md"
+    },
+    {
+      "type": "Project index",
+      "title": "Black Cat Repository README",
+      "description": "Current M14 status, completed M13B physical evidence, signing design and wider roadmap.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/README.md"
+    },
+    {
+      "type": "Brand asset",
+      "title": "Black Cat Boot Splash Source",
+      "description": "Digest-pinned cosmetic boot splash.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/assets/blackcat-boot-160x120.png.b64"
+    },
+    {
+      "type": "Overview",
+      "title": "Black Cat Project Overview",
+      "description": "Project objective, assurance levels and claim boundaries.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/01-project-overview.md"
+    },
+    {
+      "type": "Learning guide",
+      "title": "Beginner-to-Technical Learning Bridge",
+      "description": "Hashes, signatures, UEFI, Secure Boot, TPM, PCRs, attestation and dm-verity.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/02-learning-bridge.md"
+    },
+    {
+      "type": "Threat model",
+      "title": "Trust Chain & Threat Model v0.1",
+      "description": "Core threats, boundaries and acceptance gates.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/03-trust-chain-threat-model-v0.1.md"
+    },
+    {
+      "type": "Architecture",
+      "title": "External Evidence Anchoring",
+      "description": "Future evidence hashing/signatures/history anchoring design.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/04-external-evidence-anchoring.md"
+    },
+    {
+      "type": "Decision record",
+      "title": "Architecture Decision Register",
+      "description": "Durable decisions through ADR-042, including M14 canonical Ed25519 release signing and the future modular-runtime/external-workshop trust boundary.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/05-architecture-decisions.md"
+    },
+    {
+      "type": "Build specification",
+      "title": "Prototype Build Specification v0.1",
+      "description": "Prototype trust-chain specification including separate release-signing and Secure Boot signing identities.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/06-prototype-build-specification-v0.1.md"
+    },
+    {
+      "type": "Engineering record",
+      "title": "Lessons Learned Register",
+      "description": "Mandatory engineering record including M13B closure, M14/M15 hardening/preparation and the modular-runtime/untrusted-workshop design lesson.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/07-lessons-learned.md"
+    },
+    {
+      "type": "Paused research",
+      "title": "Community Compute Commons Feasibility Study",
+      "description": "Preserved paused research.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/08-compute-commons-feasibility-study.md"
+    },
+    {
+      "type": "Paused research",
+      "title": "Community Compute Commons Architecture",
+      "description": "Preserved future architecture.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/09-community-compute-commons-architecture.md"
+    },
+    {
+      "type": "Paused research",
+      "title": "Community Compute Commons Threat Extension",
+      "description": "Preserved future threat extension.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/docs/10-threat-model-extension-community-compute-v0.1.md"
+    },
+    {
+      "type": "Build guide",
+      "title": "Black Cat Prototype 1 Build Scaffold",
+      "description": "Build pipeline including the M14 release-signing layer.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/build/README.md"
+    },
+    {
+      "type": "Build library",
+      "title": "Strict Release Manifest Validator",
+      "description": "Shared fail-closed validator enforcing exact canonical JSON bytes and the closed blackcat-release-manifest-v0.1 field/schema contract.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/build/lib/validate-release-manifest.sh"
+    },
+    {
+      "type": "Build script",
+      "title": "Create Release Manifest",
+      "description": "Creates canonical signed metadata binding exact artifact identity, source/build provenance and trusted Ed25519 public-key fingerprint, then passes it through the shared validator.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/build/40-create-release-manifest.sh"
+    },
+    {
+      "type": "Build script",
+      "title": "Sign Release Manifest",
+      "description": "Validates and signs exact canonical manifest bytes while refusing private-key/public-fingerprint mismatch.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/build/41-sign-release-manifest.sh"
+    },
+    {
+      "type": "Verifier",
+      "title": "Verify Authenticated Release",
+      "description": "Independently verifies closed canonical manifest schema, Ed25519 key fingerprint/signature and optional exact artifact filename/size/SHA-256.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/build/42-verify-release.sh"
+    },
+    {
+      "type": "Test",
+      "title": "Release Signing Positive/Negative Test",
+      "description": "Uses an ephemeral development keypair and rejects tampering, non-canonical JSON, unexpected fields, wrong filenames, malformed signatures, wrong keys, unsupported key types and invalid release IDs.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/tests/01-release-signing-check.sh"
+    },
+    {
+      "type": "Automation",
+      "title": "Release Signing Self-Test Workflow",
+      "description": "GitHub-hosted, read-only, no-production-secret workflow for M14 signing mechanics including the shared strict validator.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/.github/workflows/release-signing-self-test.yml"
+    },
+    {
+      "type": "Runtime diagnostic",
+      "title": "Black Cat Quick Check",
+      "description": "Root-owned no-typing runtime evidence collector.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/config/live-build/includes.chroot/usr/local/bin/blackcat-check"
+    },
+    {
+      "type": "Build script",
+      "title": "Artifact Manifest Generator",
+      "description": "Unsigned build-provenance generator, intentionally distinct from M14 release authenticity.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/build/30-artifact-manifest.sh"
+    },
+    {
+      "type": "Test",
+      "title": "Static Project Checks",
+      "description": "Existing repository/static safety checks.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/tests/00-static-check.sh"
+    },
+    {
+      "type": "Automation",
+      "title": "Black Cat Boot Smoke Test",
+      "description": "Hosted UEFI/QEMU/live-userspace smoke test for the ISO path.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/.github/workflows/blackcat-boot-smoke.yml"
+    },
+    {
+      "type": "Automation",
+      "title": "PTL First Live Build",
+      "description": "Self-hosted ISO build/fingerprint plus hosted smoke gate.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/remove-chroot-systemd-boot/.github/workflows/ptl-live-build.yml"
+    },
+    {
+      "type": "Live page",
+      "title": "Public Living Project Page",
+      "description": "Public viewer driven by this GitHub index with candidate/release separation and project documentation.",
+      "url": "https://easyai.com.au/USB/project.php"
+    }
   ],
   "sections": [
-    {"title":"Automation Manifesto — proceed by default","content":"Safe, reversible, auditable, already-authorized engineering proceeds automatically until a genuine human gate is reached."},
-    {"title":"AI autonomy policy — when GPT continues automatically","content":"Routine safe work is AUTO/AUTO_WITH_CHECKS. Physical/destructive actions, secrets/credentials, trust ownership, protected merge/release and material security-policy choices remain HUMAN_GATE."},
-    {"title":"Recoverable AI chat continuity and context health","content":"AI_WORK_STATE.md is the compact recovery checkpoint; GREEN/AMBER/RED context health remains heuristic rather than a fabricated exact context percentage."},
-    {"title":"M13B physical result","content":"COMPLETE on the tested configuration. Corrected quick-check booted without old report Permission denied errors. Read-only lsblk showed the live USB mounted and internal 476.9G NVMe plus all four partitions with no mount points. Classification: OBSERVED on tested hardware, not universal/attested."},
-    {"title":"M14 authenticated release signing","content":"CURRENT. Generator, signer and verifier share a strict fail-closed validator for exact canonical JSON and an exact closed field/schema set. Detached Ed25519 signatures bind release ID/time, exact artifact filename/size/SHA-256, source/build identity and trusted release-public-key fingerprint. Expanded negative tests reject tampering, non-canonical JSON, unexpected fields, wrong filename, malformed signature, wrong key, unsupported key type and invalid release IDs."},
-    {"title":"M14 development-test evidence","content":"Equivalent updated M14 scripts/tests passed in an isolated local shell using ephemeral development keys only. This is LOCAL DEVELOPMENT EVIDENCE, not current-revision GitHub CI evidence. The Approved Release gate remains closed."},
-    {"title":"M14 production key human gate","content":"Production release-signing private-key ownership/custody must be deliberately selected by the operator. The decision covers generation/holding location, backup/recovery, revocation/replacement, public-key distribution, compromise response and automation policy. No production private key may be committed to GitHub or placed on the general-purpose builder merely for convenience."},
-    {"title":"M15 safe preparation without production authority","content":"The planned signed-UKI path has a Debian 13/systemd-ukify development design. It binds kernel, initrd, cmdline, OS release, uname and SBAT metadata, records UKI/section digests and requires negative tests. Only ephemeral DEVELOPMENT ONLY Secure Boot keys are permitted during this preparation. No firmware enrollment, target-disk write or production Secure Boot authority is authorized."},
-    {"title":"Future modular Black Cat sessions","content":"Non-essential applications are planned as pre-built ready-to-run modules outside the immutable trusted core. A future icon/checkbox selector and safe presets choose only the software needed for the current session, and module selection is coupled to explicit least-privilege capabilities. Where practical, unticked modules are not mounted/exposed at all."},
-    {"title":"Future external AI build workshop","content":"Natural-language tool creation should preferably build in a separate disposable VPS/VM workshop treated as untrusted. The workshop may design, compile and test but gets no trusted-core write authority or Black Cat production signing keys. Returned source/modules/manifests/tests remain potentially malicious until independently verified and capability-constrained by Black Cat."},
-    {"title":"Pre-desktop AI boundary","content":"A lightweight AI interface may eventually help choose modules or request new tools before the full desktop is assembled, but only after a minimal authenticated Black Cat environment and capability broker are active. This does not authorize firmware/pre-kernel LLM execution."},
-    {"title":"Release signing versus Secure Boot signing","content":"The M14 release-signing identity authenticates release metadata/artifact identity. The M15 Secure Boot/UKI signing identity authorizes executable boot artifacts under firmware policy. They remain logically distinct and must not silently share authority."},
-    {"title":"Current Test Candidate versus Approved ISO","content":"The exact M13B candidate remains development evidence. No Approved Black Cat ISO exists yet; production release-signing authority is not provisioned."},
-    {"title":"Zero-new-inbound automation policy","content":"Current M14/M15 work adds no inbound listener and no production secret to CI. The future modular/workshop design also does not authorize an inbound listener on the trusted core merely for convenience."},
-    {"title":"Future native AI project automation in Black Cat Linux","content":"M26 remains future work after M25, backed by fail-closed repository policy, a sandboxed capability broker, modular session software and an external untrusted AI workshop for heavy/generated builds."},
-    {"title":"Core trust chain","content":"Authenticated release reference -> verified USB image -> UEFI/Secure Boot -> measured boot/event log -> TPM evidence -> signed UKI -> dm-verity root -> immutable Linux -> RAM-backed state -> nonce-bound TPM Quote -> independent verifier -> attestation report."},
-    {"title":"Mandatory lessons discipline","content":"Meaningful sessions update lessons and affected technical/decision documents; AI_WORK_STATE.md maintains compact handoff state and project_content.json is written last."}
+    {
+      "title": "Automation Manifesto — proceed by default",
+      "content": "Safe, reversible, auditable, already-authorized engineering proceeds automatically until a genuine human gate is reached."
+    },
+    {
+      "title": "AI autonomy policy — when GPT continues automatically",
+      "content": "Routine safe work is AUTO/AUTO_WITH_CHECKS. Physical/destructive actions, secrets/credentials, trust ownership, protected merge/release and material security-policy choices remain HUMAN_GATE."
+    },
+    {
+      "title": "Recoverable AI chat continuity and context health",
+      "content": "AI_WORK_STATE.md is the compact recovery checkpoint; GREEN/AMBER/RED context health remains heuristic rather than a fabricated exact context percentage."
+    },
+    {
+      "title": "M13B physical result",
+      "content": "COMPLETE on the tested configuration. Corrected quick-check booted without old report Permission denied errors. Read-only lsblk showed the live USB mounted and internal 476.9G NVMe plus all four partitions with no mount points. Classification: OBSERVED on tested hardware, not universal/attested."
+    },
+    {
+      "title": "M14 authenticated release signing",
+      "content": "CURRENT. Generator, signer and verifier share a strict fail-closed validator for exact canonical JSON and an exact closed field/schema set. Detached Ed25519 signatures bind release ID/time, exact artifact filename/size/SHA-256, source/build identity and trusted release-public-key fingerprint. Expanded negative tests reject tampering, non-canonical JSON, unexpected fields, wrong filename, malformed signature, wrong key, unsupported key type and invalid release IDs."
+    },
+    {
+      "title": "M14 development-test evidence",
+      "content": "Equivalent updated M14 scripts/tests passed in an isolated local shell using ephemeral development keys only. This is LOCAL DEVELOPMENT EVIDENCE, not current-revision GitHub CI evidence. The Approved Release gate remains closed."
+    },
+    {
+      "title": "M14 production key human gate",
+      "content": "Production release-signing private-key ownership/custody must be deliberately selected by the operator. The decision covers generation/holding location, backup/recovery, revocation/replacement, public-key distribution, compromise response and automation policy. No production private key may be committed to GitHub or placed on the general-purpose builder merely for convenience."
+    },
+    {
+      "title": "M15 safe preparation without production authority",
+      "content": "The planned signed-UKI path has a Debian 13/systemd-ukify development design. It binds kernel, initrd, cmdline, OS release, uname and SBAT metadata, records UKI/section digests and requires negative tests. Only ephemeral DEVELOPMENT ONLY Secure Boot keys are permitted during this preparation. No firmware enrollment, target-disk write or production Secure Boot authority is authorized."
+    },
+    {
+      "title": "Future modular Black Cat sessions",
+      "content": "Non-essential applications are planned as pre-built ready-to-run modules outside the immutable trusted core. A future icon/checkbox selector and safe presets choose only the software needed for the current session, and module selection is coupled to explicit least-privilege capabilities. Where practical, unticked modules are not mounted/exposed at all."
+    },
+    {
+      "title": "Future external AI build workshop",
+      "content": "Natural-language tool creation should preferably build in a separate disposable VPS/VM workshop treated as untrusted. The workshop may design, compile and test but gets no trusted-core write authority or Black Cat production signing keys. Returned source/modules/manifests/tests remain potentially malicious until independently verified and capability-constrained by Black Cat."
+    },
+    {
+      "title": "Pre-desktop AI boundary",
+      "content": "A lightweight AI interface may eventually help choose modules or request new tools before the full desktop is assembled, but only after a minimal authenticated Black Cat environment and capability broker are active. This does not authorize firmware/pre-kernel LLM execution."
+    },
+    {
+      "title": "Release signing versus Secure Boot signing",
+      "content": "The M14 release-signing identity authenticates release metadata/artifact identity. The M15 Secure Boot/UKI signing identity authorizes executable boot artifacts under firmware policy. They remain logically distinct and must not silently share authority."
+    },
+    {
+      "title": "Current Test Candidate versus Approved ISO",
+      "content": "The exact M13B candidate remains development evidence. No Approved Black Cat ISO exists yet; production release-signing authority is not provisioned."
+    },
+    {
+      "title": "Zero-new-inbound automation policy",
+      "content": "Current M14/M15 work adds no inbound listener and no production secret to CI. The future modular/workshop design also does not authorize an inbound listener on the trusted core merely for convenience."
+    },
+    {
+      "title": "Future native AI project automation in Black Cat Linux",
+      "content": "M26 remains future work after M25, backed by fail-closed repository policy, a sandboxed capability broker, modular session software and an external untrusted AI workshop for heavy/generated builds."
+    },
+    {
+      "title": "Core trust chain",
+      "content": "Authenticated release reference -> verified USB image -> UEFI/Secure Boot -> measured boot/event log -> TPM evidence -> signed UKI -> dm-verity root -> immutable Linux -> RAM-backed state -> nonce-bound TPM Quote -> independent verifier -> attestation report."
+    },
+    {
+      "title": "Mandatory lessons discipline",
+      "content": "Meaningful sessions update lessons and affected technical/decision documents; AI_WORK_STATE.md maintains compact handoff state and project_content.json is written last."
+    }
   ],
   "milestones": [
-    {"id":"M01","title":"Research secure Linux, measured boot and attestation technologies","status":"complete"},
-    {"id":"M02","title":"Define trust model and claim boundaries","status":"complete"},
-    {"id":"M03","title":"Produce Trust Chain & Threat Model v0.1","status":"complete"},
-    {"id":"M04","title":"Create explainers and learning bridge","status":"complete"},
-    {"id":"M05","title":"Add evidence-history architecture","status":"complete"},
-    {"id":"M06","title":"Establish private GitHub canonical workspace","status":"complete"},
-    {"id":"M07","title":"Hardcode lessons-learned and JSON-last project rules","status":"complete"},
-    {"id":"M08","title":"Create Prototype Build Specification v0.1","status":"complete"},
-    {"id":"M09","title":"Create safe first-stage build scripts and static checks","status":"complete"},
-    {"id":"M10","title":"Create single-command real-builder evidence collector","status":"complete"},
-    {"id":"M11","title":"Run first real-builder report on clean Debian 13/trixie amd64","status":"complete"},
-    {"id":"M12","title":"Install verified build dependencies and rerun preflight","status":"complete"},
-    {"id":"M13","title":"Build and fingerprint first Debian Live reference artifact and physically boot it","status":"complete"},
-    {"id":"M13B","title":"Rebuild and physically retest Black Cat no-typing System Check after report-permission fix","status":"complete"},
-    {"id":"M14","title":"Implement authenticated release signing","status":"current"},
-    {"id":"M15","title":"Implement signed UKI and Secure Boot path","status":"planned"},
-    {"id":"M16","title":"Capture TPM PCRs and TCG event log on a capable target platform","status":"planned"},
-    {"id":"M17","title":"Implement dm-verity protected root","status":"planned"},
-    {"id":"M18","title":"Implement RAM-backed disposable runtime","status":"planned"},
-    {"id":"M19","title":"Generate nonce-bound TPM Quote and attestation bundle on a capable target platform","status":"planned"},
-    {"id":"M20","title":"Build independent attestation verifier","status":"planned"},
-    {"id":"M21","title":"Run mandatory positive and negative trust-chain tests","status":"planned"},
-    {"id":"M22","title":"Implement safe USB writer and read-back verification","status":"planned"},
-    {"id":"M23","title":"Perform independent multi-PC corroboration tests","status":"planned"},
-    {"id":"M24","title":"Security review and adversarial testing","status":"planned"},
-    {"id":"M25","title":"Publish first usable core prototype","status":"planned"},
-    {"id":"M26","title":"Integrate repository-governed AI project automation, modular session software and an external untrusted build workshop into Black Cat user space","status":"planned"},
-    {"id":"CCC","title":"Community Compute Commons implementation","status":"paused"}
+    {
+      "id": "M01",
+      "title": "Research secure Linux, measured boot and attestation technologies",
+      "status": "complete"
+    },
+    {
+      "id": "M02",
+      "title": "Define trust model and claim boundaries",
+      "status": "complete"
+    },
+    {
+      "id": "M03",
+      "title": "Produce Trust Chain & Threat Model v0.1",
+      "status": "complete"
+    },
+    {
+      "id": "M04",
+      "title": "Create explainers and learning bridge",
+      "status": "complete"
+    },
+    {
+      "id": "M05",
+      "title": "Add evidence-history architecture",
+      "status": "complete"
+    },
+    {
+      "id": "M06",
+      "title": "Establish private GitHub canonical workspace",
+      "status": "complete"
+    },
+    {
+      "id": "M07",
+      "title": "Hardcode lessons-learned and JSON-last project rules",
+      "status": "complete"
+    },
+    {
+      "id": "M08",
+      "title": "Create Prototype Build Specification v0.1",
+      "status": "complete"
+    },
+    {
+      "id": "M09",
+      "title": "Create safe first-stage build scripts and static checks",
+      "status": "complete"
+    },
+    {
+      "id": "M10",
+      "title": "Create single-command real-builder evidence collector",
+      "status": "complete"
+    },
+    {
+      "id": "M11",
+      "title": "Run first real-builder report on clean Debian 13/trixie amd64",
+      "status": "complete"
+    },
+    {
+      "id": "M12",
+      "title": "Install verified build dependencies and rerun preflight",
+      "status": "complete"
+    },
+    {
+      "id": "M13",
+      "title": "Build and fingerprint first Debian Live reference artifact and physically boot it",
+      "status": "complete"
+    },
+    {
+      "id": "M13B",
+      "title": "Rebuild and physically retest Black Cat no-typing System Check after report-permission fix",
+      "status": "complete"
+    },
+    {
+      "id": "M14",
+      "title": "Implement authenticated release signing",
+      "status": "current"
+    },
+    {
+      "id": "M15",
+      "title": "Implement signed UKI and Secure Boot path",
+      "status": "planned"
+    },
+    {
+      "id": "M16",
+      "title": "Capture TPM PCRs and TCG event log on a capable target platform",
+      "status": "planned"
+    },
+    {
+      "id": "M17",
+      "title": "Implement dm-verity protected root",
+      "status": "planned"
+    },
+    {
+      "id": "M18",
+      "title": "Implement RAM-backed disposable runtime",
+      "status": "planned"
+    },
+    {
+      "id": "M19",
+      "title": "Generate nonce-bound TPM Quote and attestation bundle on a capable target platform",
+      "status": "planned"
+    },
+    {
+      "id": "M20",
+      "title": "Build independent attestation verifier",
+      "status": "planned"
+    },
+    {
+      "id": "M21",
+      "title": "Run mandatory positive and negative trust-chain tests",
+      "status": "planned"
+    },
+    {
+      "id": "M22",
+      "title": "Implement safe USB writer and read-back verification",
+      "status": "planned"
+    },
+    {
+      "id": "M23",
+      "title": "Perform independent multi-PC corroboration tests",
+      "status": "planned"
+    },
+    {
+      "id": "M24",
+      "title": "Security review and adversarial testing",
+      "status": "planned"
+    },
+    {
+      "id": "M25",
+      "title": "Publish first usable core prototype",
+      "status": "planned"
+    },
+    {
+      "id": "M26",
+      "title": "Integrate repository-governed AI project automation, modular session software and an external untrusted build workshop into Black Cat user space",
+      "status": "planned"
+    },
+    {
+      "id": "CCC",
+      "title": "Community Compute Commons implementation",
+      "status": "paused"
+    }
   ],
   "decisions": [
-    {"date":"2026-09-08","title":"Reuse mature security components","text":"Use Debian, UEFI Secure Boot, systemd UKI, TPM 2.0 and dm-verity rather than inventing replacement primitives."},
-    {"date":"2026-09-08","title":"Independent verification is mandatory","text":"The target cannot be the sole authority deciding its own evidence is trustworthy."},
-    {"date":"2026-09-10","title":"GitHub is the canonical development workspace","text":"Documents, source and the living JSON index are versioned in the private repository."},
-    {"date":"2026-09-11","title":"Lessons learned are mandatory output","text":"Every meaningful session records lessons and affected documents before project_content.json is updated last."},
-    {"date":"2026-09-11","title":"Progressive hardening is mandatory","text":"Temporary weaker controls must be explicit, bounded and later replaced."},
-    {"date":"2026-09-12","title":"Physical boot is observation, not attestation","text":"Real-hardware success is scoped to the tested configuration unless stronger evidence upgrades it."},
-    {"date":"2026-09-12","title":"Current Test Candidate is separate from Approved ISO","text":"Development testing and release promotion remain separate states."},
-    {"date":"2026-09-12","title":"Systemd is the sole Black Cat quick-check evidence producer","text":"The root service produces evidence once; the login hook is display-only."},
-    {"date":"2026-09-12","title":"Automation Manifesto pre-pause check is mandatory","text":"Safe reversible work proceeds automatically until a genuine human gate."},
-    {"date":"2026-09-13","title":"Automation must not add new inbound attack surface for convenience","text":"Existing GitHub Actions remain the default automation infrastructure."},
-    {"date":"2026-09-13","title":"Root AI autonomy policy is the operational continue/stop authority","text":"AI_AUTONOMY_POLICY.md classifies automatic work and genuine human gates."},
-    {"date":"2026-09-13","title":"Compact repository state makes AI chat dropouts recoverable","text":"AI_WORK_STATE.md is the first-read recovery checkpoint."},
-    {"date":"2026-09-13","title":"M13B passes physical no-typing and internal-disk-default-unmounted gates","text":"The corrected candidate passed on the tested hardware/configuration as OBSERVED evidence."},
-    {"date":"2026-09-13","title":"M14 release authenticity uses canonical Ed25519-signed metadata","text":"Exact canonical release-manifest bytes are signed with a release identity distinct from Secure Boot signing. Ephemeral development keys may test mechanics; production key custody is a human trust-policy gate."},
-    {"date":"2026-09-15","title":"M14 manifest schema is closed and centrally validated","text":"Generator, signer and verifier use one strict canonical/schema validator. Unexpected fields and ambiguous/non-canonical representations fail closed; schema extension requires an explicit future version."},
-    {"date":"2026-09-15","title":"M15 preparation may use ephemeral keys without creating trust ownership","text":"Signed-UKI format/evidence/negative-test design can proceed with DEVELOPMENT ONLY ephemeral keys, but production Secure Boot key ownership/enrollment and firmware changes remain separate HUMAN_GATE actions."},
-    {"date":"2026-09-15","title":"Trusted core, selectable modules, untrusted AI workshop","text":"Black Cat will keep non-essential software outside the immutable trusted core as pre-built session modules. AI-generated tools should preferably be built in a separate disposable workshop that cannot grant itself trust, alter the core or hold production signing authority; returned artifacts cross an independent verification/capability boundary before activation."}
+    {
+      "date": "2026-09-08",
+      "title": "Reuse mature security components",
+      "text": "Use Debian, UEFI Secure Boot, systemd UKI, TPM 2.0 and dm-verity rather than inventing replacement primitives."
+    },
+    {
+      "date": "2026-09-08",
+      "title": "Independent verification is mandatory",
+      "text": "The target cannot be the sole authority deciding its own evidence is trustworthy."
+    },
+    {
+      "date": "2026-09-10",
+      "title": "GitHub is the canonical development workspace",
+      "text": "Documents, source and the living JSON index are versioned in the private repository."
+    },
+    {
+      "date": "2026-09-11",
+      "title": "Lessons learned are mandatory output",
+      "text": "Every meaningful session records lessons and affected documents before project_content.json is updated last."
+    },
+    {
+      "date": "2026-09-11",
+      "title": "Progressive hardening is mandatory",
+      "text": "Temporary weaker controls must be explicit, bounded and later replaced."
+    },
+    {
+      "date": "2026-09-12",
+      "title": "Physical boot is observation, not attestation",
+      "text": "Real-hardware success is scoped to the tested configuration unless stronger evidence upgrades it."
+    },
+    {
+      "date": "2026-09-12",
+      "title": "Current Test Candidate is separate from Approved ISO",
+      "text": "Development testing and release promotion remain separate states."
+    },
+    {
+      "date": "2026-09-12",
+      "title": "Systemd is the sole Black Cat quick-check evidence producer",
+      "text": "The root service produces evidence once; the login hook is display-only."
+    },
+    {
+      "date": "2026-09-12",
+      "title": "Automation Manifesto pre-pause check is mandatory",
+      "text": "Safe reversible work proceeds automatically until a genuine human gate."
+    },
+    {
+      "date": "2026-09-13",
+      "title": "Automation must not add new inbound attack surface for convenience",
+      "text": "Existing GitHub Actions remain the default automation infrastructure."
+    },
+    {
+      "date": "2026-09-13",
+      "title": "Root AI autonomy policy is the operational continue/stop authority",
+      "text": "AI_AUTONOMY_POLICY.md classifies automatic work and genuine human gates."
+    },
+    {
+      "date": "2026-09-13",
+      "title": "Compact repository state makes AI chat dropouts recoverable",
+      "text": "AI_WORK_STATE.md is the first-read recovery checkpoint."
+    },
+    {
+      "date": "2026-09-13",
+      "title": "M13B passes physical no-typing and internal-disk-default-unmounted gates",
+      "text": "The corrected candidate passed on the tested hardware/configuration as OBSERVED evidence."
+    },
+    {
+      "date": "2026-09-13",
+      "title": "M14 release authenticity uses canonical Ed25519-signed metadata",
+      "text": "Exact canonical release-manifest bytes are signed with a release identity distinct from Secure Boot signing. Ephemeral development keys may test mechanics; production key custody is a human trust-policy gate."
+    },
+    {
+      "date": "2026-09-15",
+      "title": "M14 manifest schema is closed and centrally validated",
+      "text": "Generator, signer and verifier use one strict canonical/schema validator. Unexpected fields and ambiguous/non-canonical representations fail closed; schema extension requires an explicit future version."
+    },
+    {
+      "date": "2026-09-15",
+      "title": "M15 preparation may use ephemeral keys without creating trust ownership",
+      "text": "Signed-UKI format/evidence/negative-test design can proceed with DEVELOPMENT ONLY ephemeral keys, but production Secure Boot key ownership/enrollment and firmware changes remain separate HUMAN_GATE actions."
+    },
+    {
+      "date": "2026-09-15",
+      "title": "Trusted core, selectable modules, untrusted AI workshop",
+      "text": "Black Cat will keep non-essential software outside the immutable trusted core as pre-built session modules. AI-generated tools should preferably be built in a separate disposable workshop that cannot grant itself trust, alter the core or hold production signing authority; returned artifacts cross an independent verification/capability boundary before activation."
+    }
   ],
   "changelog": [
-    {"date":"2026-09-08","version":"0.1","summary":"Initial trust chain and threat model."},
-    {"date":"2026-09-10","version":"0.2","summary":"Added External Evidence Anchoring."},
-    {"date":"2026-09-10","version":"0.3","summary":"Established GitHub as canonical workspace."},
-    {"date":"2026-09-11","version":"0.4","summary":"Locked Prototype 1 baseline and mandatory lessons process."},
-    {"date":"2026-09-11","version":"0.5","summary":"Added safe first-stage build tooling/static validation."},
-    {"date":"2026-09-11","version":"0.6","summary":"Paused Community Compute Commons implementation."},
-    {"date":"2026-09-11","version":"0.7","summary":"Provisioned first remote Debian builder/progressive hardening."},
-    {"date":"2026-09-11","version":"0.8","summary":"Established self-hosted Actions execution."},
-    {"date":"2026-09-11","version":"0.9","summary":"Verified builder toolchain/fixed preflight issues."},
-    {"date":"2026-09-12","version":"1.0","summary":"Black Cat branding, first physical USB boot and no-typing System Check."},
-    {"date":"2026-09-12","version":"1.1","summary":"Added controlled approved-ISO gate."},
-    {"date":"2026-09-12","version":"1.2","summary":"Hardened public viewer fail-closed behavior."},
-    {"date":"2026-09-12","version":"1.3","summary":"Synchronized protected token-file deployment/UEFI smoke harness."},
-    {"date":"2026-09-12","version":"1.4","summary":"Added workflow concurrency."},
-    {"date":"2026-09-12","version":"1.5","summary":"Froze exact M13B candidate and separated candidate/release distribution."},
-    {"date":"2026-09-12","version":"1.6","summary":"Fixed duplicate diagnostic execution after physical failure evidence."},
-    {"date":"2026-09-12","version":"1.7","summary":"Added Automation Manifesto/proceed-by-default autonomy."},
-    {"date":"2026-09-12","version":"1.8","summary":"Added reproducible cosmetic boot branding."},
-    {"date":"2026-09-12","version":"1.9","summary":"Added decode-before-digest branding validation."},
-    {"date":"2026-09-13","version":"2.0","summary":"Published corrected M13B candidate/viewer regression controls."},
-    {"date":"2026-09-13","version":"2.1","summary":"Restored builder/server status while separating telemetry from authority."},
-    {"date":"2026-09-13","version":"2.2","summary":"Added root AI_AUTONOMY_POLICY.md."},
-    {"date":"2026-09-13","version":"2.3","summary":"Added compact AI_WORK_STATE/context recovery."},
-    {"date":"2026-09-13","version":"2.4","summary":"Planned post-core M26 native AI project automation."},
-    {"date":"2026-09-13","version":"2.5","summary":"Baked M26 into fail-closed reusable scaffolding."},
-    {"date":"2026-09-13","version":"2.6","summary":"Recorded corrected M13B quick-check physical evidence."},
-    {"date":"2026-09-13","version":"2.7","summary":"Completed M13B internal-disk-default-unmounted physical gate and advanced to M14."},
-    {"date":"2026-09-13","version":"2.8","summary":"Implemented non-secret M14 authenticated release-signing mechanics: canonical Ed25519-signed release manifests, independent exact-artifact verification, negative tamper/wrong-key tests, CI self-test workflow, ADR-041 and signing documentation. Production signing-key custody remains a human gate and no approved release exists yet."},
-    {"date":"2026-09-15","version":"2.9","summary":"Hardened M14 with one strict closed-schema canonical manifest validator, broader fail-closed negative tests and successful local development self-test evidence using ephemeral keys; added key rotation/compromise baseline and safe M15 systemd-ukify preparation with DEVELOPMENT ONLY keys. Production release/Secure Boot trust ownership remains human-gated."},
-    {"date":"2026-09-15","version":"3.0","summary":"Recorded future Black Cat modular runtime and untrusted AI workshop architecture: a small immutable trusted core, pre-built selectable session modules with least-privilege capabilities, and external/disposable AI builds whose outputs remain untrusted until independently verified. Added docs/18, ADR-042, lessons and M26 roadmap refinement; no new runtime service or production trust authority was created."}
+    {
+      "date": "2026-09-17",
+      "version": "3.0.1",
+      "summary": "Published the exact artwork-enabled VM-tested ISO as Current Test Candidate through the existing JSON endpoint; preserved the M13B candidate as historical. No approved release."
+    },
+    {
+      "date": "2026-09-08",
+      "version": "0.1",
+      "summary": "Initial trust chain and threat model."
+    },
+    {
+      "date": "2026-09-10",
+      "version": "0.2",
+      "summary": "Added External Evidence Anchoring."
+    },
+    {
+      "date": "2026-09-10",
+      "version": "0.3",
+      "summary": "Established GitHub as canonical workspace."
+    },
+    {
+      "date": "2026-09-11",
+      "version": "0.4",
+      "summary": "Locked Prototype 1 baseline and mandatory lessons process."
+    },
+    {
+      "date": "2026-09-11",
+      "version": "0.5",
+      "summary": "Added safe first-stage build tooling/static validation."
+    },
+    {
+      "date": "2026-09-11",
+      "version": "0.6",
+      "summary": "Paused Community Compute Commons implementation."
+    },
+    {
+      "date": "2026-09-11",
+      "version": "0.7",
+      "summary": "Provisioned first remote Debian builder/progressive hardening."
+    },
+    {
+      "date": "2026-09-11",
+      "version": "0.8",
+      "summary": "Established self-hosted Actions execution."
+    },
+    {
+      "date": "2026-09-11",
+      "version": "0.9",
+      "summary": "Verified builder toolchain/fixed preflight issues."
+    },
+    {
+      "date": "2026-09-12",
+      "version": "1.0",
+      "summary": "Black Cat branding, first physical USB boot and no-typing System Check."
+    },
+    {
+      "date": "2026-09-12",
+      "version": "1.1",
+      "summary": "Added controlled approved-ISO gate."
+    },
+    {
+      "date": "2026-09-12",
+      "version": "1.2",
+      "summary": "Hardened public viewer fail-closed behavior."
+    },
+    {
+      "date": "2026-09-12",
+      "version": "1.3",
+      "summary": "Synchronized protected token-file deployment/UEFI smoke harness."
+    },
+    {
+      "date": "2026-09-12",
+      "version": "1.4",
+      "summary": "Added workflow concurrency."
+    },
+    {
+      "date": "2026-09-12",
+      "version": "1.5",
+      "summary": "Froze exact M13B candidate and separated candidate/release distribution."
+    },
+    {
+      "date": "2026-09-12",
+      "version": "1.6",
+      "summary": "Fixed duplicate diagnostic execution after physical failure evidence."
+    },
+    {
+      "date": "2026-09-12",
+      "version": "1.7",
+      "summary": "Added Automation Manifesto/proceed-by-default autonomy."
+    },
+    {
+      "date": "2026-09-12",
+      "version": "1.8",
+      "summary": "Added reproducible cosmetic boot branding."
+    },
+    {
+      "date": "2026-09-12",
+      "version": "1.9",
+      "summary": "Added decode-before-digest branding validation."
+    },
+    {
+      "date": "2026-09-13",
+      "version": "2.0",
+      "summary": "Published corrected M13B candidate/viewer regression controls."
+    },
+    {
+      "date": "2026-09-13",
+      "version": "2.1",
+      "summary": "Restored builder/server status while separating telemetry from authority."
+    },
+    {
+      "date": "2026-09-13",
+      "version": "2.2",
+      "summary": "Added root AI_AUTONOMY_POLICY.md."
+    },
+    {
+      "date": "2026-09-13",
+      "version": "2.3",
+      "summary": "Added compact AI_WORK_STATE/context recovery."
+    },
+    {
+      "date": "2026-09-13",
+      "version": "2.4",
+      "summary": "Planned post-core M26 native AI project automation."
+    },
+    {
+      "date": "2026-09-13",
+      "version": "2.5",
+      "summary": "Baked M26 into fail-closed reusable scaffolding."
+    },
+    {
+      "date": "2026-09-13",
+      "version": "2.6",
+      "summary": "Recorded corrected M13B quick-check physical evidence."
+    },
+    {
+      "date": "2026-09-13",
+      "version": "2.7",
+      "summary": "Completed M13B internal-disk-default-unmounted physical gate and advanced to M14."
+    },
+    {
+      "date": "2026-09-13",
+      "version": "2.8",
+      "summary": "Implemented non-secret M14 authenticated release-signing mechanics: canonical Ed25519-signed release manifests, independent exact-artifact verification, negative tamper/wrong-key tests, CI self-test workflow, ADR-041 and signing documentation. Production signing-key custody remains a human gate and no approved release exists yet."
+    },
+    {
+      "date": "2026-09-15",
+      "version": "2.9",
+      "summary": "Hardened M14 with one strict closed-schema canonical manifest validator, broader fail-closed negative tests and successful local development self-test evidence using ephemeral keys; added key rotation/compromise baseline and safe M15 systemd-ukify preparation with DEVELOPMENT ONLY keys. Production release/Secure Boot trust ownership remains human-gated."
+    },
+    {
+      "date": "2026-09-15",
+      "version": "3.0",
+      "summary": "Recorded future Black Cat modular runtime and untrusted AI workshop architecture: a small immutable trusted core, pre-built selectable session modules with least-privilege capabilities, and external/disposable AI builds whose outputs remain untrusted until independently verified. Added docs/18, ADR-042, lessons and M26 roadmap refinement; no new runtime service or production trust authority was created."
+    }
+  ],
+  "historical_candidates": [
+    {
+      "status": "historical-superseded",
+      "channel": "m13b-physical-test",
+      "filename": "live-image-amd64.hybrid.iso",
+      "size_bytes": 376438784,
+      "sha256": "cb14d25b7fd43e2b0e563efaada357d6ab196a42d717b016c4857f85968fe641",
+      "source_commit": "c56389b71ecd96270bdd047369378f5a94d8bf93",
+      "build_run": "34686464650",
+      "artifact_id": "10300658965",
+      "artifact_name": "ptl-first-live-build-34686464650",
+      "smoke_test": "passed",
+      "download_url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/34686464650/artifacts/10300658965",
+      "note": "TEST CANDIDATE — NOT AN APPROVED RELEASE. This exact candidate completed the M13B physical gates on the tested hardware/configuration. It remains development evidence while M14 adds authenticated release metadata and signing authority.",
+      "superseded_by": "f498776780c543013e437161a878e22ca4fc40a66f47fc271d6fd6a964c29d75"
+    }
   ]
 }
