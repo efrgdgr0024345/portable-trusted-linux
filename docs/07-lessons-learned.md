@@ -1077,3 +1077,16 @@ The current viewer accepts any syntactically valid HTTPS candidate URL once othe
 ## 2026-09-17 — JSON-only live publication completed
 
 The existing PHP required no deployment. Updating project_content.json on its configured source branch with the compatible status value and exact evidence-bound identity immediately refreshed the live page. The post-publication check matched every required field and confirmed the approved-release gate remained closed. This validates the intended operational pattern: publish compatible JSON, then verify the rendered live page rather than assuming repository success equals operator-facing success.
+
+## 2026-09-17 — Scan verified extracted content once, with container identity checked separately
+
+### What happened
+
+The exact artifact ZIP and ISO matched their recorded SHA-256 values on an independent GitHub-hosted runner. A first ClamAV pass tried to scan the ZIP, ISO, extracted ISO tree and extracted SquashFS root together. The nested containers repeated the same payload and exhausted the bounded scan time, producing only `Heuristics.Limits.Exceeded.MaxScanTime` alerts. A corrected run kept the cryptographic checks, extracted the image without mounting or executing it, removed the verified container copies, and scanned the resulting files once.
+
+Final run `35231392125` completed with ClamAV exit 0: 43,350 files and 5,548 directories scanned, 0 infected files, 3.42 GiB processed after archive expansion. This is one-engine static evidence, not proof of safety or release approval.
+
+### Lesson
+
+For large nested release artifacts, bind identity with hashes at each container boundary, then scan the uniquely extracted payload. Treat scanner-limit alerts and workflow failures as inconclusive rather than malware findings or clean results. Report the completed scanner summary, its scope and its limits before advising physical use.
+
