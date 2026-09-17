@@ -9,6 +9,7 @@ require_cmd lb
 require_cmd git
 require_cmd base64
 require_cmd sha256sum
+require_cmd jq
 
 BUILD_ID="${BUILD_ID:-$(new_build_id)}"
 # CI uses a unique directory outside the repository checkout so root-owned
@@ -53,6 +54,18 @@ cp -a /usr/share/live/build/bootloaders/. config/bootloaders/
 if [[ -d "${PTL_CONFIG_DIR}/live-build" ]]; then
   cp -a "${PTL_CONFIG_DIR}/live-build/." config/
 fi
+
+# Embed immutable source/build identity for offline diagnostics. This is build
+# evidence; it is not a release signature or approval.
+repository_commit="$(git -C "${PTL_ROOT}" rev-parse HEAD 2>/dev/null || printf unknown)"
+repository_ref="${PTL_SOURCE_REF:-$(git -C "${PTL_ROOT}" branch --show-current 2>/dev/null || printf unknown)}"
+mkdir -p config/includes.chroot/usr/share/blackcat
+jq -n \
+  --arg build_id "$BUILD_ID" \
+  --arg repository_commit "$repository_commit" \
+  --arg repository_ref "$repository_ref" \
+  '{schema_version:"0.1",product:"Black Cat",evidence_class:"BUILD_EVIDENCE",build_id:$build_id,repository_commit:$repository_commit,repository_ref:$repository_ref}' \
+  > config/includes.chroot/usr/share/blackcat/build-source.json
 
 # Branding asset policy:
 # - source is a compact repository-tracked base64 representation, so no network
@@ -112,20 +125,35 @@ log "Canonical Black Cat wallpaper and six interface icons verified"
 # GitHub's contents API stores new text files without executable mode metadata.
 # Apply runtime modes explicitly during preparation so the generated image does
 # not depend on repository file-mode transport.
-if [[ -f config/includes.chroot/usr/local/bin/blackcat-check ]]; then
-  chmod 0755 config/includes.chroot/usr/local/bin/blackcat-check
-fi
-if [[ -f config/includes.chroot/usr/local/bin/blackcat-session-start ]]; then
-  chmod 0755 config/includes.chroot/usr/local/bin/blackcat-session-start
-fi
+for executable in \
+  config/includes.chroot/usr/local/bin/blackcat-check \
+  config/includes.chroot/usr/local/bin/blackcat-session-start \
+  config/includes.chroot/usr/local/bin/blackcat-session-ready \
+  config/includes.chroot/usr/local/sbin/blackcat-diagnostics \
+  config/includes.chroot/usr/local/sbin/blackcat-boot-monitor \
+  config/includes.chroot/usr/local/sbin/blackcat-recovery \
+  config/includes.chroot/usr/local/sbin/blackcat-export-report; do
+  [[ -f "$executable" ]] && chmod 0755 "$executable"
+done
 if [[ -f config/includes.chroot/etc/profile.d/blackcat-auto-check.sh ]]; then
   chmod 0644 config/includes.chroot/etc/profile.d/blackcat-auto-check.sh
 fi
+mkdir -p config/includes.chroot/etc/systemd/system/multi-user.target.wants
 if [[ -f config/includes.chroot/etc/systemd/system/blackcat-check.service ]]; then
   chmod 0644 config/includes.chroot/etc/systemd/system/blackcat-check.service
-  mkdir -p config/includes.chroot/etc/systemd/system/multi-user.target.wants
   ln -sfn ../blackcat-check.service \
     config/includes.chroot/etc/systemd/system/multi-user.target.wants/blackcat-check.service
+fi
+if [[ -f config/includes.chroot/etc/systemd/system/blackcat-boot-monitor.service ]]; then
+  chmod 0644 config/includes.chroot/etc/systemd/system/blackcat-boot-monitor.service
+  ln -sfn ../blackcat-boot-monitor.service \
+    config/includes.chroot/etc/systemd/system/multi-user.target.wants/blackcat-boot-monitor.service
+fi
+if [[ -f config/includes.chroot/etc/systemd/system/blackcat-recovery.service ]]; then
+  chmod 0644 config/includes.chroot/etc/systemd/system/blackcat-recovery.service
+fi
+if [[ -f config/includes.chroot/etc/xdg/autostart/blackcat-session-ready.desktop ]]; then
+  chmod 0644 config/includes.chroot/etc/xdg/autostart/blackcat-session-ready.desktop
 fi
 
 cat > "${ARTIFACT_DIR}/prepare.json" <<EOF
@@ -137,7 +165,7 @@ cat > "${ARTIFACT_DIR}/prepare.json" <<EOF
   "work_dir": "${WORK_DIR}",
   "boot_splash_sha256": "${splash_sha}",
   "prepared_utc": "$(date -u '+%Y-%m-%dT%H:%M:%SZ')",
-  "repository_commit": "$(git -C "${PTL_ROOT}" rev-parse HEAD 2>/dev/null || printf 'unknown')"
+  "repository_commit": "${repository_commit}"
 }
 EOF
 
