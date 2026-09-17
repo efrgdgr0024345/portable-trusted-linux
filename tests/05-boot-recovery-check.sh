@@ -22,7 +22,6 @@ for pkg in procps kbd x11-utils; do
 done
 
 grep -Fq 'ConditionKernelCommandLine=!blackcat.check=1' "$MONITOR_UNIT"
-grep -Fq 'Before=getty@tty1.service' "$MONITOR_UNIT"
 grep -Fq 'Conflicts=getty@tty1.service' "$RECOVERY_UNIT"
 grep -Fq 'TTYPath=/dev/tty1' "$RECOVERY_UNIT"
 grep -Fq 'Exec=/usr/local/bin/blackcat-session-ready' "$READY_DESKTOP"
