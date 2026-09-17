@@ -31,13 +31,19 @@ QEMU 10.0.13 used OVMF UEFI, TCG, 2 vCPU, 2048 MiB, no guest NIC and no host dis
 
 The VM reported UEFI; Secure Boot `UNKNOWN`; TPM and TCG event log `NOT_EXPOSED`; dm-verity `NOT_ACTIVE`; network `NO_ACTIVE_LINK_OBSERVED`. These are development observations, not verified security or physical-hardware claims.
 
+## Exact-candidate malware triage
+
+Disposable GitHub-hosted run `35231392125` independently downloaded artifact `10480220416`, matched ZIP SHA-256 `e7d6a6202aa9acf998e407070021cdf0b26cebd330d361afe7b00dbef09a96ba`, extracted the sole ISO, and matched ISO size `770703360` and SHA-256 `f498776780c543013e437161a878e22ca4fc40a66f47fc271d6fd6a964c29d75`. ClamAV 1.5.3 scanned 43,350 files in the extracted ISO/root filesystem and reported 0 infected files with exit 0. See `docs/22-candidate-malware-triage.md`.
+
+This is bounded one-engine static evidence. It does not explain Chrome's warning, prove safety, authenticate the original build authority, or approve a release. Verify the locally downloaded ISO hash before Rufus.
+
 ## Next automatic actions
 
-Live candidate publication is complete. The page was accepted at 2026-09-17T09:17:52Z against blob `f012581ef46bfa8b1977d82727c55b91c3ce864a`; no PHP replacement occurred. Prepare the physical-test checklist without selecting or writing a device.
+Live candidate publication and bounded static malware triage are complete. The page was accepted at 2026-09-17T09:17:52Z against blob `f012581ef46bfa8b1977d82727c55b91c3ce864a`; no PHP replacement occurred. The next automatic preparation is the physical-test checklist. The operator should verify the downloaded ISO's SHA-256 before Rufus.
 
 ## Next genuine human gate
 
-The authoritative live-page verification passed. Obtain explicit approval for the exact spare USB device, then follow `docs/13-physical-boot-test.md`. Do not write a device, merge to main, create production signing authority, approve a release or deploy without the corresponding human gate.
+The authoritative live-page verification and bounded static scan passed. Obtain explicit approval for the exact spare USB device, confirm the local ISO SHA-256, then follow `docs/13-physical-boot-test.md`. Do not merge to main, create production signing authority, approve a release or deploy without the corresponding human gate.
 
 ## Context health
 
