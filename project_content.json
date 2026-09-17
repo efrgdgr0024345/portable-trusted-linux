@@ -1,9 +1,9 @@
 {
   "title": "Black Cat",
   "version": "3.5",
-  "phase": "JSON-only live candidate publication execution",
+  "phase": "Artwork-enabled candidate published and ready for physical-test device selection",
   "updated": "2026-09-17",
-  "summary": "The artwork candidate remains the intended physical-test image. Its artifact is available, evidence identity is reverified, and persistent viewer compatibility/negative fixtures are added. Publication JSON and live acceptance remain pending until the final source check passes.",
+  "summary": "The exact artwork-enabled ISO passed its bounded VM gates and is now published through the existing JSON-only live-page path. The live page was verified field-by-field; physical USB selection/write and hardware validation remain pending. No approved release exists.",
   "candidate": {
     "status": "ready-for-physical-testing",
     "channel": "graphical-physical-test",
@@ -862,6 +862,11 @@
     {
       "date": "2026-09-17",
       "version": "3.5",
+      "summary": "Completed JSON-only live publication. Verified exact candidate identity/link and closed release gate on the live page; PHP unchanged. JSON written last."
+    },
+    {
+      "date": "2026-09-17",
+      "version": "3.5",
       "summary": "Added persistent candidate publication fixtures and reverified artifact/evidence/viewer contract. JSON publication awaits exact-head source check. JSON written last."
     },
     {
@@ -1192,21 +1197,23 @@
     "checkpoint": "AI_WORK_STATE.md",
     "review_branch": "codex/graphical-evidence-review",
     "merged": false,
-    "next_action": "Wait for the exact-head source check. If successful, narrowly update project_content.json on codex/remove-chroot-systemd-boot with status test and exact artwork identity, then verify the live page field-by-field.",
+    "next_action": "Prepare the physical-test checklist, then obtain explicit confirmation of the exact spare USB target before any write.",
     "last_passed_source_check": {
-      "run": 35180150390,
-      "commit": "c1b623d0989c4c6d30814f4b92b80a44b79f501a"
+      "run": 35204175860,
+      "commit": "f36893104392afbb6c7a67544e6a440cce7f193d"
     },
     "completion_scope": "Exact artwork candidate built and bounded VM gates observed; physical, production signing, release, merge and deployment gates remain.",
     "checkpoint_contract": "Strict continuity headings restored and statically guarded.",
     "live_candidate_handoff": {
       "url": "https://easyai.com.au/USB/project.php",
-      "status": "fixtures-committed-source-check-pending-before-json-publication",
-      "last_observed_source_branch": "codex/remove-chroot-systemd-boot",
+      "status": "complete-live-verified",
+      "source_branch": "codex/remove-chroot-systemd-boot",
+      "json_blob": "f012581ef46bfa8b1977d82727c55b91c3ce864a",
+      "verified_at": "2026-09-17T09:17:52Z",
+      "php_replaced": false,
       "fail_closed": true,
-      "plan": "docs/21-json-only-candidate-publication-plan.md",
-      "author_model": "Codex, GPT-5-based; exact deployed model/version unavailable",
-      "human_signoff_required_for_deviation": true
+      "exact_fields_matched": true,
+      "approved_release": "none"
     }
   },
   "capabilities": [
