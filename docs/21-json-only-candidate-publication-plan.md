@@ -2,7 +2,7 @@
 
 Author: Codex, GPT-5-based assistant. Exact deployed model/version is not exposed in this session; no stronger/lighter tier is claimed.
 Authority: User instruction to rewrite the resolution plan and require human sign-off for lower-model deviations.
-Status: Plan recorded; publication implementation and live acceptance remain pending.
+Status: Execution in progress; artifact/evidence and viewer contract reverified, persistent fixture tests added; JSON publication and live acceptance pending.
 
 ## Binding execution rule
 

@@ -1069,3 +1069,7 @@ The user correctly identified that routine ISO updates should not require PHP re
 ## 2026-09-17 — Model hierarchy rule covers all plans, ideas and suggestions
 
 The operator clarified that the human-signoff restriction is project-wide: any higher-model plan, idea or suggestion cannot be changed by a lower model without explicit human sign-off. The prior wording over-focused on one publication plan. Root policy and recovery state now state the broader scope, provenance requirements, unknown-rank handling and prohibition on self-approved exceptions. No live publication or ISO change was made in this policy-only session.
+
+## 2026-09-17 — Prepublication compatibility must test more than HTTPS syntax
+
+The current viewer accepts any syntactically valid HTTPS candidate URL once other fields pass. The binding recovery plan therefore adds a stricter prepublication check that binds the run, artifact ID/name and URL to the evidence report. Fixtures also prove missing hashes, wrong status and incomplete identity disable the viewer handoff. This is preparation evidence; the live JSON had not yet been changed at the time of this lesson.

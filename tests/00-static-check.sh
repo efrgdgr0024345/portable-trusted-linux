@@ -152,6 +152,12 @@ else
   printf '[SKIP]    jq unavailable; JSON/candidate/policy checks skipped\n'
 fi
 
+if command -v php >/dev/null 2>&1; then
+  php "${ROOT_DIR}/tests/04-candidate-publication-contract.php" || failures=1
+else
+  printf '[SKIP]    php unavailable; candidate publication fixture checks skipped\n'
+fi
+
 for script in \
   "${ROOT_DIR}"/build/*.sh \
   "${ROOT_DIR}"/tests/*.sh \

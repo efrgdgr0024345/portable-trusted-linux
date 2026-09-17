@@ -33,7 +33,7 @@ The VM reported UEFI; Secure Boot `UNKNOWN`; TPM and TCG event log `NOT_EXPOSED`
 
 ## Next automatic actions
 
-Execute `docs/21-json-only-candidate-publication-plan.md`: update compatible JSON at the deployed viewer's actual source branch, without a PHP replacement. Verify the live candidate before handoff. The project-status-live migration proposal is superseded for this repair. Lower/lighter models must follow the plan or obtain explicit human sign-off for deviations.
+Execute `docs/21-json-only-candidate-publication-plan.md`: artifact/evidence and the viewer contract are reverified; persistent compatibility/negative fixtures are added. After their source check passes, update compatible JSON at the deployed viewer's actual source branch, without a PHP replacement. Verify the live candidate before handoff. The project-status-live migration proposal is superseded for this repair. Lower/lighter models must follow the plan or obtain explicit human sign-off for deviations.
 
 ## Next genuine human gate
 
