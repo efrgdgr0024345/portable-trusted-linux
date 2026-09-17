@@ -19,6 +19,9 @@ pciutils
 usbutils
 util-linux
 kmod
+procps
+kbd
+x11-utils
 
 # Graphical UI prototype; not a security-enforcing module loader.
 xserver-xorg
