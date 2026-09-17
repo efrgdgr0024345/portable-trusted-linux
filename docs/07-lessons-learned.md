@@ -1025,3 +1025,19 @@ BUILD AND SAME-BUILDER IDENTITY OBSERVED / GUI PANEL AND QUICK-CHECK REPORT OBSE
 ### Source validation follow-through
 
 Run 35155024291 passed at a1a9afc3d2fba6d5c81ace22019493f4a951ec32 after the false-positive fixes and restoration of the shared signing validator's executable bit. Positive and negative Ed25519 development tests, static guards, PHP 8.4.24 lint and viewer fixtures all passed. The tracked executable-bit defect was a real tooling failure distinct from the two false positives; no production signing key was created. The handoff records the still-pending VM interactions, diagnostic settling, physical test and deployment boundaries.
+
+## 2026-09-17 — Exact artwork candidate completed its bounded VM gate
+
+### What was attempted
+
+Integrate the canonical Black Cat artwork into the graphical live image, keep every visible control usable, and exercise the exact resulting ISO through both graphical interaction and System Check paths.
+
+### What happened
+
+Seven of the 18 canonical design files were selected for the build: one wallpaper and six category icons. Checksummed repository copies prevented silent asset substitution. The first artwork build exposed two real integration defects: the fixed-height panel clipped lower controls, and static Xfce wallpaper configuration did not reliably target the live session's actual property. Increasing the panel height and applying the wallpaper through a session-start wrapper resolved both. The System Check path also exposed an unbounded Plymouth wait; a command-line-conditioned service override removed that wait only for `blackcat.check=1`.
+
+The corrected ISO, SHA-256 `f498776780c543013e437161a878e22ca4fc40a66f47fc271d6fd6a964c29d75`, was built in run `35179377345`. Run `35180150392` observed Browser selection, CLEAR, OPEN DESKTOP, a stable wallpaper across two captures, and the settled System Check photo prompt. Secure Boot remained `UNKNOWN`, TPM and TCG log were `NOT_EXPOSED`, and dm-verity was `NOT_ACTIVE` in this VM.
+
+### Lesson
+
+Visual source inclusion is not proof of usable integration: exact-image interaction and post-login state must be observed. Runtime desktop configuration can be more reliable than assuming a static channel/property path. Boot-time waits need a bounded diagnostic-mode design. Asset accounting must distinguish “available in the design folder” from “selected for this build,” and VM success must remain separate from physical and release approval.

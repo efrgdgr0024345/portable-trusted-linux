@@ -6,15 +6,15 @@ The project explores a portable, independently verifiable Linux environment for 
 
 Internal repository names, `PTL_` environment variables, workflow names and evidence identifiers remain unchanged for stability. The Black Cat change is branding, not a trust-model or protocol rename.
 
-## Current status — evidence review, 16 September 2026
+## Current status — artwork candidate VM gate complete, 17 September 2026
 
-**Active outcome: demonstrate the exact graphical development candidate in a VM, retain System Check, then prepare a spare-USB physical test. No approved release exists.**
+**Active outcome: prepare the exact artwork-enabled graphical candidate for a controlled spare-USB physical test. Its bounded VM gates passed; no approved release exists.**
 
 | Capability | Evidence stage | Scope |
 | --- | --- | --- |
-| Graphical ISO construction | CI build observed | Source `86ddbb8eac1a0dbf912c035d5b916b70453dff88`, run `35095923202` |
-| Preserved ISO identity | Rehashed on builder | 770,703,360 bytes; SHA-256 `81f702cd9e59d4d7ba5654e6a69dbd655617968f92381049881930aef9b2fcb7`; recovery run `35107102698` |
-| Graphical boot and new-image System Check | VM panel/report observed; interaction/settling pending | See the current evidence report; no physical evidence for this new image |
+| Graphical ISO construction | CI build observed | Artwork source `ed5d80ac09c3f1650d67594242643d27efcf15e9`, run `35179377345` |
+| Preserved ISO identity | Build and VM harness checked | 770,703,360 bytes; SHA-256 `f498776780c543013e437161a878e22ca4fc40a66f47fc271d6fd6a964c29d75` |
+| Graphical boot and System Check | VM interactions and settled prompt observed | Run `35180150392`; physical evidence for this exact image remains pending |
 | Earlier M13B physical boot | Previously observed on one machine | Different 376,438,784-byte image `cb14d25b…`; never transfer that observation to this graphical image |
 | Release signing | Development implementation | Ephemeral-key tests; production key custody remains undecided |
 | Secure Boot / TPM attestation / dm-verity guarantees | Planned or incomplete | A successful build or attractive desktop does not verify them |
@@ -25,7 +25,7 @@ Internal repository names, `PTL_` environment variables, workflow names and evid
 - [Compact working state](AI_WORK_STATE.md)
 - The integrated branch preserves both the USB development history and the parallel Console/Focus history. Merge to main requires approval under the existing autonomy policy.
 - The public viewer source now presents capability evidence instead of a single completion percentage. It is prepared for reconciled main; it has not been deployed in this session.
-- Artifact upload in the original build failed because GitHub Actions storage was full. Builder recovery worked; artifact publication, build success and boot success are separate facts.
+- The current artifact upload succeeded as `blackcat-graphical-development-35179377345` (ID `10480220416`). Artifact publication, build success, VM observations and physical success remain separate facts.
 
 ## No-typing diagnostic path
 

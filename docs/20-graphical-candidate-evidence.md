@@ -1,5 +1,31 @@
 # Graphical candidate evidence and handoff — 16 September 2026
 
+## Authoritative current candidate — 17 September 2026
+
+This section supersedes the earlier candidate identity below while preserving that history. The exact artwork-enabled candidate is:
+
+| Field | Observed value |
+| --- | --- |
+| Filename | `live-image-amd64.hybrid.iso` |
+| Size | `770703360` bytes |
+| SHA-256 | `f498776780c543013e437161a878e22ca4fc40a66f47fc271d6fd6a964c29d75` |
+| Source | `ed5d80ac09c3f1650d67594242643d27efcf15e9` |
+| Build run | `35179377345` |
+| Artifact | `blackcat-graphical-development-35179377345` (ID `10480220416`) |
+| VM evidence run | `35180150392` |
+| Evidence harness | `c1b623d0989c4c6d30814f4b92b80a44b79f501a` |
+
+The VM evidence used QEMU 10.0.13 with OVMF UEFI, TCG, 2 vCPU, 2048 MiB, no guest NIC and no host disks. The panel displayed all six selected cat icons and the canonical tagline. Browser selection and CLEAR changed the request summary as designed; no feature was activated. OPEN DESKTOP removed the preview, and two successive captures showed the canonical black-cat wallpaper. The separate System Check path reached its stable photo prompt after 140 seconds.
+
+Observed diagnostic values were UEFI; Secure Boot `UNKNOWN`; TPM and TCG event log `NOT_EXPOSED`; dm-verity `NOT_ACTIVE`; and network `NO_ACTIVE_LINK_OBSERVED`. These are VM observations, not security guarantees.
+
+Preserved frames and the machine-readable report are in [`evidence/2026-09-17-artwork-candidate/`](../evidence/2026-09-17-artwork-candidate/). Physical testing of this exact image, production signing, release approval, merge and deployment remain pending.
+
+### Design-asset scope
+
+The canonical folder contains 18 files. This candidate intentionally uses seven selected files: `image-gen-8.png` as the optimized wallpaper and six cat illustrations for Browser, Network, Office/PDF, AI, Developer and Security. Optimization changed the wallpaper encoding, not its intended visual content. The remaining design files are retained as references; “all artwork was used” is not claimed.
+
+
 ## What is established
 
 The preserved development ISO was rehashed and booted in two separate UEFI virtual-machine sessions on the existing builder. The actual Xfce desktop and Black Cat session panel were observed. The alternate System Check entry produced the Quick Check report. These are scoped **OBSERVED** results, not release approval or hardware attestation.

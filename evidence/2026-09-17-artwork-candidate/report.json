@@ -1,0 +1,73 @@
+{
+  "classification": "OBSERVED",
+  "filename": "live-image-amd64.hybrid.iso",
+  "size_bytes": 770703360,
+  "sha256": "f498776780c543013e437161a878e22ca4fc40a66f47fc271d6fd6a964c29d75",
+  "source_commit": "ed5d80ac09c3f1650d67594242643d27efcf15e9",
+  "build_run": 35179377345,
+  "artifact": {
+    "name": "blackcat-graphical-development-35179377345",
+    "id": 10480220416,
+    "upload": "success"
+  },
+  "builder_copy": "/home/github-runner/blackcat-builds/run-35179377345-attempt-1/live-image-amd64.hybrid.iso",
+  "boot_run": 35180150392,
+  "test_source_commit": "c1b623d0989c4c6d30814f4b92b80a44b79f501a",
+  "environment": {
+    "host": "ptl-builder-01",
+    "qemu": "10.0.13",
+    "firmware": "OVMF UEFI",
+    "acceleration": "TCG",
+    "memory_mib": 2048,
+    "vcpus": 2,
+    "guest_nic": false,
+    "host_disks_attached": false
+  },
+  "design": {
+    "folder": "/linux usb project/Graphical design for black cat project",
+    "file_count": 18,
+    "selected_build_assets": 7,
+    "wallpaper": "image-gen-8.png",
+    "categories": [
+      "Browser",
+      "Network",
+      "Office / PDF",
+      "AI",
+      "Developer",
+      "Security"
+    ],
+    "tagline": "Stealth. Intelligence. Independence.",
+    "status": "observed"
+  },
+  "gui": {
+    "status": "GUI_INTERACTIONS_OBSERVED",
+    "browser_selection": "Requested (NOT activated): Browser",
+    "clear": "Requested (NOT activated): none",
+    "open_desktop": "preview absent in two successive frames; wallpaper observed",
+    "frames": [
+      "gui-selected.png",
+      "gui-cleared.png",
+      "desktop.png"
+    ]
+  },
+  "quick_check": {
+    "status": "QUICK_CHECK_SETTLED_PROMPT_OBSERVED",
+    "elapsed_seconds": 140,
+    "frame": "check-settled.png",
+    "uefi": true,
+    "secure_boot": "UNKNOWN",
+    "tpm": "NOT_EXPOSED",
+    "tcg_event_log": "NOT_EXPOSED",
+    "dm_verity": "NOT_ACTIVE",
+    "network": "NO_ACTIVE_LINK_OBSERVED",
+    "kernel": "6.12.107+deb13-amd64",
+    "architecture": "x86_64"
+  },
+  "physical_test": "not_run_for_this_image",
+  "release_approval": "none",
+  "limits": [
+    "Development VM observations only; no physical boot evidence for this exact image.",
+    "Security signals reported UNKNOWN, NOT_EXPOSED or NOT_ACTIVE are not verified guarantees.",
+    "Production signing, release approval, merge and deployment remain pending."
+  ]
+}
