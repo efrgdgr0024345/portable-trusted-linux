@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -u
+
+wallpaper=/usr/share/backgrounds/blackcat/blackcat-design-wallpaper.jpg
+if command -v xfconf-query >/dev/null 2>&1 && [[ -r "$wallpaper" ]]; then
+  mapfile -t properties < <(xfconf-query -c xfce4-desktop -l 2>/dev/null | grep '/last-image$' || true)
+  if (( ${#properties[@]} == 0 )); then
+    properties=(/backdrop/screen0/monitorVirtual-1/workspace0/last-image)
+  fi
+  for property in "${properties[@]}"; do
+    xfconf-query -c xfce4-desktop -p "$property" --create -t string -s "$wallpaper" 2>/dev/null || true
+    style="${property%/last-image}/image-style"
+    xfconf-query -c xfce4-desktop -p "$style" --create -t int -s 5 2>/dev/null || true
+  done
+fi
+
+exec /usr/bin/python3 /usr/local/bin/blackcat-session-ui

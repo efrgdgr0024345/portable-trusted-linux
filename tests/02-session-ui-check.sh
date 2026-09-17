@@ -3,6 +3,7 @@ set -Eeuo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 UI="$ROOT/config/live-build/includes.chroot/usr/local/bin/blackcat-session-ui"
 AUTOSTART="$ROOT/config/live-build/includes.chroot/etc/xdg/autostart/blackcat-session-ui.desktop"
+SESSION_START="$ROOT/config/live-build/includes.chroot/usr/local/bin/blackcat-session-start"
 PLYMOUTH_DROPIN="$ROOT/config/live-build/includes.chroot/etc/systemd/system/plymouth-quit-wait.service.d/blackcat-check.conf"
 WALLPAPER_CONFIG="$ROOT/config/live-build/includes.chroot/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
 DESIGN_ASSETS="$ROOT/assets/design"
@@ -24,7 +25,9 @@ if command -v python3 >/dev/null; then
   trap 'rm -rf "$TMP"' EXIT
   PYTHONPYCACHEPREFIX="$TMP" python3 -m py_compile "$UI"
 fi
-grep -Fq 'Exec=/usr/bin/python3 /usr/local/bin/blackcat-session-ui' "$AUTOSTART"
+grep -Fq 'Exec=/usr/local/bin/blackcat-session-start' "$AUTOSTART"
+grep -Fq 'xfconf-query -c xfce4-desktop' "$SESSION_START"
+grep -Fq 'exec /usr/bin/python3 /usr/local/bin/blackcat-session-ui' "$SESSION_START"
 grep -Fq 'ConditionKernelCommandLine=!blackcat.check=1' "$PLYMOUTH_DROPIN"
 grep -Fq '/usr/share/backgrounds/blackcat/blackcat-design-wallpaper.jpg' "$WALLPAPER_CONFIG"
 for asset in blackcat-design-wallpaper.jpg browser.png network.png office.png ai.png developer.png security.png; do

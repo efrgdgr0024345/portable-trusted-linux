@@ -115,6 +115,9 @@ log "Canonical Black Cat wallpaper and six interface icons verified"
 if [[ -f config/includes.chroot/usr/local/bin/blackcat-check ]]; then
   chmod 0755 config/includes.chroot/usr/local/bin/blackcat-check
 fi
+if [[ -f config/includes.chroot/usr/local/bin/blackcat-session-start ]]; then
+  chmod 0755 config/includes.chroot/usr/local/bin/blackcat-session-start
+fi
 if [[ -f config/includes.chroot/etc/profile.d/blackcat-auto-check.sh ]]; then
   chmod 0644 config/includes.chroot/etc/profile.d/blackcat-auto-check.sh
 fi
