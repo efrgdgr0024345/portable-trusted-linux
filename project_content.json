@@ -1,9 +1,9 @@
 {
   "title": "Black Cat",
-  "version": "3.5",
-  "phase": "Artwork-enabled candidate published and ready for physical-test device selection",
+  "version": "3.6",
+  "phase": "Artwork-enabled candidate passed bounded static malware triage; local hash and physical hardware validation pending",
   "updated": "2026-09-17",
-  "summary": "The exact artwork-enabled ISO passed its bounded VM gates and is now published through the existing JSON-only live-page path. The live page was verified field-by-field; physical USB selection/write and hardware validation remain pending. No approved release exists.",
+  "summary": "The exact artwork-enabled ISO passed bounded VM gates and a hash-bound ClamAV static scan of its extracted contents. The live candidate identity remains published; the operator must verify the locally downloaded ISO hash before Rufus, and physical hardware validation remains pending. No approved release exists.",
   "candidate": {
     "status": "ready-for-physical-testing",
     "channel": "graphical-physical-test",
@@ -18,7 +18,19 @@
     "vm_evidence_run": "35180150392",
     "physical_hardware_validation": "pending",
     "download_url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/35179377345/artifacts/10480220416",
-    "note": "TEST CANDIDATE — NOT AN APPROVED RELEASE. Use only this exact byte size and SHA-256 for the next physical test."
+    "note": "TEST CANDIDATE — NOT AN APPROVED RELEASE. Use only this exact byte size and SHA-256 for the next physical test.",
+    "malware_triage": {
+      "status": "passed-bounded-static-scan",
+      "run": 35231392125,
+      "scanner": "ClamAV 1.5.3",
+      "signature_count": 3628071,
+      "scanned_directories": 5548,
+      "scanned_files": 43350,
+      "infected_files": 0,
+      "exit_code": 0,
+      "report": "docs/22-candidate-malware-triage.md",
+      "limitation": "One-engine static scan of hash-verified extracted content; not proof of safety, source authenticity, Chrome verdict or release approval."
+    }
   },
   "release": {
     "status": "none",
@@ -405,6 +417,12 @@
       "title": "JSON-only candidate publication recovery",
       "description": "Existing PHP contract, JSON-only update, live acceptance, model attribution and human-approved deviations.",
       "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/docs/21-json-only-candidate-publication-plan.md"
+    },
+    {
+      "type": "Review evidence",
+      "title": "Exact Candidate Malware Triage",
+      "description": "Hash verification, isolated extraction and bounded ClamAV result for artifact 10480220416.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/candidate-malware-scan/docs/22-candidate-malware-triage.md"
     }
   ],
   "sections": [
@@ -861,6 +879,11 @@
   "changelog": [
     {
       "date": "2026-09-17",
+      "version": "3.6",
+      "summary": "Verified exact ZIP and ISO hashes on an independent disposable runner; completed extracted-content ClamAV scan with 43,350 files, 0 infected and exit 0. Recorded limits and kept release/physical gates closed. JSON written last."
+    },
+    {
+      "date": "2026-09-17",
       "version": "3.5",
       "summary": "Completed JSON-only live publication. Verified exact candidate identity/link and closed release gate on the live page; PHP unchanged. JSON written last."
     },
@@ -1180,7 +1203,19 @@
       "Development VM observations only; no physical boot evidence for this exact image.",
       "Security signals reported UNKNOWN, NOT_EXPOSED or NOT_ACTIVE are not verified guarantees.",
       "Production signing, release approval, merge and deployment remain pending."
-    ]
+    ],
+    "malware_triage": {
+      "status": "passed-bounded-static-scan",
+      "run": 35231392125,
+      "scanner": "ClamAV 1.5.3",
+      "signature_count": 3628071,
+      "scanned_directories": 5548,
+      "scanned_files": 43350,
+      "infected_files": 0,
+      "exit_code": 0,
+      "report": "docs/22-candidate-malware-triage.md",
+      "limitation": "One-engine static scan of hash-verified extracted content; not proof of safety, source authenticity, Chrome verdict or release approval."
+    }
   },
   "design_reference": {
     "folder": "/linux usb project/Graphical design for black cat project",
@@ -1197,7 +1232,7 @@
     "checkpoint": "AI_WORK_STATE.md",
     "review_branch": "codex/graphical-evidence-review",
     "merged": false,
-    "next_action": "Prepare the physical-test checklist, then obtain explicit confirmation of the exact spare USB target before any write.",
+    "next_action": "Verify the downloaded ISO SHA-256 on the operator's Windows computer, then obtain explicit confirmation of the exact spare USB target before Rufus writes it.",
     "last_passed_source_check": {
       "run": 35204175860,
       "commit": "f36893104392afbb6c7a67544e6a440cce7f193d"
@@ -1226,6 +1261,11 @@
       "title": "Candidate identity",
       "stage": "build-and-harness-verified",
       "scope": "SHA-256 and size matched before the evidence harness booted the image; not independent authenticated provenance."
+    },
+    {
+      "title": "Candidate malware triage",
+      "stage": "passed-bounded-static-scan",
+      "scope": "Run 35231392125: exact ZIP/ISO hashes matched; ClamAV scanned 43,350 extracted files and reported 0 infected files with exit 0. One-engine static evidence only."
     },
     {
       "title": "Graphical boot",
