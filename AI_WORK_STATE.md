@@ -33,11 +33,11 @@ The VM reported UEFI; Secure Boot `UNKNOWN`; TPM and TCG event log `NOT_EXPOSED`
 
 ## Next automatic actions
 
-Execute `docs/21-json-only-candidate-publication-plan.md`: artifact/evidence and the viewer contract are reverified; persistent compatibility/negative fixtures are added. After their source check passes, update compatible JSON at the deployed viewer's actual source branch, without a PHP replacement. Verify the live candidate before handoff. The project-status-live migration proposal is superseded for this repair. Lower/lighter models must follow the plan or obtain explicit human sign-off for deviations.
+Live candidate publication is complete. The page was accepted at 2026-09-17T09:17:52Z against blob `f012581ef46bfa8b1977d82727c55b91c3ce864a`; no PHP replacement occurred. Prepare the physical-test checklist without selecting or writing a device.
 
 ## Next genuine human gate
 
-After the authoritative live-page verification passes, obtain explicit approval for the exact spare USB device, then follow `docs/13-physical-boot-test.md`. Do not write a device, merge to main, create production signing authority, approve a release or deploy without the corresponding human gate.
+The authoritative live-page verification passed. Obtain explicit approval for the exact spare USB device, then follow `docs/13-physical-boot-test.md`. Do not write a device, merge to main, create production signing authority, approve a release or deploy without the corresponding human gate.
 
 ## Context health
 
