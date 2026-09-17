@@ -1073,3 +1073,7 @@ The operator clarified that the human-signoff restriction is project-wide: any h
 ## 2026-09-17 — Prepublication compatibility must test more than HTTPS syntax
 
 The current viewer accepts any syntactically valid HTTPS candidate URL once other fields pass. The binding recovery plan therefore adds a stricter prepublication check that binds the run, artifact ID/name and URL to the evidence report. Fixtures also prove missing hashes, wrong status and incomplete identity disable the viewer handoff. This is preparation evidence; the live JSON had not yet been changed at the time of this lesson.
+
+## 2026-09-17 — JSON-only live publication completed
+
+The existing PHP required no deployment. Updating project_content.json on its configured source branch with the compatible status value and exact evidence-bound identity immediately refreshed the live page. The post-publication check matched every required field and confirmed the approved-release gate remained closed. This validates the intended operational pattern: publish compatible JSON, then verify the rendered live page rather than assuming repository success equals operator-facing success.
