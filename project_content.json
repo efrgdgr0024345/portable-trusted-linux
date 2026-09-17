@@ -860,6 +860,11 @@
   ],
   "changelog": [
     {
+      "date": "2026-09-17",
+      "version": "3.5",
+      "summary": "Clarified project-wide higher-model plan/idea/suggestion protection: lower-model changes require explicit human sign-off. Policy-only update; JSON last."
+    },
+    {
       "version": "3.5",
       "date": "2026-09-17",
       "summary": "Recorded corrected JSON-only recovery plan and binding successor-model/human-signoff rule; superseded PHP/branch migration prerequisite. Implementation pending. JSON written last."
@@ -1256,5 +1261,12 @@
       "download_url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/34686464650/artifacts/10300658965",
       "note": "Historical M13B candidate with physical evidence on the tested configuration. Not the current graphical ISO and not an approved release."
     }
-  ]
+  ],
+  "model_hierarchy_policy": {
+    "scope": "All higher-model plans, ideas and suggestions across this project",
+    "rule": "A lower model must not change them without explicit human sign-off.",
+    "self_approved_exceptions": false,
+    "unknown_rank": "Preserve direction; obtain human clarification before changing it.",
+    "provenance": "Record model/version when reliably exposed; do not invent rankings."
+  }
 }
