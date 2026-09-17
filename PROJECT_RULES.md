@@ -2,6 +2,16 @@
 
 These rules are mandatory for all future work in this repository.
 
+## Higher-model plans, ideas and suggestions require human sign-off to change
+
+Any plan, idea or suggestion from a higher model MUST NOT be changed by a lower model without explicit human sign-off. This applies project-wide, not only to the current task or a named plan.
+
+A lower model may implement the authorized work faithfully and report problems, but MUST NOT independently replace, discard, weaken, reinterpret to change its meaning, or materially depart from the higher model's plan, idea or suggestion. Before a change, it must present the original, the proposed change, the reason and risks, and obtain explicit human approval. It cannot approve its own exception. Generic permission to continue is not sign-off for an undisclosed deviation.
+
+Record the originating model/version and provenance when reliably known. Higher/lower ordering must come from a human-established hierarchy or trustworthy platform metadata, never a model's self-assessment. When authorship or rank is unknown, preserve the existing direction and seek human clarification before changing it.
+
+A suggestion is not automatically authorization to execute it. Safety, platform permissions and explicit human instructions retain precedence; if faithful execution is unsafe or blocked, stop that action and report it rather than silently substituting another plan. This repository policy does not claim technical enforcement over future models.
+
 ## Binding plan and model-attribution rule
 
 The active resolution plan is `docs/21-json-only-candidate-publication-plan.md`. Any successor model, including a lower/lighter model, MUST follow it or obtain explicit human sign-off before deviating. It must report blockers rather than silently changing the approach. Record the authoring model/version for every plan or substantive suggestion when reliably known; otherwise state unknown. This is a project instruction, not a technical guarantee of model compliance, and never overrides higher-priority safety/authorization requirements.
