@@ -1,9 +1,9 @@
 {
   "title": "Black Cat",
-  "version": "3.3",
-  "phase": "Artwork-enabled graphical candidate ready for physical testing",
+  "version": "3.4",
+  "phase": "Repairing authoritative live candidate publication",
   "updated": "2026-09-17",
-  "summary": "The exact artwork-enabled graphical ISO passed its bounded VM interaction and System Check gates and is the active test candidate. Physical validation remains pending and requires explicit confirmation of the spare USB target. Production signing, release approval, merge and deployment remain incomplete.",
+  "summary": "The artwork-enabled ISO remains the exact active test candidate and its VM gates passed. The live operator page was found pinned to an obsolete development branch. A priority fail-closed handoff rule, stable project-status-live source and static regression guard are now implemented in the review branch. Production deployment and live-page identity verification remain required before asking the operator to download or physically test.",
   "candidate": {
     "status": "ready-for-physical-testing",
     "channel": "graphical-physical-test",
@@ -672,6 +672,11 @@
   ],
   "decisions": [
     {
+      "date": "2026-09-17",
+      "title": "The live candidate page is the fail-closed physical-test handoff",
+      "summary": "Use stable project-status-live metadata and verify the live HTTPS page against exact evidence before asking the operator to download or test. Never bypass a stale page with a chat-only link."
+    },
+    {
       "date": "2026-09-08",
       "title": "Reuse mature security components",
       "text": "Use Debian, UEFI Secure Boot, systemd UKI, TPM 2.0 and dm-verity rather than inventing replacement primitives."
@@ -848,6 +853,11 @@
     }
   ],
   "changelog": [
+    {
+      "version": "3.4",
+      "date": "2026-09-17",
+      "summary": "Elevated live candidate publication to Priority Rule 0, added a stable project-status-live viewer source and regression guard, and recorded the no-chat-link fail-closed handoff. JSON written last."
+    },
     {
       "version": "3.3",
       "date": "2026-09-17",
@@ -1161,13 +1171,28 @@
     "checkpoint": "AI_WORK_STATE.md",
     "review_branch": "codex/graphical-evidence-review",
     "merged": false,
-    "next_action": "Confirm the exact spare USB device, then follow docs/13-physical-boot-test.md using candidate SHA-256 f4987767…; record physical observations without transferring historical claims.",
+    "next_action": "Publish project_content.json to project-status-live, deploy the corrected canonical web/project.php to the host, then verify the live HTTPS page matches the exact candidate across byte size, SHA-256, source, run, artifact ID and URL. Only then request exact spare-USB approval.",
     "last_passed_source_check": {
       "run": 35180150390,
       "commit": "c1b623d0989c4c6d30814f4b92b80a44b79f501a"
     },
     "completion_scope": "Exact artwork candidate built and bounded VM gates observed; physical, production signing, release, merge and deployment gates remain.",
-    "checkpoint_contract": "Strict continuity headings restored and statically guarded."
+    "checkpoint_contract": "Strict continuity headings restored and statically guarded.",
+    "live_candidate_handoff": {
+      "url": "https://easyai.com.au/USB/project.php",
+      "status": "repository-fix-complete-deployment-and-live-verification-pending",
+      "source_branch": "project-status-live",
+      "fail_closed": true,
+      "required_match_fields": [
+        "filename",
+        "size_bytes",
+        "sha256",
+        "source_commit",
+        "build_run",
+        "artifact_id",
+        "download_url"
+      ]
+    }
   },
   "capabilities": [
     {
