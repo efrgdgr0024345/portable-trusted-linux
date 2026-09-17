@@ -1,0 +1,13 @@
+[Unit]
+Description=Black Cat graphical readiness monitor
+ConditionKernelCommandLine=!blackcat.check=1
+After=local-fs.target systemd-user-sessions.service
+Before=getty@tty1.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/blackcat-boot-monitor
+Restart=no
+
+[Install]
+WantedBy=multi-user.target
