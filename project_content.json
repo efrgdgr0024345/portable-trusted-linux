@@ -1,9 +1,9 @@
 {
   "title": "Black Cat",
-  "version": "3.4",
-  "phase": "Repairing authoritative live candidate publication",
+  "version": "3.5",
+  "phase": "JSON-only live candidate publication plan recorded; execution pending",
   "updated": "2026-09-17",
-  "summary": "The artwork-enabled ISO remains the exact active test candidate and its VM gates passed. The live operator page was found pinned to an obsolete development branch. A priority fail-closed handoff rule, stable project-status-live source and static regression guard are now implemented in the review branch. Production deployment and live-page identity verification remain required before asking the operator to download or physically test.",
+  "summary": "The artwork candidate has VM evidence, but live publication is not confirmed. The prior proposal to require a PHP deployment and project-status-live migration is superseded. The binding plan preserves the deployed PHP and updates compatible JSON at its existing source branch, followed by exact live-page acceptance.",
   "candidate": {
     "status": "ready-for-physical-testing",
     "channel": "graphical-physical-test",
@@ -399,6 +399,12 @@
       "title": "Artwork Candidate VM Evidence Report",
       "description": "Machine-readable evidence for the exact artwork-enabled candidate and bounded VM observations.",
       "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/evidence/2026-09-17-artwork-candidate/report.json"
+    },
+    {
+      "type": "Binding plan",
+      "title": "JSON-only candidate publication recovery",
+      "description": "Existing PHP contract, JSON-only update, live acceptance, model attribution and human-approved deviations.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/docs/21-json-only-candidate-publication-plan.md"
     }
   ],
   "sections": [
@@ -854,6 +860,11 @@
   ],
   "changelog": [
     {
+      "version": "3.5",
+      "date": "2026-09-17",
+      "summary": "Recorded corrected JSON-only recovery plan and binding successor-model/human-signoff rule; superseded PHP/branch migration prerequisite. Implementation pending. JSON written last."
+    },
+    {
       "version": "3.4",
       "date": "2026-09-17",
       "summary": "Elevated live candidate publication to Priority Rule 0, added a stable project-status-live viewer source and regression guard, and recorded the no-chat-link fail-closed handoff. JSON written last."
@@ -1171,7 +1182,7 @@
     "checkpoint": "AI_WORK_STATE.md",
     "review_branch": "codex/graphical-evidence-review",
     "merged": false,
-    "next_action": "Publish project_content.json to project-status-live, deploy the corrected canonical web/project.php to the host, then verify the live HTTPS page matches the exact candidate across byte size, SHA-256, source, run, artifact ID and URL. Only then request exact spare-USB approval.",
+    "next_action": "Follow docs/21-json-only-candidate-publication-plan.md. Plan-only checkpoint: implementation and live acceptance pending. Successor/lighter-model deviations require explicit human sign-off.",
     "last_passed_source_check": {
       "run": 35180150390,
       "commit": "c1b623d0989c4c6d30814f4b92b80a44b79f501a"
@@ -1180,18 +1191,12 @@
     "checkpoint_contract": "Strict continuity headings restored and statically guarded.",
     "live_candidate_handoff": {
       "url": "https://easyai.com.au/USB/project.php",
-      "status": "repository-fix-complete-deployment-and-live-verification-pending",
-      "source_branch": "project-status-live",
+      "status": "json-only-recovery-planned-not-executed",
+      "last_observed_source_branch": "codex/remove-chroot-systemd-boot",
       "fail_closed": true,
-      "required_match_fields": [
-        "filename",
-        "size_bytes",
-        "sha256",
-        "source_commit",
-        "build_run",
-        "artifact_id",
-        "download_url"
-      ]
+      "plan": "docs/21-json-only-candidate-publication-plan.md",
+      "author_model": "Codex, GPT-5-based; exact deployed model/version unavailable",
+      "human_signoff_required_for_deviation": true
     }
   },
   "capabilities": [
