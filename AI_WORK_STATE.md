@@ -2,6 +2,10 @@
 
 Compact handoff for a lighter coding model. Read this first, then the current evidence report and only the source relevant to the next action. This is an evidence-backed continuation checkpoint, not a release claim.
 
+## Model hierarchy rule
+
+Project-wide: a lower model MUST NOT change any higher-model plan, idea or suggestion without explicit human sign-off. Report proposed deviations first; do not self-authorize. Unknown model rank requires clarification before changing inherited direction. See PROJECT_RULES.md.
+
 ## Current project state
 
 - Review branch: `codex/graphical-evidence-review`; main is **not merged**.
