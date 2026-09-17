@@ -1,9 +1,9 @@
 {
   "title": "Black Cat",
   "version": "3.5",
-  "phase": "JSON-only live candidate publication plan recorded; execution pending",
+  "phase": "JSON-only live candidate publication execution",
   "updated": "2026-09-17",
-  "summary": "The artwork candidate has VM evidence, but live publication is not confirmed. The prior proposal to require a PHP deployment and project-status-live migration is superseded. The binding plan preserves the deployed PHP and updates compatible JSON at its existing source branch, followed by exact live-page acceptance.",
+  "summary": "The artwork candidate remains the intended physical-test image. Its artifact is available, evidence identity is reverified, and persistent viewer compatibility/negative fixtures are added. Publication JSON and live acceptance remain pending until the final source check passes.",
   "candidate": {
     "status": "ready-for-physical-testing",
     "channel": "graphical-physical-test",
@@ -862,6 +862,11 @@
     {
       "date": "2026-09-17",
       "version": "3.5",
+      "summary": "Added persistent candidate publication fixtures and reverified artifact/evidence/viewer contract. JSON publication awaits exact-head source check. JSON written last."
+    },
+    {
+      "date": "2026-09-17",
+      "version": "3.5",
       "summary": "Clarified project-wide higher-model plan/idea/suggestion protection: lower-model changes require explicit human sign-off. Policy-only update; JSON last."
     },
     {
@@ -1187,7 +1192,7 @@
     "checkpoint": "AI_WORK_STATE.md",
     "review_branch": "codex/graphical-evidence-review",
     "merged": false,
-    "next_action": "Follow docs/21-json-only-candidate-publication-plan.md. Plan-only checkpoint: implementation and live acceptance pending. Successor/lighter-model deviations require explicit human sign-off.",
+    "next_action": "Wait for the exact-head source check. If successful, narrowly update project_content.json on codex/remove-chroot-systemd-boot with status test and exact artwork identity, then verify the live page field-by-field.",
     "last_passed_source_check": {
       "run": 35180150390,
       "commit": "c1b623d0989c4c6d30814f4b92b80a44b79f501a"
@@ -1196,7 +1201,7 @@
     "checkpoint_contract": "Strict continuity headings restored and statically guarded.",
     "live_candidate_handoff": {
       "url": "https://easyai.com.au/USB/project.php",
-      "status": "json-only-recovery-planned-not-executed",
+      "status": "fixtures-committed-source-check-pending-before-json-publication",
       "last_observed_source_branch": "codex/remove-chroot-systemd-boot",
       "fail_closed": true,
       "plan": "docs/21-json-only-candidate-publication-plan.md",
