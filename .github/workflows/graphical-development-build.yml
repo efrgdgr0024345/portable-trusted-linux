@@ -15,6 +15,7 @@ on:
       - assets/design/**
       - design/**
       - tests/05-boot-recovery-check.sh
+      - tests/03-existing-candidate-boot.py
   workflow_dispatch:
 
 permissions:
@@ -57,6 +58,24 @@ jobs:
           set -Eeuo pipefail
           bash build/20-build-live.sh
           bash build/30-artifact-manifest.sh
+
+      - name: Observe normal GUI, System Check and automatic recovery failure path
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ISO="$(find out -maxdepth 1 -type f -name '*.iso' -print -quit)"
+          test -n "$ISO"
+          ISO_SHA="$(sha256sum "$ISO" | awk '{print $1}')"
+          ISO_SIZE="$(stat -c %s "$ISO")"
+          BLACKCAT_EVIDENCE_ISO="$ISO" \
+          BLACKCAT_EVIDENCE_SHA="$ISO_SHA" \
+          BLACKCAT_EVIDENCE_SIZE="$ISO_SIZE" \
+          BLACKCAT_EVIDENCE_SOURCE="$PTL_SOURCE_COMMIT" \
+          BLACKCAT_EVIDENCE_BUILD_RUN="$GITHUB_RUN_ID" \
+          BLACKCAT_EVIDENCE_MODES=gui,check,recovery \
+            python3 tests/03-existing-candidate-boot.py
+          mkdir -p artifacts/vm-evidence
+          cp -a "$HOME/blackcat-evidence/run-$GITHUB_RUN_ID/." artifacts/vm-evidence/
 
       - name: Report resulting identity or failure
         if: always()
