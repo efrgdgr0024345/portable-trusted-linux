@@ -9,6 +9,12 @@ label blackcat
     initrd @INITRD@
     append @APPEND_LIVE@
 
+label blackcat-basic-graphics
+    menu label Black Cat - Basic ^graphics (temporary)
+    linux @LINUX@
+    initrd @INITRD@
+    append @APPEND_LIVE@ nomodeset blackcat.basic_graphics=1
+
 label blackcat-check
     menu label Black Cat - ^System Check (no typing)
     linux @LINUX@
