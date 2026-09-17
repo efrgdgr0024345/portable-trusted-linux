@@ -86,7 +86,7 @@ if command -v jq >/dev/null 2>&1; then
   fi
 
   if jq -e '
-      if .candidate.status == "test" then
+      if (.candidate.status == "test" or .candidate.status == "ready-for-physical-testing") then
         (.candidate.filename | type == "string" and length > 0) and
         (.candidate.size_bytes | type == "number" and . > 0) and
         (.candidate.sha256 | type == "string" and test("^[a-f0-9]{64}$")) and
@@ -216,6 +216,15 @@ else
   printf '[OK]      Automation Manifesto points to the root autonomy policy\n'
 fi
 
+if grep -Fq 'Priority Rule 0 — The live candidate page is the physical-test authority' "${ROOT_DIR}/PROJECT_RULES.md" && \
+   grep -Fq 'FAILED CLOSED' "${ROOT_DIR}/PROJECT_RULES.md" && \
+   grep -Fq 'Do not work around it with a separate chat link' "${ROOT_DIR}/AI_AUTONOMY_POLICY.md"; then
+  printf '[OK]      live candidate handoff remains a top-level fail-closed rule\n'
+else
+  printf '[FAILED]  live candidate handoff rule is missing or weakened\n'
+  failures=1
+fi
+
 autonomy_policy="${ROOT_DIR}/AI_AUTONOMY_POLICY.md"
 for required in \
   'Default = continue automatically' \
@@ -332,10 +341,10 @@ else
   failures=1
 fi
 
-if grep -Fq "const GITHUB_BRANCH = 'main';" "$viewer"; then
-  printf '[OK]      viewer targets main after approved integration\n'
+if grep -Fq "const GITHUB_BRANCH = 'project-status-live';" "$viewer"; then
+  printf '[OK]      viewer targets the stable project-status-live source\n'
 else
-  printf '[FAILED]  viewer must target reconciled main before deployment\n'
+  printf '[FAILED]  viewer must target the stable project-status-live source\n'
   failures=1
 fi
 
@@ -346,7 +355,7 @@ else
   failures=1
 fi
 
-if grep -Fq 'Project Data Source' "$viewer" && grep -Fq 'LIVE / SYNCHRONISED' "$viewer" && grep -Fq 'Live GitHub API only' "$viewer"; then
+if grep -Fq 'Project Data Source' "$viewer" && grep -Fq 'LIVE STATUS FEED' "$viewer" && grep -Fq 'Live GitHub API only' "$viewer"; then
   printf '[OK]      viewer clearly identifies authoritative live project data\n'
 else
   printf '[FAILED]  viewer lost the clear Project Data Source panel\n'

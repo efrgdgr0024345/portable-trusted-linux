@@ -1051,3 +1051,13 @@ The project viewer still rendered the preserved 376,438,784-byte M13B record und
 ### Lesson
 
 A superseded candidate belongs in an explicit historical-candidate record, not the active viewer slot. Before authorizing removable-media work, compare filename, byte size, SHA-256, source commit and build run against the authoritative evidence report; a “ready” label alone is insufficient.
+
+## 2026-09-17 — A live GitHub fetch can still be authoritatively stale
+
+### What happened
+
+The production page returned uncached data and truthfully displayed its configured source, but the deployed PHP was pinned to `codex/remove-chroot-systemd-boot`. Its “LIVE / SYNCHRONISED” label therefore meant live access to an obsolete branch, not synchronisation with the active candidate. The assistant then supplied the newer artifact link in chat, which undermined the page's intended role as the single safe handoff.
+
+### Decision and lesson
+
+Candidate publication is now a priority fail-closed rule. The viewer targets a stable `project-status-live` source. Before any download or physical-test request, the live HTTPS page itself must match the evidence record across exact bytes, hash, source, run, artifact and URL. A chat link is not an acceptable bypass. Deployment capability and physical-write approval remain separate boundaries.

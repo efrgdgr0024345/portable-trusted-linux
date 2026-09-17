@@ -10,6 +10,10 @@ This file is the **canonical operational decision table** for when an AI assista
 
 A routine transition from one safe engineering step to the next is not a reason to ask the operator to say “proceed”.
 
+## Live candidate handoff rule
+
+The live page at `https://easyai.com.au/USB/project.php` is the operator-facing authority for candidate downloads. Before telling the operator to download, write or physically test an ISO, verify the live page's exact byte size, SHA-256, source commit, build run, artifact ID and link against the evidence record. A stale or mismatched page fails closed. Do not work around it with a separate chat link. Publishing and verifying status metadata is `AUTO_WITH_CHECKS`; selecting or writing the physical USB remains a `HUMAN_GATE`.
+
 ## Action classes
 
 ### AUTO

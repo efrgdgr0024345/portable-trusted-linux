@@ -2,6 +2,22 @@
 
 These rules are mandatory for all future work in this repository.
 
+## Priority Rule 0 — The live candidate page is the physical-test authority
+
+The operator-facing page at `https://easyai.com.au/USB/project.php` is the single authoritative download handoff for physical testing. A candidate is not ready to hand to the operator merely because its artifact exists or its repository metadata is correct.
+
+Before asking the operator to download, write or test an ISO, the assistant MUST:
+
+1. publish the active candidate metadata to the stable `project-status-live` status source;
+2. verify the live page itself over HTTPS;
+3. compare the displayed filename, exact byte size, SHA-256, source commit, build run, artifact ID and download URL with the authoritative evidence record;
+4. confirm the page does not label a superseded candidate as current; and
+5. record the successful live-page verification in the work-state checkpoint.
+
+If any value is missing, stale or different, the candidate handoff is **FAILED CLOSED**. The assistant must not bypass the failure by pasting a different artifact link into chat or asking the operator to remember which hash is correct. It must repair or clearly report the publication/deployment boundary first.
+
+This rule governs the current **test candidate** only. It does not promote the image to an approved release, authorize a physical device write, merge development work to `main`, or change release/signing gates.
+
 ## Rule 1 — Lessons learned must always be recorded
 
 Every meaningful engineering session, test, research result, failure, security discovery, architecture change, or implementation surprise MUST be recorded in the project documentation before the work is considered complete.

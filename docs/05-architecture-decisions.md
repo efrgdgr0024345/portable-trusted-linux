@@ -277,3 +277,9 @@ Replace a single project completion percentage with separately scoped capability
 **Status:** User selected on 16 September 2026.
 
 `design/README.md` binds the repository to the folder **Graphical design for black cat project**, now under **linux usb project**. The source inventory preserves stable identities and hashes for all 18 files. The exact original cat and brand notes are copied into the repository. “Stealth. Intelligence. Independence.” controls new copy; “Freedom” embedded in the historical welcome image is not silently promoted to canonical wording. Keep the current ISO fixed while testing; later artwork changes produce a different build.
+
+## ADR-2026-09-17-LIVE-CANDIDATE — Use a stable, fail-closed operator handoff
+
+**Status:** Accepted by the operator on 17 September 2026.
+
+**Decision:** `https://easyai.com.au/USB/project.php` is the single operator-facing authority for the current physical-test candidate. The viewer reads candidate metadata from the stable `project-status-live` branch rather than a temporary development branch or an unmerged `main` record. Publication is not complete until the live page is fetched and its filename, byte size, SHA-256, source commit, build run, artifact ID and URL match the evidence record. Any mismatch fails closed; chat-only replacement links are prohibited. This status mechanism does not authorize a USB write, merge development code, or promote an approved release.

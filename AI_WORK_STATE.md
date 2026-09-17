@@ -29,11 +29,11 @@ The VM reported UEFI; Secure Boot `UNKNOWN`; TPM and TCG event log `NOT_EXPOSED`
 
 ## Next automatic actions
 
-Routine bookkeeping, evidence reading, physical-test checklist preparation and non-destructive verification may continue on a lighter model. Preserve the exact hash and never transfer observations from historical images. Do not expand scope.
+Publish the current candidate through the stable `project-status-live` source, deploy the corrected canonical viewer if the host still serves the obsolete copy, and verify `https://easyai.com.au/USB/project.php` displays the exact size, SHA-256, source, run, artifact and link. Until that live verification passes, do not ask the operator to download or test the ISO. Preserve the exact hash and never transfer observations from historical images.
 
 ## Next genuine human gate
 
-Obtain explicit approval for the exact spare USB device, then follow `docs/13-physical-boot-test.md`. Do not write a device, merge to main, create production signing authority, approve a release or deploy without the corresponding human gate.
+After the authoritative live-page verification passes, obtain explicit approval for the exact spare USB device, then follow `docs/13-physical-boot-test.md`. Do not write a device, merge to main, create production signing authority, approve a release or deploy without the corresponding human gate.
 
 ## Context health
 

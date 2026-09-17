@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Canonical production source for https://easyai.com.au/USB/project.php
  *
  * Security model:
- * - private GitHub is authoritative for project/candidate/release data;
+ * - the stable project-status-live branch is authoritative for operator-facing candidate metadata;
  * - exactly one repository-read token source outside public web root;
  * - no environment/hard-coded credential fallback;
  * - project-data failure fails closed;
@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 const GITHUB_OWNER = 'efrgdgr0024345';
 const GITHUB_REPO = 'portable-trusted-linux';
-const GITHUB_BRANCH = 'main';
+const GITHUB_BRANCH = 'project-status-live';
 const CONTENT_FILE = 'project_content.json';
 const TOKEN_FILE = '/home/learning/.blackcat/github_token';
 const BUILDER_STATUS_FILE = __DIR__ . '/project_cache/builder_status.json';
@@ -311,7 +311,7 @@ $downloadEnabled =
 
 <section class="section" id="status"><div class="wrap"><div class="statushead"><div><div class="kicker">Operational observation</div><h2>Builder / Server Status</h2></div><div class="pill <?= $builderRows ? 'livepill' : 'pending' ?>"><?= $builderRows ? 'Status file available' : 'Status unavailable' ?></div></div><?php if ($builderRows): ?><div class="statusgrid"><?php foreach ($builderRows as $row): ?><div class="statuscard"><strong><?= h(str_replace(['_', '-'], ' ', $row['label'])) ?></strong><span><?= h($row['value']) ?></span></div><?php endforeach; ?></div><?php else: ?><div class="statuscard"><strong>Runtime status</strong><span>No readable builder status data is currently available.</span></div><?php endif; ?><div class="mutednote">Source: <code>project_cache/builder_status.json</code><?php if ($builderMtime !== false): ?> · file updated <?= h(date(DATE_ATOM, (int)$builderMtime)) ?><?php endif; ?>. This is display-only operational telemetry. It cannot enable, replace, supersede or approve project/candidate/release data.</div></div></section>
 
-<section class="section" id="source"><div class="wrap"><div class="sourcebox"><div class="sourcehead"><div><div class="kicker">Project Data Source</div><h2>Where this page gets authoritative project data</h2></div><div class="pill livepill">✓ LIVE / SYNCHRONISED</div></div><div class="sourcegrid"><div class="sourceitem"><strong>Repository</strong><span><?= h(GITHUB_OWNER . '/' . GITHUB_REPO) ?></span></div><div class="sourceitem"><strong>Repository branch</strong><code><?= h(GITHUB_BRANCH) ?></code></div><div class="sourceitem"><strong>Project data</strong><span><?= h(CONTENT_FILE) ?></span></div><div class="sourceitem"><strong>Git blob</strong><code><?= h($githubSha !== '' ? $githubSha : 'unknown') ?></code></div><div class="sourceitem"><strong>Credential</strong><span>Protected server file — value hidden</span></div><div class="sourceitem"><strong>Authority</strong><span>Live GitHub API only</span></div></div><div class="mutednote">Project, test-candidate and approved-release metadata comes directly from the private GitHub repository. Local builder/server telemetry is shown separately above and is never used as authority for downloads or release state.</div></div></div></section>
+<section class="section" id="source"><div class="wrap"><div class="sourcebox"><div class="sourcehead"><div><div class="kicker">Project Data Source</div><h2>Where this page gets authoritative project data</h2></div><div class="pill livepill">✓ LIVE STATUS FEED</div></div><div class="sourcegrid"><div class="sourceitem"><strong>Repository</strong><span><?= h(GITHUB_OWNER . '/' . GITHUB_REPO) ?></span></div><div class="sourceitem"><strong>Repository branch</strong><code><?= h(GITHUB_BRANCH) ?></code></div><div class="sourceitem"><strong>Project data</strong><span><?= h(CONTENT_FILE) ?></span></div><div class="sourceitem"><strong>Git blob</strong><code><?= h($githubSha !== '' ? $githubSha : 'unknown') ?></code></div><div class="sourceitem"><strong>Credential</strong><span>Protected server file — value hidden</span></div><div class="sourceitem"><strong>Authority</strong><span>Live GitHub API only</span></div></div><div class="mutednote">Project, test-candidate and approved-release metadata comes directly from the private GitHub repository. Local builder/server telemetry is shown separately above and is never used as authority for downloads or release state.</div></div></div></section>
 
 <section class="docs" id="documents"><div class="wrap"><div class="kicker">Project library</div><h2>Documents &amp; project files</h2><div class="docgrid"><?php foreach ($documents as $doc): $url = safeHttpsUrl((string)($doc['url'] ?? '')); if ($url === '') continue; ?><a class="doc" href="<?= h($url) ?>" target="_blank" rel="noopener noreferrer"><div class="doctype"><?= h((string)($doc['type'] ?? 'Document')) ?></div><h3><?= h((string)($doc['title'] ?? 'Untitled')) ?></h3><p><?= h((string)($doc['description'] ?? '')) ?></p><div class="doclink">Open document →</div></a><?php endforeach; ?></div></div></section>
 
