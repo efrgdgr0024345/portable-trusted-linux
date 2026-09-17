@@ -1041,3 +1041,13 @@ The corrected ISO, SHA-256 `f498776780c543013e437161a878e22ca4fc40a66f47fc271d6f
 ### Lesson
 
 Visual source inclusion is not proof of usable integration: exact-image interaction and post-login state must be observed. Runtime desktop configuration can be more reliable than assuming a static channel/property path. Boot-time waits need a bounded diagnostic-mode design. Asset accounting must distinguish “available in the design folder” from “selected for this build,” and VM success must remain separate from physical and release approval.
+
+## 2026-09-17 — Current-candidate display must follow the active physical-test identity
+
+### What happened
+
+The project viewer still rendered the preserved 376,438,784-byte M13B record under “Current Test Candidate” even though that object was marked superseded and the newer artwork-enabled ISO had completed its VM gate. The detailed evidence and handoff were correct, but the top-level viewer feed remained stale.
+
+### Lesson
+
+A superseded candidate belongs in an explicit historical-candidate record, not the active viewer slot. Before authorizing removable-media work, compare filename, byte size, SHA-256, source commit and build run against the authoritative evidence report; a “ready” label alone is insufficient.
