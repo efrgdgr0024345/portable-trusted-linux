@@ -1,22 +1,24 @@
 {
   "title": "Black Cat",
-  "version": "3.2",
-  "phase": "Artwork-enabled graphical candidate: physical-test preparation",
+  "version": "3.3",
+  "phase": "Artwork-enabled graphical candidate ready for physical testing",
   "updated": "2026-09-17",
-  "summary": "Seven selected assets from the canonical 18-file Black Cat design folder are integrated in the exact current graphical candidate. The ISO was built, uploaded and observed in QEMU/OVMF through checkbox, CLEAR, OPEN DESKTOP, stable wallpaper and settled System Check prompt paths. Physical validation of this image, production signing, release approval, merge and deployment remain incomplete.",
+  "summary": "The exact artwork-enabled graphical ISO passed its bounded VM interaction and System Check gates and is the active test candidate. Physical validation remains pending and requires explicit confirmation of the spare USB target. Production signing, release approval, merge and deployment remain incomplete.",
   "candidate": {
-    "status": "superseded",
-    "channel": "m13b-physical-test",
+    "status": "ready-for-physical-testing",
+    "channel": "graphical-physical-test",
     "filename": "live-image-amd64.hybrid.iso",
-    "size_bytes": 376438784,
-    "sha256": "cb14d25b7fd43e2b0e563efaada357d6ab196a42d717b016c4857f85968fe641",
-    "source_commit": "c56389b71ecd96270bdd047369378f5a94d8bf93",
-    "build_run": "34686464650",
-    "artifact_id": "10300658965",
-    "artifact_name": "ptl-first-live-build-34686464650",
+    "size_bytes": 770703360,
+    "sha256": "f498776780c543013e437161a878e22ca4fc40a66f47fc271d6fd6a964c29d75",
+    "source_commit": "ed5d80ac09c3f1650d67594242643d27efcf15e9",
+    "build_run": "35179377345",
+    "artifact_id": "10480220416",
+    "artifact_name": "blackcat-graphical-development-35179377345",
     "smoke_test": "passed",
-    "download_url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/34686464650/artifacts/10300658965",
-    "note": "Historical M13B candidate with physical evidence on the tested configuration. Not the current graphical ISO and not an approved release."
+    "vm_evidence_run": "35180150392",
+    "physical_hardware_validation": "pending",
+    "download_url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/35179377345/artifacts/10480220416",
+    "note": "TEST CANDIDATE — NOT AN APPROVED RELEASE. Use only this exact byte size and SHA-256 for the next physical test."
   },
   "release": {
     "status": "none",
@@ -847,6 +849,11 @@
   ],
   "changelog": [
     {
+      "version": "3.3",
+      "date": "2026-09-17",
+      "summary": "Moved the superseded M13B identity out of the active viewer slot and published the exact artwork-enabled ISO as the Current Test Candidate. Physical USB selection remains human-gated. JSON written last."
+    },
+    {
       "version": "3.2",
       "date": "2026-09-17",
       "summary": "Integrated seven selected canonical design assets, built and uploaded the exact artwork candidate, observed the graphical interaction and settled System Check VM gates, preserved frames, and restored the strict lighter-model handoff contract. JSON written last."
@@ -1154,7 +1161,7 @@
     "checkpoint": "AI_WORK_STATE.md",
     "review_branch": "codex/graphical-evidence-review",
     "merged": false,
-    "next_action": "After explicit spare-device approval, follow docs/13-physical-boot-test.md with the exact current hash; record physical observations without transferring historical claims.",
+    "next_action": "Confirm the exact spare USB device, then follow docs/13-physical-boot-test.md using candidate SHA-256 f4987767…; record physical observations without transferring historical claims.",
     "last_passed_source_check": {
       "run": 35180150390,
       "commit": "c1b623d0989c4c6d30814f4b92b80a44b79f501a"
@@ -1202,6 +1209,22 @@
       "title": "Graphical design",
       "stage": "build-observed",
       "scope": "Seven selected canonical assets are integrated and observed; eleven remaining files are references, not claimed as shipped."
+    }
+  ],
+  "historical_candidates": [
+    {
+      "status": "historical-superseded",
+      "channel": "m13b-physical-test",
+      "filename": "live-image-amd64.hybrid.iso",
+      "size_bytes": 376438784,
+      "sha256": "cb14d25b7fd43e2b0e563efaada357d6ab196a42d717b016c4857f85968fe641",
+      "source_commit": "c56389b71ecd96270bdd047369378f5a94d8bf93",
+      "build_run": "34686464650",
+      "artifact_id": "10300658965",
+      "artifact_name": "ptl-first-live-build-34686464650",
+      "smoke_test": "passed",
+      "download_url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/34686464650/artifacts/10300658965",
+      "note": "Historical M13B candidate with physical evidence on the tested configuration. Not the current graphical ISO and not an approved release."
     }
   ]
 }
