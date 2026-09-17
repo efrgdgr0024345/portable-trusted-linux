@@ -37,9 +37,13 @@ Disposable GitHub-hosted run `35231392125` independently downloaded artifact `10
 
 This is bounded one-engine static evidence. It does not explain Chrome's warning, prove safety, authenticate the original build authority, or approve a release. Verify the locally downloaded ISO hash before Rufus.
 
+## Physical test and active recovery plan
+
+Operator photos show Debian tty2 autologin with LightDM and Plymouth quit failures. Physical graphical startup did not pass; root cause and local USB hash remain unconfirmed. Reboot preceded detailed log collection. Active implementation plan: `docs/23-automatic-boot-diagnostics-plan.md`, authored by Codex (exact model/version unavailable), expanded at the user's request. Status: PLANNED, not implemented. Work branch: `codex/candidate-malware-scan`. Preserve higher-model direction and the existing JSON-only publication contract.
+
 ## Next automatic actions
 
-Live candidate publication and bounded static malware triage are complete. The page was accepted at 2026-09-17T09:17:52Z against blob `f012581ef46bfa8b1977d82727c55b91c3ce864a`; no PHP replacement occurred. The next automatic preparation is the physical-test checklist. The operator should verify the downloaded ISO's SHA-256 before Rufus.
+Inspect the shipped boot/session configuration and implement the plan's bounded diagnostics collector and independent readiness monitor, then the no-command recovery menu, export and failure-injection tests. Build and verify the exact next candidate before JSON-only live publication. Do not request routine manual diagnostic commands from the operator.
 
 ## Next genuine human gate
 
