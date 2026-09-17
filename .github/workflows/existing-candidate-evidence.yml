@@ -12,42 +12,39 @@ concurrency:
 jobs:
   inspect:
     runs-on: [self-hosted, Linux, X64]
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           persist-credentials: false
-      - name: Verify preserved candidate and inspect VM prerequisites
+      - name: Verify exact artwork candidate and inspect VM prerequisites
         shell: bash
         run: |
           set -Eeuo pipefail
           python3 - <<'PY'
-          import hashlib, json, pathlib, shutil, subprocess
-          base = pathlib.Path('/home/github-runner/blackcat-builds/run-35095923202-attempt-1')
+          import hashlib, json, pathlib, shutil
+          base = pathlib.Path('/home/github-runner/blackcat-builds/run-35159417803-attempt-1')
           iso = base / 'live-image-amd64.hybrid.iso'
-          expected = '81f702cd9e59d4d7ba5654e6a69dbd655617968f92381049881930aef9b2fcb7'
-          assert iso.is_file(), 'Preserved ISO missing'
-          assert iso.stat().st_size == 770703360, 'ISO size mismatch'
+          expected = 'e579d11818acfe9e885a0c9c55ee2749b070a2154f96663e66db606fba5a0455'
+          source = '3491587f7bacd04ab116e0fccc47ba9b9ea52e10'
+          assert iso.is_file(), 'Preserved artwork candidate ISO missing'
+          assert iso.stat().st_size == 770703360, 'Candidate ISO size mismatch'
           with iso.open('rb') as f:
               digest = hashlib.file_digest(f, 'sha256').hexdigest()
-          assert digest == expected, 'ISO hash mismatch'
+          assert digest == expected, 'Candidate ISO hash mismatch'
           manifest = json.loads((base / 'build-manifest.json').read_text())
-          assert manifest['sha256'] == digest
-          assert manifest['size_bytes'] == iso.stat().st_size
-          assert manifest['git']['source_commit'] == '86ddbb8eac1a0dbf912c035d5b916b70453dff88'
-          print('CANDIDATE_IDENTITY_MATCH=' + json.dumps({'sha256': digest, 'size_bytes': iso.stat().st_size, 'source_commit': manifest['git']['source_commit']}))
-          print('IDENTITY_SCOPE=matches prior CI log; not authenticated release or boot evidence')
+          assert manifest['sha256'] == digest, 'Manifest digest does not match ISO'
+          assert manifest['size_bytes'] == iso.stat().st_size, 'Manifest size does not match ISO'
+          assert manifest['git']['source_commit'] == source, 'Manifest source commit does not match candidate'
+          print('CANDIDATE_IDENTITY_MATCH=' + json.dumps({'sha256': digest, 'size_bytes': iso.stat().st_size, 'source_commit': source}))
+          print('IDENTITY_SCOPE=local recovery copy compared to build manifest and previous CI log; not authenticated release or boot evidence')
           for tool in ['qemu-system-x86_64', 'xorriso', 'tesseract', 'convert', 'socat', 'apt-get', 'dpkg-deb']:
               print('TOOL=' + tool + ':' + str(shutil.which(tool)))
           print('OVMF=' + json.dumps([str(p) for p in pathlib.Path('/usr/share/OVMF').glob('*.fd')]))
           print('MEMORY=' + pathlib.Path('/proc/meminfo').read_text().splitlines()[0])
           PY
-      - name: Boot existing image if harness is present
+      - name: Observe graphical interactions and separate settled System Check VM boot
         shell: bash
         run: |
           set -Eeuo pipefail
-          if test -f tests/03-existing-candidate-boot.py; then
-            python3 tests/03-existing-candidate-boot.py
-          else
-            echo 'BOOT_STATUS=NOT_RUN; prerequisite discovery only'
-          fi
+          python3 tests/03-existing-candidate-boot.py

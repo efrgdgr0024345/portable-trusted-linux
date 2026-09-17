@@ -185,9 +185,7 @@ def observe(work, env, qemu, tess, code, variables, toolroot, mode):
                     key('ret')
                     selected = True
                 if mode == 'gui' and 'DEVELOPMENT PREVIEW' in text:
-                    # Tk traversal order is the six checkboxes followed by the
-                    # two buttons. Prove each state from visible text/UI rather
-                    # than treating successful key injection as evidence.
+                    # The first checkbox has been located in the actual frame.
                     click(*locate_word(png, 'Browser'))
                     selected_png, selected_text = capture('selected')
                     evidence['selected'] = selected_png
@@ -195,25 +193,36 @@ def observe(work, env, qemu, tess, code, variables, toolroot, mode):
                         return {'status': 'GUI_INTERACTION_FAILED', 'frame': selected_png.name,
                                 'failure': 'checkbox summary did not show Browser'}
 
-                    click(*locate_word(selected_png, 'CLEAR'))
+                    # UI source: six focusable checkboxes, then CLEAR SELECTION
+                    # and OPEN DESKTOP. Avoid fragile full-screen OCR of button
+                    # words; verify the actual resulting visible UI state.
+                    for _ in range(6):
+                        key('tab', 0.15)
+                    key('spc', 0.8)
                     clear_png, clear_text = capture('cleared')
                     evidence['cleared'] = clear_png
                     if 'Requested (NOT activated): none' not in clear_text:
                         return {'status': 'GUI_INTERACTION_FAILED', 'frame': clear_png.name,
-                                'failure': 'clear selection did not restore none'}
+                                'failure': 'CLEAR action did not restore none; possible clipped/unfocusable button'}
 
-                    x, y = locate_word(clear_png, 'OPEN')
-                    click(x, y, 1.5)
+                    key('tab', 0.3)
+                    key('spc', 1.5)
                     desktop_png, desktop_text = capture('desktop')
                     evidence['desktop'] = desktop_png
                     if 'DEVELOPMENT PREVIEW' in desktop_text or 'OPEN DESKTOP' in desktop_text:
                         return {'status': 'GUI_INTERACTION_FAILED', 'frame': desktop_png.name,
-                                'failure': 'preview remained after open desktop'}
+                                'failure': 'preview remained after OPEN DESKTOP action'}
+                    time.sleep(3)
+                    stable_png, stable_text = capture('desktop-settled')
+                    evidence['desktop_settled'] = stable_png
+                    if 'DEVELOPMENT PREVIEW' in stable_text or 'OPEN DESKTOP' in stable_text:
+                        return {'status': 'GUI_INTERACTION_FAILED', 'frame': stable_png.name,
+                                'failure': 'preview reappeared or remained after settling'}
                     return {'status': 'GUI_INTERACTIONS_OBSERVED',
                             'frames': {name: frame.name for name, frame in evidence.items()},
                             'checkbox': 'Browser summary observed',
                             'clear': 'none summary observed',
-                            'open_desktop': 'preview closed'}
+                            'open_desktop': 'preview absent from two successive frames; screenshots retained'}
                 if mode == 'check' and 'PHOTO THIS SCREEN' in text and 'Press Enter' in text:
                     evidence['settled'] = png
                     return {'status': 'QUICK_CHECK_SETTLED_PROMPT_OBSERVED', 'frame': png.name,
