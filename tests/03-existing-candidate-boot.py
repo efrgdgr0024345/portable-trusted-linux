@@ -14,9 +14,17 @@ import tempfile
 import time
 import zlib
 
-ISO = Path('/home/github-runner/blackcat-builds/run-35179377345-attempt-1/live-image-amd64.hybrid.iso')
-SHA = 'f498776780c543013e437161a878e22ca4fc40a66f47fc271d6fd6a964c29d75'
-SOURCE = 'ed5d80ac09c3f1650d67594242643d27efcf15e9'
+ISO = Path(os.environ.get(
+    'BLACKCAT_EVIDENCE_ISO',
+    '/home/github-runner/blackcat-builds/run-35179377345-attempt-1/live-image-amd64.hybrid.iso'))
+SHA = os.environ.get(
+    'BLACKCAT_EVIDENCE_SHA',
+    'f498776780c543013e437161a878e22ca4fc40a66f47fc271d6fd6a964c29d75')
+SOURCE = os.environ.get(
+    'BLACKCAT_EVIDENCE_SOURCE',
+    'ed5d80ac09c3f1650d67594242643d27efcf15e9')
+SIZE = int(os.environ.get('BLACKCAT_EVIDENCE_SIZE', '770703360'))
+BUILD_RUN = int(os.environ.get('BLACKCAT_EVIDENCE_BUILD_RUN', '35179377345'))
 OUT = Path.home() / 'blackcat-evidence' / ('run-' + os.environ.get('GITHUB_RUN_ID', 'manual'))
 
 
@@ -248,30 +256,108 @@ def observe(work, env, qemu, tess, code, variables, toolroot, mode):
                 print('FRAME_PNG_BASE64 ' + mode + '-' + label + ' ' + base64.b64encode(frame.read_bytes()).decode(), flush=True)
 
 
+def observe_recovery(work, env, qemu, tess, toolroot):
+    """Mask LightDM and require the automatic tty1 recovery interface."""
+    kernel, initrd = work / 'vmlinuz', work / 'initrd.img'
+    run(['xorriso', '-osirrox', 'on', '-indev', str(ISO), '-extract', '/live/vmlinuz', str(kernel)],
+        capture_output=True)
+    run(['xorriso', '-osirrox', 'on', '-indev', str(ISO), '-extract', '/live/initrd.img', str(initrd)],
+        capture_output=True)
+    qmp = work / 'recovery.sock'
+    serial = OUT / 'recovery-serial.log'
+    args = [qemu, '-machine', 'q35,accel=tcg', '-m', '2048', '-smp', '2',
+            '-kernel', str(kernel), '-initrd', str(initrd), '-cdrom', str(ISO),
+            '-append', ('boot=live components quiet console=tty0 '
+                        'systemd.mask=lightdm.service blackcat.recovery_test=1'),
+            '-boot', 'd', '-nic', 'none', '-display', 'none',
+            '-vga', 'none', '-device', 'VGA,romfile=' + str(toolroot / 'usr/share/seabios/vgabios-stdvga.bin'),
+            '-device', 'qemu-xhci,id=xhci', '-device', 'usb-tablet,bus=xhci.0',
+            '-serial', 'file:' + str(serial), '-qmp', 'unix:' + str(qmp) + ',server=on,wait=off',
+            '-no-reboot', '-L', str(toolroot / 'usr/share/qemu')]
+    last = None
+    with (OUT / 'recovery-qemu.log').open('w') as log:
+        proc = subprocess.Popen(args, stdout=log, stderr=log, env=env)
+        mon = None
+        try:
+            for _ in range(30):
+                if proc.poll() is not None:
+                    raise RuntimeError('Recovery QEMU exited early: ' + (OUT / 'recovery-qemu.log').read_text())
+                if qmp.exists():
+                    try:
+                        mon = Monitor(qmp)
+                        break
+                    except (ConnectionRefusedError, FileNotFoundError):
+                        pass
+                time.sleep(1)
+            if mon is None:
+                raise RuntimeError('Recovery QEMU monitor never became ready')
+
+            start = time.monotonic()
+            for elapsed in [20, 40, 70, 100, 140]:
+                time.sleep(max(0, elapsed - (time.monotonic() - start)))
+                ppm, png = OUT / f'recovery-{elapsed}.ppm', OUT / f'recovery-{elapsed}.png'
+                mon.command('screendump', {'filename': str(ppm)})
+                png_from_ppm(ppm, png)
+                last = png
+                observed = run([tess, str(png), 'stdout', '--psm', '6'],
+                               env=env, capture_output=True).stdout
+                (OUT / f'recovery-{elapsed}.txt').write_text(observed)
+                print(f'FRAME_OCR recovery {elapsed}: ' + json.dumps(observed), flush=True)
+                folded = observed.casefold()
+                if 'desktop recovery' in folded and 'export full report' in folded:
+                    return {'status': 'AUTOMATIC_RECOVERY_MENU_OBSERVED',
+                            'frame': png.name, 'elapsed_seconds': elapsed,
+                            'injection': 'LightDM masked; short test-only readiness deadline',
+                            'scope': 'VM failure-injection observation; not physical GPU compatibility'}
+            return {'status': 'RECOVERY_MENU_NOT_OBSERVED',
+                    'frame': last.name if last else None}
+        finally:
+            if mon:
+                try:
+                    mon.command('quit')
+                except Exception:
+                    pass
+                mon.close()
+            try:
+                proc.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                proc.terminate()
+                proc.wait(timeout=10)
+            if last:
+                print('FRAME_PNG_BASE64 recovery-last ' +
+                      base64.b64encode(last.read_bytes()).decode(), flush=True)
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     with ISO.open('rb') as f:
-        if ISO.stat().st_size != 770703360 or hashlib.file_digest(f, 'sha256').hexdigest() != SHA:
+        if ISO.stat().st_size != SIZE or hashlib.file_digest(f, 'sha256').hexdigest() != SHA:
             raise RuntimeError('Candidate identity mismatch; refuse boot')
-    report = {'iso_sha256': SHA, 'size_bytes': 770703360, 'source_commit': SOURCE,
-              'build_run': 35179377345, 'network': 'no guest NIC',
+    report = {'iso_sha256': SHA, 'size_bytes': SIZE, 'source_commit': SOURCE,
+              'build_run': BUILD_RUN, 'network': 'no guest NIC',
               'scope': 'development VM observations, no release approval'}
     try:
         with tempfile.TemporaryDirectory(prefix='bcvm-') as d:
             work = Path(d)
             root, env, qemu, tess, code, variables = tools_local(work)
             modes = [m.strip() for m in os.environ.get('BLACKCAT_EVIDENCE_MODES', 'gui,check').split(',') if m.strip()]
-            if not modes or any(m not in {'gui', 'check'} for m in modes):
-                raise RuntimeError('BLACKCAT_EVIDENCE_MODES must contain gui and/or check')
+            if not modes or any(m not in {'gui', 'check', 'recovery'} for m in modes):
+                raise RuntimeError('BLACKCAT_EVIDENCE_MODES must contain gui, check and/or recovery')
             for mode in modes:
-                report[mode] = observe(work, env, qemu, tess, code, variables, root, mode)
+                if mode == 'recovery':
+                    report[mode] = observe_recovery(work, env, qemu, tess, root)
+                else:
+                    report[mode] = observe(work, env, qemu, tess, code, variables, root, mode)
     finally:
         (OUT / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
         print('BOOT_REPORT=' + json.dumps(report), flush=True)
         print('EVIDENCE_DIR=' + str(OUT), flush=True)
-    if ('gui' in report and report['gui']['status'] != 'GUI_INTERACTIONS_OBSERVED') or \
-       ('check' in report and report['check']['status'] != 'QUICK_CHECK_SETTLED_PROMPT_OBSERVED'):
-        raise SystemExit(1)
+    expected = {'gui': 'GUI_INTERACTIONS_OBSERVED',
+                'check': 'QUICK_CHECK_SETTLED_PROMPT_OBSERVED',
+                'recovery': 'AUTOMATIC_RECOVERY_MENU_OBSERVED'}
+    for mode, wanted in expected.items():
+        if mode in report and report[mode]['status'] != wanted:
+            raise SystemExit(1)
 
 
 if __name__ == '__main__':
