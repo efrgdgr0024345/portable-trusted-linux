@@ -1090,3 +1090,7 @@ Final run `35231392125` completed with ClamAV exit 0: 43,350 files and 5,548 dir
 
 For large nested release artifacts, bind identity with hashes at each container boundary, then scan the uniquely extracted payload. Treat scanner-limit alerts and workflow failures as inconclusive rather than malware findings or clean results. Report the completed scanner summary, its scope and its limits before advising physical use.
 
+
+## Physical graphics failure — automatic diagnostics plan
+
+Operator photographs show working Debian console autologin and failed LightDM and Plymouth quit services. This does not establish the cause or independently verify the USB hash. Earlier VM success did not establish physical GPU compatibility. Repeated manual command requests imposed unnecessary operator work, and reboot may have lost volatile logs. The operator requested an expanded implementation plan, now in docs/23-automatic-boot-diagnostics-plan.md: automatic bounded collection, session readiness monitoring, a graphics-independent recovery menu and explicit offline export. Failure injection must test the recovery path. Classification: physical symptoms OBSERVED; cause UNKNOWN; recovery feature PLANNED, not implemented. Author: Codex; exact model/version unavailable.
