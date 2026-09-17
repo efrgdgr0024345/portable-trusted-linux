@@ -189,6 +189,8 @@ def observe(work, env, qemu, tess, code, variables, toolroot, mode):
                 time.sleep(max(0, elapsed - (time.monotonic() - start)))
                 png, text = capture(str(elapsed))
                 if mode == 'check' and not selected and 'System Check' in text:
+                    # Start, Basic graphics, then System Check.
+                    key('down')
                     key('down')
                     key('ret')
                     selected = True
@@ -270,6 +272,7 @@ def observe_recovery(work, env, qemu, tess, toolroot):
             '-append', ('boot=live components quiet console=tty0 '
                         'systemd.mask=lightdm.service blackcat.recovery_test=1'),
             '-boot', 'd', '-nic', 'none', '-display', 'none',
+            '-bios', str(toolroot / 'usr/share/seabios/bios-256k.bin'),
             '-vga', 'none', '-device', 'VGA,romfile=' + str(toolroot / 'usr/share/seabios/vgabios-stdvga.bin'),
             '-device', 'qemu-xhci,id=xhci', '-device', 'usb-tablet,bus=xhci.0',
             '-serial', 'file:' + str(serial), '-qmp', 'unix:' + str(qmp) + ',server=on,wait=off',
