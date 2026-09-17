@@ -7,12 +7,14 @@ on:
     branches:
       - build/graphical-iso-2026-09-16
       - codex/graphical-evidence-review
+      - codex/automatic-boot-recovery
     paths:
       - .github/workflows/graphical-development-build.yml
       - build/**
       - config/**
       - assets/design/**
       - design/**
+      - tests/05-boot-recovery-check.sh
   workflow_dispatch:
 
 permissions:
@@ -46,6 +48,7 @@ jobs:
           echo "SOURCE_COMMIT=$PTL_SOURCE_COMMIT"
           echo "SOURCE_REF=$PTL_SOURCE_REF"
           bash tests/02-session-ui-check.sh
+          bash tests/05-boot-recovery-check.sh
           bash build/00-host-check.sh
 
       - name: Build development-only ISO
