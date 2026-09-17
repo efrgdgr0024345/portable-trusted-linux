@@ -1065,3 +1065,7 @@ Candidate publication is now a priority fail-closed rule. The viewer targets a s
 ## 2026-09-17 — Preserve the JSON publication contract
 
 The user correctly identified that routine ISO updates should not require PHP replacement. The assistant had updated a different branch and proposed migrating the viewer rather than maintaining its existing JSON endpoint. Inspection also showed candidate.status must be "test"; the newer label was incompatible. The new plan supersedes the migration proposal, requires narrow compatible JSON publication and live verification, and binds successor models to human-approved deviations. Author: Codex (GPT-5-based); exact model version unavailable. Plan recorded, not implemented.
+
+## 2026-09-17 — Model hierarchy rule covers all plans, ideas and suggestions
+
+The operator clarified that the human-signoff restriction is project-wide: any higher-model plan, idea or suggestion cannot be changed by a lower model without explicit human sign-off. The prior wording over-focused on one publication plan. Root policy and recovery state now state the broader scope, provenance requirements, unknown-rank handling and prohibition on self-approved exceptions. No live publication or ISO change was made in this policy-only session.
