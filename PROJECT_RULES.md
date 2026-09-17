@@ -2,13 +2,17 @@
 
 These rules are mandatory for all future work in this repository.
 
+## Binding plan and model-attribution rule
+
+The active resolution plan is `docs/21-json-only-candidate-publication-plan.md`. Any successor model, including a lower/lighter model, MUST follow it or obtain explicit human sign-off before deviating. It must report blockers rather than silently changing the approach. Record the authoring model/version for every plan or substantive suggestion when reliably known; otherwise state unknown. This is a project instruction, not a technical guarantee of model compliance, and never overrides higher-priority safety/authorization requirements.
+
 ## Priority Rule 0 — The live candidate page is the physical-test authority
 
 The operator-facing page at `https://easyai.com.au/USB/project.php` is the single authoritative download handoff for physical testing. A candidate is not ready to hand to the operator merely because its artifact exists or its repository metadata is correct.
 
 Before asking the operator to download, write or test an ISO, the assistant MUST:
 
-1. publish the active candidate metadata to the stable `project-status-live` status source;
+1. publish compatible candidate JSON to the source branch the deployed PHP actually reads, following `docs/21-json-only-candidate-publication-plan.md`; do not require a PHP replacement for routine ISO updates;
 2. verify the live page itself over HTTPS;
 3. compare the displayed filename, exact byte size, SHA-256, source commit, build run, artifact ID and download URL with the authoritative evidence record;
 4. confirm the page does not label a superseded candidate as current; and

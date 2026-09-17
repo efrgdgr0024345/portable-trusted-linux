@@ -6,7 +6,7 @@ Compact handoff for a lighter coding model. Read this first, then the current ev
 
 - Review branch: `codex/graphical-evidence-review`; main is **not merged**.
 - Automated VM gates are complete for the artwork-enabled graphical candidate.
-- Human gates remain: spare-USB selection/write, physical boot, hardware observations, production signing, release approval, merge and deployment.
+- Human gates remain: spare-USB selection/write, physical boot, hardware observations, production signing, release approval, and merge. Routine JSON publication is not PHP deployment.
 - Canonical design authority: `design/README.md`; original folder is `/linux usb project/Graphical design for black cat project` (18 files).
 - The build uses seven selected canonical assets: one wallpaper plus six category icons. Other design files remain references.
 
@@ -29,7 +29,7 @@ The VM reported UEFI; Secure Boot `UNKNOWN`; TPM and TCG event log `NOT_EXPOSED`
 
 ## Next automatic actions
 
-Publish the current candidate through the stable `project-status-live` source, deploy the corrected canonical viewer if the host still serves the obsolete copy, and verify `https://easyai.com.au/USB/project.php` displays the exact size, SHA-256, source, run, artifact and link. Until that live verification passes, do not ask the operator to download or test the ISO. Preserve the exact hash and never transfer observations from historical images.
+Execute `docs/21-json-only-candidate-publication-plan.md`: update compatible JSON at the deployed viewer's actual source branch, without a PHP replacement. Verify the live candidate before handoff. The project-status-live migration proposal is superseded for this repair. Lower/lighter models must follow the plan or obtain explicit human sign-off for deviations.
 
 ## Next genuine human gate
 

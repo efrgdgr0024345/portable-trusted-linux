@@ -4,6 +4,10 @@ This file is the **canonical operational decision table** for when an AI assista
 
 `PROJECT_RULES.md` remains the master repository policy. `docs/11-automation-manifesto.md` explains the philosophy and rationale. `AI_WORK_STATE.md` is the compact recovery/checkpoint state used after chat/session discontinuity. This top-level file exists so the continue/stop rules are visible immediately at the repository root and can be checked by automation.
 
+## Binding plan and model-attribution rule
+
+The active resolution plan is `docs/21-json-only-candidate-publication-plan.md`. Any successor model, including a lower/lighter model, MUST follow it or obtain explicit human sign-off before deviating. It must report blockers rather than silently changing the approach. Record the authoring model/version for every plan or substantive suggestion when reliably known; otherwise state unknown. This is a project instruction, not a technical guarantee of model compliance, and never overrides higher-priority safety/authorization requirements.
+
 ## Core operating rule
 
 > **Default = continue automatically. Stop only at a genuine human gate, an explicit operator stop instruction, an applicable safety/platform authorization boundary, or a capability boundary that the available tools cannot cross.**

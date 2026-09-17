@@ -283,3 +283,7 @@ Replace a single project completion percentage with separately scoped capability
 **Status:** Accepted by the operator on 17 September 2026.
 
 **Decision:** `https://easyai.com.au/USB/project.php` is the single operator-facing authority for the current physical-test candidate. The viewer reads candidate metadata from the stable `project-status-live` branch rather than a temporary development branch or an unmerged `main` record. Publication is not complete until the live page is fetched and its filename, byte size, SHA-256, source commit, build run, artifact ID and URL match the evidence record. Any mismatch fails closed; chat-only replacement links are prohibited. This status mechanism does not authorize a USB write, merge development code, or promote an approved release.
+
+## ADR-2026-09-17-JSON-PUBLICATION — Supersede branch migration for recovery
+
+The user requires routine ISO publication through JSON without PHP replacement. The project-status-live migration portion of ADR-2026-09-17-LIVE-CANDIDATE is superseded by docs/21-json-only-candidate-publication-plan.md. Preserve the fail-closed live verification requirement. Publish to the existing viewer source with its compatible schema; any successor-model deviation requires explicit human sign-off. Implementation remains pending.
