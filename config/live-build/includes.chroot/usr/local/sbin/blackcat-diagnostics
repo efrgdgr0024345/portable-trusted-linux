@@ -8,6 +8,7 @@ if [[ "${1:-}" == "--reason" && -n "${2:-}" ]]; then
 fi
 
 base="${BLACKCAT_DIAGNOSTICS_DIR:-/run/blackcat/diagnostics}"
+collector_timeout="${BLACKCAT_COLLECTOR_TIMEOUT:-5}"
 boot_id="$(cat /proc/sys/kernel/random/boot_id 2>/dev/null || printf unknown)"
 report_dir="$base/$boot_id"
 mkdir -p "$report_dir"
@@ -27,7 +28,7 @@ capture() {
   local name="$1"
   shift
   local tmp="$report_dir/.${name}.tmp" rc=0 state=complete
-  if timeout --signal=TERM 5 "$@" >"$tmp" 2>&1; then
+  if timeout --signal=TERM "$collector_timeout" "$@" >"$tmp" 2>&1; then
     rc=0
   else
     rc=$?
