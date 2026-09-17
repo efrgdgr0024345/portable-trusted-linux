@@ -14,9 +14,9 @@ import tempfile
 import time
 import zlib
 
-ISO = Path('/home/github-runner/blackcat-builds/run-35159417803-attempt-1/live-image-amd64.hybrid.iso')
-SHA = 'e579d11818acfe9e885a0c9c55ee2749b070a2154f96663e66db606fba5a0455'
-SOURCE = '3491587f7bacd04ab116e0fccc47ba9b9ea52e10'
+ISO = Path('/home/github-runner/blackcat-builds/run-35179377345-attempt-1/live-image-amd64.hybrid.iso')
+SHA = 'f498776780c543013e437161a878e22ca4fc40a66f47fc271d6fd6a964c29d75'
+SOURCE = 'ed5d80ac09c3f1650d67594242643d27efcf15e9'
 OUT = Path.home() / 'blackcat-evidence' / ('run-' + os.environ.get('GITHUB_RUN_ID', 'manual'))
 
 
@@ -254,7 +254,7 @@ def main():
         if ISO.stat().st_size != 770703360 or hashlib.file_digest(f, 'sha256').hexdigest() != SHA:
             raise RuntimeError('Candidate identity mismatch; refuse boot')
     report = {'iso_sha256': SHA, 'size_bytes': 770703360, 'source_commit': SOURCE,
-              'build_run': 35159417803, 'network': 'no guest NIC',
+              'build_run': 35179377345, 'network': 'no guest NIC',
               'scope': 'development VM observations, no release approval'}
     try:
         with tempfile.TemporaryDirectory(prefix='bcvm-') as d:
