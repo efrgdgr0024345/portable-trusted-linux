@@ -2,7 +2,7 @@
 
 Author: Codex, GPT-5-based assistant. Exact deployed model/version is not exposed in this session; no stronger/lighter tier is claimed.
 Authority: User instruction to rewrite the resolution plan and require human sign-off for lower-model deviations.
-Status: Execution in progress; artifact/evidence and viewer contract reverified, persistent fixture tests added; JSON publication and live acceptance pending.
+Status: COMPLETE — JSON-only publication accepted live at 2026-09-17T09:17:52Z.
 
 ## Binding execution rule
 
@@ -35,3 +35,7 @@ Routine future ISO publication follows the same evidence -> compatible JSON upda
 ## Definition of done
 
 The live page itself displays and links the exact verified artwork candidate without replacing PHP; the compatibility and negative tests pass; historical evidence is retained; no approved-release or physical-test claims are fabricated. Until these conditions hold, status is NOT COMPLETE.
+
+## Acceptance record
+
+At 2026-09-17T09:17:52Z the live HTTPS page reported JSON blob f012581ef46bfa8b1977d82727c55b91c3ce864a from codex/remove-chroot-systemd-boot and displayed the exact intended filename, 770703360-byte size, full f4987767… SHA-256, ed5d80ac… source, build 35179377345, artifact name/ID and exact artifact URL. It showed Ready for physical testing while the separate release panel showed No approved ISO and Download unavailable. PHP was not replaced. Definition of done passed.
