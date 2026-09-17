@@ -1,9 +1,9 @@
 {
   "title": "Black Cat",
-  "version": "3.1",
-  "phase": "Graphical candidate validation",
+  "version": "3.2",
+  "phase": "Artwork-enabled graphical candidate: physical-test preparation",
   "updated": "2026-09-17",
-  "summary": "Architecture review and bounded lighter-model handoff are ready. The exact graphical ISO was built, rehashed and observed booting to the Black Cat panel and a separate System Check report in a VM. Interaction and settled diagnostic-screen tests remain next; physical validation of this image, production signing and release approval are incomplete. Canonical design references are integrated for future work. Review-branch changes are not merged or deployed.",
+  "summary": "Seven selected assets from the canonical 18-file Black Cat design folder are integrated in the exact current graphical candidate. The ISO was built, uploaded and observed in QEMU/OVMF through checkbox, CLEAR, OPEN DESKTOP, stable wallpaper and settled System Check prompt paths. Physical validation of this image, production signing, release approval, merge and deployment remain incomplete.",
   "candidate": {
     "status": "superseded",
     "channel": "m13b-physical-test",
@@ -29,7 +29,7 @@
     "smoke_test": "pending",
     "download_url": "",
     "release_page_url": "",
-    "note": "No approved release. Development signing tests passed with ephemeral keys; production key custody, physical validation of the graphical image and release approval remain outstanding."
+    "note": "No approved release. The artwork-enabled graphical candidate passed bounded VM gates; production key custody, physical validation, release approval, merge and deployment remain outstanding."
   },
   "documents": [
     {
@@ -391,12 +391,18 @@
       "title": "Existing Candidate VM Harness",
       "description": "Existing Candidate VM Harness",
       "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/tests/03-existing-candidate-boot.py"
+    },
+    {
+      "type": "Review evidence",
+      "title": "Artwork Candidate VM Evidence Report",
+      "description": "Machine-readable evidence for the exact artwork-enabled candidate and bounded VM observations.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/evidence/2026-09-17-artwork-candidate/report.json"
     }
   ],
   "sections": [
     {
       "title": "Current graphical validation focus",
-      "content": "The fixed graphical ISO booted to the Black Cat panel in QEMU/OVMF; a separate System Check boot produced its report. Checkbox/CLEAR/OPEN DESKTOP interaction, missing glyphs and the unsettled Plymouth/photo-prompt remain the next bounded work. Physical tests of this image have not run."
+      "content": "The exact artwork-enabled graphical ISO passed its bounded QEMU/OVMF interaction and settled System Check gates. Six cat icons, request selection/CLEAR, OPEN DESKTOP and the stable canonical wallpaper were observed. Physical testing of this exact hash remains the next human-gated step; production signing and release approval remain incomplete."
     },
     {
       "title": "Automation Manifesto — proceed by default",
@@ -658,8 +664,8 @@
     },
     {
       "id": "GUI01",
-      "title": "Verify graphical controls and settled System Check on the fixed candidate",
-      "status": "current"
+      "title": "Verify artwork-enabled graphical controls and settled System Check in VM",
+      "status": "complete-in-VM-physical-pending"
     }
   ],
   "decisions": [
@@ -840,6 +846,11 @@
     }
   ],
   "changelog": [
+    {
+      "version": "3.2",
+      "date": "2026-09-17",
+      "summary": "Integrated seven selected canonical design assets, built and uploaded the exact artwork candidate, observed the graphical interaction and settled System Check VM gates, preserved frames, and updated the lighter-model handoff. JSON written last."
+    },
     {
       "version": "3.1",
       "date": "2026-09-17",
@@ -1075,14 +1086,16 @@
   },
   "graphical_candidate": {
     "classification": "OBSERVED",
-    "source_commit": "86ddbb8eac1a0dbf912c035d5b916b70453dff88",
+    "source_commit": "ed5d80ac09c3f1650d67594242643d27efcf15e9",
     "filename": "live-image-amd64.hybrid.iso",
     "size_bytes": 770703360,
-    "sha256": "81f702cd9e59d4d7ba5654e6a69dbd655617968f92381049881930aef9b2fcb7",
-    "build_run": 35095923202,
-    "identity_recheck_run": 35107102698,
-    "boot_run": 35107884622,
-    "test_source_commit": "bf731270592334820fb6d782a79b91cb93572e5a",
+    "sha256": "f498776780c543013e437161a878e22ca4fc40a66f47fc271d6fd6a964c29d75",
+    "build_run": 35179377345,
+    "artifact_id": 10480220416,
+    "artifact_name": "blackcat-graphical-development-35179377345",
+    "artifact_publication": "success",
+    "boot_run": 35180150392,
+    "test_source_commit": "c1b623d0989c4c6d30814f4b92b80a44b79f501a",
     "environment": {
       "host": "ptl-builder-01",
       "qemu": "10.0.13",
@@ -1094,36 +1107,37 @@
       "host_disks_attached": false
     },
     "gui": {
-      "status": "observed",
-      "frame": "gui.png",
-      "elapsed_capture_seconds": 220,
-      "interaction_test": "not_run",
-      "missing_icon_glyphs": "observed"
+      "status": "interactions-observed",
+      "frames": [
+        "gui-selected.png",
+        "gui-cleared.png",
+        "desktop.png"
+      ],
+      "checkbox": "Browser summary observed",
+      "clear": "none summary observed",
+      "open_desktop": "panel absent and wallpaper stable in two successive captures",
+      "artwork": "six selected cat icons and canonical wallpaper observed"
     },
     "quick_check": {
-      "status": "report_observed",
-      "frame": "check.png",
-      "elapsed_capture_seconds": 140,
-      "settled_photo_screen": "not_verified",
-      "plymouth_quit_wait": "still_running_at_capture",
+      "status": "settled-prompt-observed",
+      "frame": "check-settled.png",
+      "elapsed_seconds": 140,
+      "plymouth_quit_wait": "resolved for blackcat.check=1",
       "secure_boot": "UNKNOWN",
       "tpm": "NOT_EXPOSED",
-      "dm_verity": "NOT_ACTIVE"
+      "tcg_event_log": "NOT_EXPOSED",
+      "dm_verity": "NOT_ACTIVE",
+      "network": "NO_ACTIVE_LINK_OBSERVED"
     },
     "physical_test": "not_run_for_this_image",
     "release_approval": "none",
-    "artifact_publication": "GitHub upload failed: storage quota",
-    "builder_copy": "/home/github-runner/blackcat-builds/run-35095923202-attempt-1/live-image-amd64.hybrid.iso",
+    "builder_copy": "/home/github-runner/blackcat-builds/run-35179377345-attempt-1/live-image-amd64.hybrid.iso",
+    "evidence_report": "evidence/2026-09-17-artwork-candidate/report.json",
     "limits": [
-      "Same-builder rehash is identity corroboration against earlier CI logs, not independent authenticated provenance.",
-      "No GUI interaction test or completed System Check login/photo-screen observation.",
-      "No physical boot evidence for this graphical image.",
-      "Current ISO predates newly linked design reference and integration edits."
-    ],
-    "frames_sha256": {
-      "gui.png": "35e087f6a90d636ed5af4e00be6f7589f9d60b887c6dba53f51a26c6c4ec3d7f",
-      "check.png": "33e4c3d5a419cec2f0460e378882b34a92729fad0ef067dfa8aa2e9d5aeb9a57"
-    }
+      "Development VM observations only; no physical boot evidence for this exact image.",
+      "Security signals reported UNKNOWN, NOT_EXPOSED or NOT_ACTIVE are not verified guarantees.",
+      "Production signing, release approval, merge and deployment remain pending."
+    ]
   },
   "design_reference": {
     "folder": "/linux usb project/Graphical design for black cat project",
@@ -1131,45 +1145,47 @@
     "file_count": 18,
     "repository_manifest": "design/source-manifest.json",
     "authority": "Brand notes govern new derivatives: Stealth. Intelligence. Independence.",
-    "in_current_iso": false
+    "in_current_iso": true,
+    "selected_build_assets": 7,
+    "selected_scope": "One wallpaper and six category icons; remaining files retained as references."
   },
   "handoff": {
     "ready_for_lighter_model": true,
     "checkpoint": "AI_WORK_STATE.md",
     "review_branch": "codex/graphical-evidence-review",
     "merged": false,
-    "next_action": "Use the existing fixed ISO and scoped VM harness to test checkbox/CLEAR/OPEN DESKTOP interactions and wait for a settled System Check photo prompt. Record exact observations.",
+    "next_action": "After explicit spare-device approval, follow docs/13-physical-boot-test.md with the exact current hash; record physical observations without transferring historical claims.",
     "last_passed_source_check": {
-      "run": 35155024291,
-      "commit": "a1a9afc3d2fba6d5c81ace22019493f4a951ec32"
+      "run": 35180150390,
+      "commit": "c1b623d0989c4c6d30814f4b92b80a44b79f501a"
     },
-    "completion_scope": "Review, architecture plan and saved continuation checkpoint; not full product completion."
+    "completion_scope": "Exact artwork candidate built and bounded VM gates observed; physical, production signing, release, merge and deployment gates remain."
   },
   "capabilities": [
     {
       "title": "Graphical ISO build",
-      "stage": "built",
-      "scope": "Run 35095923202; exact identity in graphical_candidate."
+      "stage": "built-and-uploaded",
+      "scope": "Source ed5d80ac09c3f1650d67594242643d27efcf15e9; run 35179377345; exact identity in graphical_candidate."
     },
     {
       "title": "Candidate identity",
-      "stage": "rehashed",
-      "scope": "Same-builder corroboration; not independent authenticated provenance."
+      "stage": "build-and-harness-verified",
+      "scope": "SHA-256 and size matched before the evidence harness booted the image; not independent authenticated provenance."
     },
     {
       "title": "Graphical boot",
-      "stage": "VM-observed",
-      "scope": "Panel visible; interactions pending; missing glyphs observed."
+      "stage": "VM-interactions-observed",
+      "scope": "Six icons, Browser selection, CLEAR, OPEN DESKTOP and stable canonical wallpaper observed in run 35180150392."
     },
     {
       "title": "System Check",
-      "stage": "report-observed",
-      "scope": "Plymouth wait still present at capture; settled prompt pending."
+      "stage": "settled-prompt-observed",
+      "scope": "Photo prompt observed after 140 seconds; VM security values remain UNKNOWN, NOT_EXPOSED or NOT_ACTIVE."
     },
     {
       "title": "Physical graphical boot",
       "stage": "pending",
-      "scope": "Historical M13B physical evidence belongs to a different ISO."
+      "scope": "No physical evidence for the exact f4987767… artwork candidate; historical M13B evidence belongs to a different ISO."
     },
     {
       "title": "Release signing",
@@ -1183,8 +1199,8 @@
     },
     {
       "title": "Graphical design",
-      "stage": "reference-integrated",
-      "scope": "Canonical folder and repository snapshot linked; current ISO predates integration."
+      "stage": "build-observed",
+      "scope": "Seven selected canonical assets are integrated and observed; eleven remaining files are references, not claimed as shipped."
     }
   ]
 }
