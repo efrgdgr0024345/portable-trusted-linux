@@ -48,7 +48,6 @@ jobs:
             rm -rf /var/lib/apt/lists/* /usr/share/doc/* /usr/share/man/* /usr/share/locale/*
           '
 
-          # Keep networking firmware likely to be relevant to this HP OMEN; discard unrelated blobs.
           sudo find "$ROOT/lib/firmware" -type f \
             ! -iname 'iwlwifi*' \
             ! -ipath '*intel*' \
@@ -66,7 +65,6 @@ jobs:
           #!/bin/bash
           set -Eeuo pipefail
           exec </dev/console >/dev/console 2>&1
-
           EXPECTED_ISO="ubuntu-26.04.1-desktop-amd64.iso"
           EXPECTED_SIZE="6482409472"
           EXPECTED_SHA="601e30fbf5d97759367c632e2c33630665039b7e2158fd068403da3ccf1bda1f"
@@ -155,7 +153,6 @@ jobs:
 
           echo "[2/6] Authenticating Canonical signature..."
           gpgv --keyring "$KEYRING" "$WORK/SHA256SUMS.gpg" "$WORK/SHA256SUMS" || fail "Canonical signature verification failed."
-
           LINE="$(grep -F "*$EXPECTED_ISO" "$WORK/SHA256SUMS" || true)"
           [ -n "$LINE" ] || fail "Expected ISO is absent from signed manifest."
           MANIFEST_SHA="$(awk '{print $1}' <<<"$LINE")"
@@ -164,7 +161,6 @@ jobs:
           echo "[3/6] Downloading verified Ubuntu ISO into RAM..."
           curl --fail --location --proto '=https' --tlsv1.2 --retry 3 --retry-delay 5 \
             -o "$WORK/$EXPECTED_ISO" "$BASE/$EXPECTED_ISO" || fail "ISO download failed."
-
           ACTUAL_SIZE="$(stat -c %s "$WORK/$EXPECTED_ISO")"
           [ "$ACTUAL_SIZE" = "$EXPECTED_SIZE" ] || fail "Downloaded ISO size mismatch."
 
@@ -236,7 +232,7 @@ jobs:
 
           KVER="$(ls "$ROOT/lib/modules" | sort -V | tail -n1)"
           VMLINUZ="$ROOT/boot/vmlinuz-$KVER"
-          test -s "$VMLINUX"
+          test -s "$VMLINUZ"
 
           sudo rm -f "$ROOT/boot/initrd.img-"* "$ROOT/var/log/"* 2>/dev/null || true
           sudo rm -rf "$ROOT/tmp/"* "$ROOT/var/tmp/"*
@@ -261,7 +257,7 @@ jobs:
 
           echo "Building and signing UKI..."
           ukify build \
-            --linux="$VMLINUX" \
+            --linux="$VMLINUZ" \
             --initrd="$OUT/initrd.zst" \
             --cmdline=@"$OUT/cmdline" \
             --os-release=@"$OUT/os-release" \
