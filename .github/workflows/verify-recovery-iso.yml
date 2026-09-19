@@ -1,7 +1,5 @@
 name: Verify Ubuntu 26.04.1 recovery ISO
 on:
-  push:
-    branches: [recovery-verify-ubuntu-26041]
   workflow_dispatch:
 permissions:
   contents: read
