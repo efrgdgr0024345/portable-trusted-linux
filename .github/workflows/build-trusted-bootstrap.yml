@@ -231,8 +231,11 @@ jobs:
           sudo systemctl --root="$ROOT" enable blackcat-recovery-bootstrap.service
 
           KVER="$(ls "$ROOT/lib/modules" | sort -V | tail -n1)"
-          VMLINUZ="$ROOT/boot/vmlinuz-$KVER"
-          test -s "$VMLINUZ"
+          sudo cp "$ROOT/boot/vmlinuz-$KVER" "$OUT/vmlinuz"
+          sudo chown "$(id -u):$(id -g)" "$OUT/vmlinuz"
+          chmod 0644 "$OUT/vmlinuz"
+          VMLINUZ="$OUT/vmlinuz"
+          test -r "$VMLINUZ"
 
           sudo rm -f "$ROOT/boot/initrd.img-"* "$ROOT/var/log/"* 2>/dev/null || true
           sudo rm -rf "$ROOT/tmp/"* "$ROOT/var/tmp/"*
