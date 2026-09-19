@@ -37,3 +37,4 @@ jobs:
           grep -F 'grep -qw toram /proc/cmdline' recovery/rewrite-usb.sh
           grep -F 'if [[ "$TARGET" == /dev/nvme* ]]' recovery/rewrite-usb.sh
           grep -F 'head -c "$EXPECTED_SIZE" "$TARGET"' recovery/rewrite-usb.sh
+          echo "RECOVERY_PAYLOAD_SHA256=$(sha256sum recovery/rewrite-usb.sh | awk '{print $1}')"
