@@ -1,0 +1,42 @@
+name: Makephone Viewer Deployment
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/makephone-viewer-deploy.yml'
+      - 'ops/makephone-viewer/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: makephone-viewer-deployment
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: github.repository == 'efrgdgr0024345/portable-trusted-linux' && github.actor == 'efrgdgr0024345' && github.head_ref == 'ops/makephone-viewer-20260920'
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 8
+    steps:
+      - name: Confirm intended host and inspect existing web service
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          test "$(hostname)" = ptl-builder-01
+          printf 'HOST=%s USER=%s\n' "$(hostname)" "$(id -un)"
+          if sudo -n true 2>/dev/null; then echo SUDO_AVAILABLE=yes; else echo SUDO_AVAILABLE=no; fi
+          echo '--- listening TCP ports ---'
+          ss -lnt
+          echo '--- available servers ---'
+          for c in nginx caddy apache2 python3 curl openssl certbot; do command -v "$c" || true; done
+          echo '--- running web services ---'
+          systemctl is-active nginx caddy apache2 || true
+          echo '--- web document roots ---'
+          for d in /var/www /srv/www /srv/makephone; do if [ -d "$d" ]; then ls -ld "$d"; find "$d" -maxdepth 2 -type d 2>/dev/null | head -20; fi; done
+          echo '--- HTTP routing directives only ---'
+          if command -v nginx >/dev/null; then sudo -n nginx -T 2>&1 | grep -E '^# configuration file|^[[:space:]]*(listen|server_name|root|alias|location|ssl_certificate)[[:space:]]' | head -100 || true; fi
+          echo '--- localhost web response headers ---'
+          curl --max-time 4 -sSI http://127.0.0.1/ || true
+          echo '--- host firewall status ---'
+          if command -v ufw >/dev/null; then sudo -n ufw status || true; fi
+          echo '--- disk available ---'
+          df -h /
