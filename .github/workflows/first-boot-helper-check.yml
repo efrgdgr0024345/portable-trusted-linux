@@ -1,0 +1,25 @@
+name: First-boot helper checks
+on:
+  push:
+    branches: [recovery-verify-ubuntu-26041]
+    paths:
+      - 'recovery/first-boot-audit.sh'
+      - 'recovery/lockdown-live-firewall.sh'
+      - '.github/workflows/first-boot-helper-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - run: |
+          set -euo pipefail
+          bash -n recovery/first-boot-audit.sh
+          bash -n recovery/lockdown-live-firewall.sh
+          shellcheck recovery/first-boot-audit.sh
+          shellcheck recovery/lockdown-live-firewall.sh
+          sha256sum recovery/first-boot-audit.sh recovery/lockdown-live-firewall.sh
