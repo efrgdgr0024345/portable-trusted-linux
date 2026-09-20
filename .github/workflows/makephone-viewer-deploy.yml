@@ -12,56 +12,44 @@ concurrency:
   group: makephone-viewer-deployment
   cancel-in-progress: false
 jobs:
-  deploy:
+  inspect:
     if: github.repository == 'efrgdgr0024345/portable-trusted-linux' && github.actor == 'efrgdgr0024345' && github.head_ref == 'ops/makephone-viewer-20260920'
     runs-on: [self-hosted, Linux, X64]
-    timeout-minutes: 5
+    timeout-minutes: 3
     steps:
-      - name: Check out the deployment code without persisting credentials
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-        with:
-          persist-credentials: false
-          path: makephone-deploy-work
-      - name: Install static preview in an isolated user-owned directory
+      - name: Check server process and network after earlier workflow completed
         shell: bash
         run: |
           set -Eeuo pipefail
           test "$(hostname)" = ptl-builder-01
-          test "$(id -un)" = github-runner
           DEST="$HOME/makephone-viewer"
-          SOURCE="$GITHUB_WORKSPACE/makephone-deploy-work/ops/makephone-viewer/serve.py"
-          test ! -L "$DEST"
-          mkdir -p "$DEST"
-          chmod 700 "$DEST"
-          python3 -m py_compile "$SOURCE"
-          if [ -e "$DEST/serve.py" ]; then
-            cmp "$SOURCE" "$DEST/serve.py" || { echo 'Existing server code differs; refusing automatic replacement'; exit 1; }
-          else
-            install -m 700 "$SOURCE" "$DEST/serve.py"
+          printf 'HOST=%s USER=%s\n' "$(hostname)" "$(id -un)"
+          echo '--- listeners ---'
+          ss -lnt
+          echo '--- preview pid ---'
+          if [ -f "$DEST/server.pid" ]; then
+            PID="$(cat "$DEST/server.pid")"
+            if [[ "$PID" =~ ^[0-9]+$ ]]; then ps -p "$PID" -o pid,ppid,comm,etime || true; fi
           fi
-          if ss -lnt | awk 'NR>1 {print $4}' | grep -Eq ':8080$'; then
-            curl -fsS --max-time 5 http://127.0.0.1:8080/makephone/health.json | python3 -c 'import json,sys; d=json.load(sys.stdin); assert d["service"] == "makephone-static-preview"; assert d["bundle_sha256"] == "28a95a2c91b355ee886dec191ed21acc219452ad1a57b88a701e52da7578c0d8"'
-            echo 'Existing matching preview retained'
-          else
-            # Ordinary user-level web daemon, with a clean environment: no CI token,
-            # repository credentials or Actions process-tracking environment.
-            # Does not modify system services, sudo policy, firewall or boot setup.
-            nohup env -i HOME="$HOME" PATH=/usr/bin:/bin LANG=C.UTF-8 /usr/bin/python3 "$DEST/serve.py" </dev/null >"$DEST/server.log" 2>&1 &
-            echo "$!" > "$DEST/server.pid"
-          fi
-          for attempt in 1 2 3 4 5; do
-            if curl -fsS --max-time 2 http://127.0.0.1:8080/makephone/health.json > "$DEST/health.json"; then break; fi
-            sleep 1
-          done
-          python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["service"] == "makephone-static-preview"; print(json.dumps(d,indent=2))' "$DEST/health.json"
-          printf 'SERVER_DIRECTORY=%s\n' "$DEST"
-          printf 'VIEWER_FILE=%s/public/index.html\n' "$DEST"
-          echo 'CANDIDATE_URL=http://170.64.224.131:8080/makephone/'
-          echo 'TRANSPORT=HTTP_DEVELOPMENT_PREVIEW_NO_CREDENTIALS'
-          echo 'REBOOT_AUTOSTART=NOT_CONFIGURED'
-          {
-            echo '## Makephone preview server'
-            echo 'User-level server installed on ptl-builder-01, TCP 8080.'
-            echo 'Asset transfer and external browser verification are separate checks.'
-            echo 'Transport is HTTP, not HTTPS. Reboot autostart is not configured.'
-          } >> "$GITHUB_STEP_SUMMARY"
+          echo '--- preview log ---'
+          tail -15 "$DEST/server.log" || true
+          echo '--- localhost service ---'
+          curl -fsS --max-time 5 http://127.0.0.1:8080/makephone/health.json || true
+          echo
+          echo '--- own public interface service ---'
+          curl -fsS --max-time 5 http://170.64.224.131:8080/makephone/health.json || true
+          echo
+          echo '--- user system service availability ---'
+          systemctl --user is-system-running || true
+          echo '--- configured administrative permissions, no changes ---'
+          sudo -n -l || true
+  external-check:
+    if: github.repository == 'efrgdgr0024345/portable-trusted-linux' && github.actor == 'efrgdgr0024345' && github.head_ref == 'ops/makephone-viewer-20260920'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Verify the droplet preview from an independent hosted runner
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          curl --fail --show-error --connect-timeout 8 --max-time 15 --retry 1 http://170.64.224.131:8080/makephone/health.json
