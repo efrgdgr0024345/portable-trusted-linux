@@ -1,0 +1,60 @@
+name: Verify Ubuntu Mini 26.04.1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-ubuntu-mini-26041.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Independent Canonical ISO verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Download Canonical release files
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          BASE='https://cdimage.ubuntu.com/ubuntu-mini-iso/releases/26.04/release'
+          ISO='ubuntu-mini-iso-26.04.1-mini-iso-amd64.iso'
+          wget -q "$BASE/SHA256SUMS" -O SHA256SUMS
+          wget -q "$BASE/SHA256SUMS.gpg" -O SHA256SUMS.gpg
+          wget -q "$BASE/$ISO" -O "$ISO"
+          ls -lh "$ISO" SHA256SUMS SHA256SUMS.gpg
+
+      - name: Verify Canonical signing key fingerprint and signature
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          EXPECTED_FPR='843938DF228D22F7B3742BC0D94AA3F0EFE21092'
+          KEYRING="$RUNNER_TEMP/ubuntu-cdimage.gpg"
+          export GNUPGHOME="$RUNNER_TEMP/gnupg"
+          mkdir -m 700 -p "$GNUPGHOME"
+          gpg --batch --keyserver hkps://keyserver.ubuntu.com --recv-keys "$EXPECTED_FPR"
+          ACTUAL_FPR="$(gpg --with-colons --fingerprint "$EXPECTED_FPR" | awk -F: '$1=="fpr"{print $10; exit}')"
+          echo "EXPECTED_FPR=$EXPECTED_FPR"
+          echo "ACTUAL_FPR=$ACTUAL_FPR"
+          test "$ACTUAL_FPR" = "$EXPECTED_FPR"
+          gpg --batch --export "$EXPECTED_FPR" > "$KEYRING"
+          gpgv --keyring "$KEYRING" SHA256SUMS.gpg SHA256SUMS
+
+      - name: Compare signed checksum with downloaded ISO
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ISO='ubuntu-mini-iso-26.04.1-mini-iso-amd64.iso'
+          SIGNED="$(awk -v f="$ISO" '$2=="*"f || $2==f {print $1}' SHA256SUMS)"
+          ACTUAL="$(sha256sum "$ISO" | awk '{print $1}')"
+          SIZE="$(stat -c '%s' "$ISO")"
+          echo "ISO=$ISO"
+          echo "SIZE_BYTES=$SIZE"
+          echo "SIGNED_SHA256=$SIGNED"
+          echo "ACTUAL_SHA256=$ACTUAL"
+          test -n "$SIGNED"
+          test "$SIGNED" = "$ACTUAL"
+          echo "RESULT=PASS"
