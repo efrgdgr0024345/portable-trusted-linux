@@ -1,0 +1,65 @@
+name: Verify Fedora Workstation 44
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-fedora-workstation-44.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Independent Fedora ISO verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Download Fedora release files
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          BASE='https://download.fedoraproject.org/pub/fedora/linux/releases/44/Workstation/x86_64/iso'
+          ISO='Fedora-Workstation-Live-44-1.7.x86_64.iso'
+          CHECKSUM='Fedora-Workstation-44-1.7-x86_64-CHECKSUM'
+
+          wget -q "$BASE/$CHECKSUM" -O "$CHECKSUM"
+          wget -q "$BASE/$ISO" -O "$ISO"
+          curl -fsSLo fedora.gpg https://fedoraproject.org/fedora.gpg
+
+          ls -lh "$ISO" "$CHECKSUM" fedora.gpg
+
+      - name: Verify Fedora-signed checksum
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          CHECKSUM='Fedora-Workstation-44-1.7-x86_64-CHECKSUM'
+          gpgv --keyring ./fedora.gpg --output verified-checksums.txt "$CHECKSUM"
+          grep -F 'Fedora-Workstation-Live-44-1.7.x86_64.iso' verified-checksums.txt
+
+      - name: Compare checksum and exact size
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ISO='Fedora-Workstation-Live-44-1.7.x86_64.iso'
+          EXPECTED_SHA='1620295f6a00c27c3208f0c00b8ece4eab1ec69b9002152d97488bf26a426ddf'
+          EXPECTED_SIZE='2851612672'
+
+          ACTUAL_SHA="$(sha256sum "$ISO" | awk '{print $1}')"
+          ACTUAL_SIZE="$(stat -c '%s' "$ISO")"
+          SIGNED_SHA="$(awk -v f="$ISO" '$2=="*"f || $2==f {print $1}' verified-checksums.txt)"
+
+          echo "ISO=$ISO"
+          echo "EXPECTED_SIZE=$EXPECTED_SIZE"
+          echo "ACTUAL_SIZE=$ACTUAL_SIZE"
+          echo "EXPECTED_SHA256=$EXPECTED_SHA"
+          echo "SIGNED_SHA256=$SIGNED_SHA"
+          echo "ACTUAL_SHA256=$ACTUAL_SHA"
+
+          test "$ACTUAL_SIZE" = "$EXPECTED_SIZE"
+          test "$SIGNED_SHA" = "$EXPECTED_SHA"
+          test "$ACTUAL_SHA" = "$EXPECTED_SHA"
+
+          echo "RESULT=PASS"
