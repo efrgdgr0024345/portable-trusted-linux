@@ -1,0 +1,23 @@
+Fedora Workstation 44 x86_64 Live verification target
+
+File:
+Fedora-Workstation-Live-44-1.7.x86_64.iso
+
+Official Fedora Workstation page:
+https://www.fedoraproject.org/workstation/download/
+
+Official Fedora release path:
+https://download.fedoraproject.org/pub/fedora/linux/releases/44/Workstation/x86_64/iso/
+
+Exact size:
+2851612672 bytes
+
+Official SHA-256:
+1620295f6a00c27c3208f0c00b8ece4eab1ec69b9002152d97488bf26a426ddf
+
+Verification policy:
+- Fedora's signed CHECKSUM must verify with Fedora's published OpenPGP certificate bundle.
+- Signed checksum must equal the official SHA-256 above.
+- Fresh GitHub-hosted runner must calculate the same SHA-256.
+- Local RAM copy must calculate the same SHA-256.
+- Final USB raw read-back must calculate the same SHA-256 before boot.
