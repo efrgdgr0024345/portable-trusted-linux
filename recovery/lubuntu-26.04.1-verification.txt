@@ -1,0 +1,19 @@
+Lubuntu 26.04.1 Desktop AMD64 verification target
+
+File:
+lubuntu-26.04.1-desktop-amd64.iso
+
+Canonical release directory:
+https://cdimage.ubuntu.com/lubuntu/releases/26.04/release/
+
+Canonical-published SHA-256:
+a8038585420f2270845549c6f493e0ec98e68d4b2c49571cbe500a4b5fab3062
+
+Canonical CD image signing key fingerprint:
+843938DF228D22F7B3742BC0D94AA3F0EFE21092
+
+Verification policy:
+- Canonical SHA256SUMS.gpg must verify.
+- Canonical signed hash must equal local RAM ISO hash.
+- Fresh GitHub-hosted runner hash must equal the same value.
+- Final USB raw read-back must equal the same value before boot.
