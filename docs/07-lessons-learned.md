@@ -1137,3 +1137,21 @@ Retire the CLI OAuth helper: the current file exits without invoking gh. Two loc
 
 ### Evidence classification
 **OBSERVED** operator-supplied scope screen and reported cancellation. **VERIFIED** local refusal/no-gh-execution tests relative to the retired helper. Broad grant approval, actual revocation and local cleanup are **UNKNOWN**; no approval or success was reported. Runner registration, online status and sudo remain **UNKNOWN / PENDING**. Final JSON follow-through remains blocked by the previously reported automatic approval review pending separate approval to retain existing public references.
+
+
+## 2026-11-10 — Runner registration and privileged service readiness are separate evidence
+
+### What was attempted
+Continue recovery after the operator supplied Runner successfully added and Settings Saved output.
+
+### What happened
+Registration is OBSERVED from the console transcript. API queue review returned only two recovery push runs on the recovery branch (42691361475 queued; 42691382043 pending), with no in-progress or waiting runs. An authorized startup script and five local confirmation-gate tests were prepared; shell syntax and all five tests passed. No sudo policy or service startup has yet been reported.
+
+### Why it matters
+Successful registration does not prove a live listener or usable administrative build path. Dedicated labels prevent generic jobs selecting this runner but are not authorization against an external PR that changes workflow labels. A job-start hook is not a sufficient isolation boundary. The repository must require approval for all outside collaborators, and approved code plus repository writers remain trusted.
+
+### Decision / change
+Use GitHub's mature outside-collaborator approval control, verify custom-only runner labels, and require explicit operator confirmations before startup. The script validates registered identity, sudoers syntax, effective sudo UID and service account. Unrestricted passwordless sudo is root-equivalent, explicitly operator-authorized, temporary and unsuitable for production keys or unrelated workloads. See docs/runner-service-startup.md for bounded evidence and replacement hardening.
+
+### Evidence classification
+**OBSERVED** operator-supplied registration and API queue state. **VERIFIED** local syntax and five confirmation-gate checks relative to the script. Approval settings, labels, service, remote sudo and full builder restoration remain **UNKNOWN / PENDING**. No core trust-chain milestone or release advanced. Final JSON remains blocked pending the previously requested approval to retain existing public infrastructure references.
