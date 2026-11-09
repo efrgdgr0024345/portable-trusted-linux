@@ -1099,3 +1099,23 @@ Use the checksum-pinned helper and one browser approval; capture the short-lived
 
 ### Evidence classification
 **VERIFIED** local shell syntax and non-root rejection relative to the helper. **OBSERVED** official runner environment-input support and operator-provided installation output. Remote authorization, token creation, registration, cleanup, service startup and sudo execution remain **UNKNOWN / PENDING**. No runtime trust milestone or release approval advanced.
+
+
+## 2026-11-10 — Syntax validation missed a real GitHub CLI compatibility failure
+
+### What was attempted
+Run the committed console-only runner registration helper using Debian's packaged GitHub CLI.
+
+### What actually happened
+The operator reported unknown flag: --skip-ssh-key after successful helper checksum verification. The earlier bash syntax and non-root checks had not exercised gh's option parser. The helper failed before device authentication or runner registration. The unnecessary flag was removed because HTTPS was already selected.
+
+The corrected options passed against the actual locally installed Debian gh 2.46.0-3 parser using --help without authentication or network use. A negative unsupported-flag case was rejected. Both tests in tests/test_runner_cli_compatibility.py and bash syntax validation passed. Target version was not reported; its displayed help supports the revised flags.
+
+### Why it matters
+A shell script can be syntactically valid and still call an unsupported CLI option. Claiming compatibility from syntax-only tests would create false confidence and add operator work.
+
+### Decision / change
+Exercise actual dependency option parsing where possible, with both accepted and rejected cases. Current helper source is ff6c9707dcd51ee14b1ca3473a5f27a39631c512; SHA-256 feda754b526a500a4cee7068f475934c87873fafc7c28d3412aed26c24f4909b. Preserve the failed helper identity in the technical guide. Retry with the corrected pinned source; do not start the service or claim recovered execution before registration and smoke evidence.
+
+### Evidence classification
+**OBSERVED** operator-supplied unknown-flag failure. **VERIFIED** local shell syntax and two parser tests relative to Debian gh 2.46.0-3. Remote authentication, registration and sudo smoke remain **UNKNOWN / PENDING**. The final project_content.json update remains blocked by automatic approval review pending separate operator approval to retain its existing public infrastructure/runbook references.
