@@ -6,7 +6,10 @@
         "codex/m15-signed-uki-development"
       ],
       "paths": [
-        ".github/workflows/m15-development.yml"
+        ".github/workflows/m15-development.yml",
+        "build/**",
+        "verifier/**",
+        "tests/test_m15_*.py"
       ]
     },
     "workflow_dispatch": {}

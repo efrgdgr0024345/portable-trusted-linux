@@ -1260,3 +1260,14 @@ Use `ukify inspect IMAGE --all`. The exact command constructor is now tested aga
 
 ### Evidence classification
 OBSERVED remote CLI failures; VERIFIED corrected command against actual package tooling and two local inspector tests. Fresh normal-pipeline signing/negative/ISO results remain PENDING. No production signing, firmware enrollment or target-device action occurred.
+
+## 2026-11-10 — ukify can succeed while skipping malformed SBAT input
+
+### Attempt and result
+Retained-input run 42706245365 passed PE signature verification but failed the mandatory metadata binding check: Missing expected Black Cat SBAT row. The exact ukify 257.13 source shows merge_sbat skips headerless input with a warning while returning success. Supplying only the product row was insufficient.
+
+### Why it matters and decision
+A successful assembly/signing exit code does not prove requested metadata was included. Supply the standard sbat header followed by the explicit Black Cat row, keep the existing strict row check, and test the real package's build/merge behavior on a clearly NOT BOOTABLE fixture. All 22 M15 local tests now pass, including real metadata merging. Do not weaken the verifier to accept missing SBAT. Preserve the failing diagnostic artifact 13714081214; it is not clean acceptance evidence. Fresh normal-pipeline signing/ISO acceptance remains pending.
+
+### Evidence classification
+OBSERVED actual diagnostic failure; VERIFIED source cause and real-tool metadata regression. No production keys or platform enrollment occurred. Temporary development keys were unlinked on the handled failure; secure RAM erasure is not claimed.

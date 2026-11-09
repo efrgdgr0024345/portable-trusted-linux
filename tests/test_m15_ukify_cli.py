@@ -6,6 +6,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import tempfile
 import unittest
 
 sys.dont_write_bytecode = True
@@ -31,6 +32,26 @@ class UkifyInspectorTests(unittest.TestCase):
         result = self.invoke(ROOT / "no-such-development-image.efi")
         self.assertNotEqual(result.returncode, 0)
         self.assertNotIn("unrecognized arguments", result.stderr)
+
+    def test_real_ukify_retains_sbat_row_from_build_input(self):
+        # NOT BOOTABLE payload; this tests the actual metadata merger only.
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            (root / "kernel").write_bytes(b"NOT A BOOTABLE KERNEL")
+            (root / "initrd").write_bytes(b"NOT A REAL INITRD")
+            (root / "sbat").write_text(build.sbat_text())
+            image = root / "test.efi"
+            argv = [UKIFY, "build", "--config=/dev/null", "--stub=" + str(STUB),
+                    "--linux=" + str(root / "kernel"), "--initrd=" + str(root / "initrd"),
+                    "--uname=development-fixture", "--no-sign-kernel", "--no-measure",
+                    "--sbat=@" + str(root / "sbat"), "--output=" + str(image)]
+            result = subprocess.run(argv, text=True, capture_output=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            output = root / "sbat-extracted"
+            subprocess.run(["objcopy", "--dump-section", ".sbat=" + str(output), str(image),
+                            str(root / "discard.efi")], check=True, capture_output=True)
+            rows = output.read_bytes().rstrip(b"\0").decode().splitlines()
+            self.assertIn(build.SBAT, rows)
 
 
 if __name__ == "__main__":

@@ -24,11 +24,17 @@ spec.loader.exec_module(verify_module)
 digest = verify_module.digest
 CMDLINE = "boot=live components quiet"
 SBAT = "blackcat,1,Black Cat,blackcat-development,1,https://github.com/efrgdgr0024345/portable-trusted-linux"
+SBAT_HEADER = "sbat,1,SBAT Version,sbat,1,https://github.com/rhboot/shim/blob/main/SBAT.md"
 
 
 def inspect_command(image):
     # ukify 257's argparse layout requires positional FILE before --all.
     return ["ukify", "inspect", image, "--all"]
+
+
+def sbat_text():
+    # ukify ignores an input without the SBAT header, even with exit status 0.
+    return SBAT_HEADER + "\n" + SBAT + "\n"
 
 
 def unique_files(paths):
@@ -94,7 +100,7 @@ def build(work, output):
     if not osrel_path.resolve().is_relative_to((work / "chroot").resolve()):
         raise RuntimeError("os-release escapes build chroot")
     osrel = osrel_path.read_text().rstrip("\n") + "\nIMAGE_ID=blackcat\nIMAGE_VERSION=prototype1-m15-development\n"
-    for name, value in (("cmdline.txt", CMDLINE), ("os-release", osrel), ("sbat.csv", SBAT + "\n")):
+    for name, value in (("cmdline.txt", CMDLINE), ("os-release", osrel), ("sbat.csv", sbat_text())):
         (output / name).write_text(value)
     manifest = {
         "schema": "blackcat-m15-inputs-v1", "key_policy": "EPHEMERAL DEVELOPMENT ONLY",

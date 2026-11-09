@@ -127,3 +127,6 @@ Regression checks include signed synthetic PE fixtures (not bootable kernels), r
 
 ### Inspector compatibility follow-through
 The 257-series inspector is invoked as `ukify inspect IMAGE --all`, with the positional image preceding the option. Remote attempts 42702518668 and 42704330214 exposed this parser ordering constraint. Two tests exercise the real package tool rather than only shell/Python syntax. Retained-input diagnostics are not clean acceptance evidence, and their output is stored separately. Full integration remains pending until the fresh normal pipeline passes.
+
+### SBAT input contract
+The product SBAT row is supplied together with the standard `sbat,1,...` header. ukify 257 silently skips headerless input despite exit zero; run 42706245365 was rejected by the independent required-row check. A real-tool build regression now verifies that the row survives merging with the stub/kernel SBAT data. The strict verifier is retained.
