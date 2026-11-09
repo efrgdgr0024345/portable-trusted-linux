@@ -31,6 +31,7 @@ lb config \
   --distribution trixie \
   --architectures amd64 \
   --binary-images iso-hybrid \
+  --bootloaders "grub-pc grub-efi" \
   --archive-areas "main" \
   --apt-recommends true \
   --security true \

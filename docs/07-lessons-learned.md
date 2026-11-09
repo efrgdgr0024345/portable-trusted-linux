@@ -1208,3 +1208,22 @@ Implement a mandatory binary hook with exact input/version matching, explicit em
 
 ### Evidence classification
 OBSERVED actual toolchain/probe and live-build source; VERIFIED local static detection of checkpoint drift, now corrected. Full normal-pipeline build, signature tests and final ISO read-back remain PENDING until CI evidence exists. No production key or platform ownership action was performed.
+
+## 2026-11-10 — Partial package inspection can point at the wrong EFI image; log failures must also fail closed
+
+### What was attempted
+Check the first M15 implementation against the complete Debian live-build package while its first integration build runs.
+
+### What happened
+The initial 240-line probe showed a cleanup reference to binary/boot/efi.img. Inspecting the full matching package revealed that the actual generated and ISO-selected file is binary/boot/grub/efi.img. The first source draft therefore targeted the wrong location; its mandatory file-existence check will refuse rather than publish an unused signed sidecar. The corrected stage and read-back verifier now use the actual path. Explicit grub-pc/grub-efi configuration selects live-build's existing EFI-partition image support.
+
+Review also found that the inherited non-root build wrapper captured only lb's PIPESTATUS[0]; a failed tee/log write after successful lb could yield exit zero. Capturing the whole pipefail result fixes this. Four tests exercise the actual wrapper with safely intercepted build/privileged commands: failed log, failed lb, cached work and stale evidence all refuse. Ordinary SIGTERM now unwinds ephemeral-key temporary storage; SIGKILL/secure RAM erasure are not claimed.
+
+### Why it matters
+A cleanup path is not proof of the path consumed by image creation. Exact package behavior and final-image read-back are necessary. Evidence-generation failures must not become successful build results.
+
+### Decision / change
+Retain the initial draft and this correction in history. Keep the wrong-path file-existence gate and final-image binding checks fail-closed. Publish the corrected source for a fresh integration build; do not relabel the first attempt as successful without its result. Full cryptographic/ISO results remain pending.
+
+### Evidence classification
+VERIFIED source mismatch against the matching Debian package and four local negative wrapper tests. The first normal build is still running at this checkpoint; its final result is not yet known. No firmware enrollment, target-device write or production key was used.

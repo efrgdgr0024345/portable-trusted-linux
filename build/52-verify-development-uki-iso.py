@@ -42,7 +42,7 @@ def check(iso, bundle):
         def extract(source, destination):
             v.command(["xorriso", "-osirrox", "on", "-indev", iso, "-extract", source, destination])
         extract("/EFI/Linux/blackcat-development.efi", temp / "filesystem.efi")
-        extract("/boot/efi.img", temp / "esp.img")
+        extract("/boot/grub/efi.img", temp / "esp.img")
         extract("/live", temp / "live")
         for pattern, section in (("vmlinuz*", ".linux"), ("initrd*", ".initrd")):
             files = {x.resolve() for x in (temp / "live").glob(pattern) if x.is_file()}

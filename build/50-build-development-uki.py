@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import shlex
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -164,9 +165,9 @@ def build(work, output):
 
     # Replace the development UEFI entry rather than ship an unused signed sidecar.
     # Do not install an unsigned GRUB/shim fallback in this generated ESP.
-    esp = binary / "boot/efi.img"
+    esp = binary / "boot/grub/efi.img"
     if not esp.is_file():
-        raise RuntimeError("Expected live-build UEFI ESP file boot/efi.img is missing")
+        raise RuntimeError("Expected live-build UEFI ESP file boot/grub/efi.img is missing")
     esp.unlink()
     megabytes = max(64, ((signed.stat().st_size + 16 * 1024 * 1024) // (1024 * 1024)) + 1)
     with esp.open("wb") as stream:
@@ -236,4 +237,7 @@ def main():
 
 
 if __name__ == "__main__":
+    # Unwind TemporaryDirectory on ordinary CI termination; SIGKILL/power loss
+    # still cannot promise cleanup or secure RAM erasure.
+    signal.signal(signal.SIGTERM, lambda number, frame: sys.exit(128 + number))
     raise SystemExit(main())

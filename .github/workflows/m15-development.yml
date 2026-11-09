@@ -46,7 +46,7 @@
         {
           "name": "Run source and fail-closed regression checks",
           "shell": "bash",
-          "run": "set -Eeuo pipefail\nexport PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\ntest \"$(git rev-parse HEAD)\" = \"$PTL_SOURCE_COMMIT\"\nbash tests/00-static-check.sh\npython3 -m unittest discover -s tests -p 'test_runner_*.py'\npython3 -m py_compile build/50-build-development-uki.py build/52-verify-development-uki-iso.py verifier/verify-development-uki.py\n"
+          "run": "set -Eeuo pipefail\nexport PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\ntest \"$(git rev-parse HEAD)\" = \"$PTL_SOURCE_COMMIT\"\nbash tests/00-static-check.sh\npython3 -m unittest discover -s tests -p 'test_runner_*.py'\npython3 tests/test_m15_pipeline_failure.py\npython3 -m py_compile build/50-build-development-uki.py build/52-verify-development-uki-iso.py verifier/verify-development-uki.py\n"
         },
         {
           "name": "Normal Prototype 1 pipeline including mandatory signed UKI gate",
@@ -57,7 +57,7 @@
           "name": "Preserve public evidence and summarize exact identities",
           "if": "always()",
           "shell": "bash",
-          "run": "set -Eeuo pipefail\nretain=\"$HOME/blackcat-builds/m15/run-${GITHUB_RUN_ID}-attempt-${GITHUB_RUN_ATTEMPT}\"\nmkdir -p \"$retain\"\nif [ -d out ]; then cp -r out/. \"$retain/\"; fi\nif [ -d \"$PTL_BUILD_WORK_DIR/m15-evidence\" ] && [ ! -d \"$retain/m15\" ]; then\n  cp -r \"$PTL_BUILD_WORK_DIR/m15-evidence\" \"$retain/m15\"\nfi\nif [ -d \"$retain/m15\" ]; then\n  find \"$retain/m15\" -type f -name '*.key' -print -quit | grep -q . && exit 1\nfi\nprintf 'LOCAL_EVIDENCE_DIR=%s\\n' \"$retain\"\nfor f in out/m15/provenance.json out/m15/tests.json out/m15/iso-verification.json; do\n  if [ -f \"$f\" ]; then echo \"$f\"; cat \"$f\"; fi\ndone\nif [ -f out/live-build.log ]; then tail -n 90 out/live-build.log; fi\n"
+          "run": "set -Eeuo pipefail\nretain=\"$HOME/blackcat-builds/m15/run-${GITHUB_RUN_ID}-attempt-${GITHUB_RUN_ATTEMPT}\"\nmkdir -p \"$retain\"\nif [ -d \"$PTL_BUILD_WORK_DIR/m15-evidence\" ] && [ ! -d out/m15 ]; then\n  mkdir -p out\n  cp -r \"$PTL_BUILD_WORK_DIR/m15-evidence\" out/m15\nfi\nif [ -d out ]; then cp -r out/. \"$retain/\"; fi\nif [ -d \"$PTL_BUILD_WORK_DIR/m15-evidence\" ] && [ ! -d \"$retain/m15\" ]; then\n  cp -r \"$PTL_BUILD_WORK_DIR/m15-evidence\" \"$retain/m15\"\nfi\nif [ -d \"$retain/m15\" ]; then\n  find \"$retain/m15\" -type f -name '*.key' -print -quit | grep -q . && exit 1\nfi\nprintf 'LOCAL_EVIDENCE_DIR=%s\\n' \"$retain\"\nfor f in out/m15/provenance.json out/m15/tests.json out/m15/iso-verification.json; do\n  if [ -f \"$f\" ]; then echo \"$f\"; cat \"$f\"; fi\ndone\nif [ -f out/live-build.log ]; then tail -n 90 out/live-build.log; fi\n"
         },
         {
           "name": "Upload development UKI evidence only (not an approved ISO)",
