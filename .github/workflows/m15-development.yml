@@ -58,6 +58,11 @@
           "run": "set -Eeuo pipefail\nold=/var/tmp/ptl-m15-42700951403-1\nif [ -d \"$old/binary/live\" ] && [ ! -d \"$old/binary/blackcat/m15\" ]; then\n  echo 'DIAGNOSTIC ONLY: retained input source e93b76c3daf37f3c544e5446a5d842cdfdf66be7; clean pipeline still mandatory'\n  sudo -n env PTL_SOURCE_COMMIT=\"$PTL_SOURCE_COMMIT\" PTL_INPUT_SOURCE_COMMIT=e93b76c3daf37f3c544e5446a5d842cdfdf66be7 GITHUB_RUN_ID=\"$GITHUB_RUN_ID\" \\\n    python3 build/50-build-development-uki.py --work-dir \"$old\" \\\n    --output \"$M15_DIAGNOSTIC_DIR\"\nelse\n  echo 'No retained inputs; normal clean build remains the acceptance path'\nfi\n"
         },
         {
+          "name": "Read-back diagnostic on retained real ISO (not clean acceptance)",
+          "shell": "bash",
+          "run": "set -Eeuo pipefail\nold=/var/tmp/ptl-m15-42706847403-1\nif [ -f \"$old/live-image-amd64.hybrid.iso\" ]; then\n  echo 'DIAGNOSTIC ONLY: prior real ISO source 6865c51c5d2b34d908e5c50b88c5f0c03d8a4cd4; fresh pipeline remains mandatory'\n  mkdir -p out\n  cp -r --no-preserve=mode,ownership \"$old/m15-evidence\" out/m15-iso-diagnostic\n  python3 build/52-verify-development-uki-iso.py --iso \"$old/live-image-amd64.hybrid.iso\" --bundle out/m15-iso-diagnostic\nfi\n"
+        },
+        {
           "name": "Normal Prototype 1 pipeline including mandatory signed UKI gate",
           "shell": "bash",
           "run": "set -Eeuo pipefail\nbash build/20-build-live.sh\nbash build/30-artifact-manifest.sh\n"
@@ -79,7 +84,7 @@
           "uses": "actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f",
           "with": {
             "name": "blackcat-m15-development-evidence-${{ github.run_id }}",
-            "path": "out/m15/**\nout/live-build.log\nout/build-manifest.json\nout/m15-diagnostic/**",
+            "path": "out/m15/**\nout/live-build.log\nout/build-manifest.json\nout/m15-diagnostic/**\nout/m15-iso-diagnostic/**",
             "if-no-files-found": "warn",
             "compression-level": 0,
             "retention-days": 7

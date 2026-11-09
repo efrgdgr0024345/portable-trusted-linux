@@ -1293,3 +1293,14 @@ Correct the affected build guide, retain the earlier candidate history and docum
 
 ### Evidence classification
 VERIFIED source/document mismatch; root privilege supported by earlier recovery CI. M15 final-image and firmware claims remain scoped separately. No production key or platform-state mutation was introduced.
+
+## 2026-11-10 — Real signing succeeded but root-owned evidence blocked the unprivileged read-back report
+
+### Attempt and result
+Clean run 42706847403, source 6865c51c5d2b34d908e5c50b88c5f0c03d8a4cd4, built a real live ISO and passed UKI signature plus tamper/wrong-key/unsigned and command-line rejection tests. It then failed closed with Permission denied writing m15-evidence/el-torito.log: the binary hook runs under privileged lb, but the post-verifier runs as github-runner. Diagnostic artifact 13715021562 preserves this failure; it is not successful pipeline acceptance.
+
+### Decision / significance
+Copy only the public evidence to runner-owned out/m15 before post-ISO verification, without preserving source ownership/mode, and publish the ISO only after that verifier succeeds. Do not solve this by running the verifier as root or making the privileged build directory broadly writable. A real wrapper test now simulates a non-writable source bundle produced during the build and proves reports land only in the writable copy. All 26 local M15 tests pass. Verify the retained real ISO as a diagnostic, then require a fresh normal-pipeline pass at corrected source. Preserve failures and image identities separately.
+
+### Evidence classification
+OBSERVED successful real UKI controls followed by a real ownership-boundary failure. VERIFIED local wrapper regression and existing crypto/layout tests. Full corrected normal-pipeline acceptance remains PENDING. xorriso also warned that the large ESP exceeds the legacy 65535-sector El Torito load-size field and encoded zero; no claim of firmware compatibility/enforcement follows from byte read-back alone. No production key, firmware enrollment or target-device write occurred.

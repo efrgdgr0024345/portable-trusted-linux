@@ -52,10 +52,12 @@ if [[ -z "$image" ]]; then
   exit 1
 fi
 
+# The binary hook runs inside privileged lb, so its bundle is root-owned.
+# Copy public evidence first; keep the independent read-back verifier unprivileged.
+cp -r --no-preserve=mode,ownership "$WORK_DIR/m15-evidence" "$OUT_DIR/m15"
 python3 "${SCRIPT_DIR}/52-verify-development-uki-iso.py" \
-  --iso "$WORK_DIR/${image#./}" --bundle "$WORK_DIR/m15-evidence"
+  --iso "$WORK_DIR/${image#./}" --bundle "$OUT_DIR/m15"
 
-cp -r "$WORK_DIR/m15-evidence" "$OUT_DIR/m15"
 cp -f "$image" "$OUT_DIR/"
 artifact="${OUT_DIR}/$(basename "$image")"
 sha256sum "$artifact" | tee "${artifact}.sha256"

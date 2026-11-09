@@ -133,3 +133,8 @@ The product SBAT row is supplied together with the standard `sbat,1,...` header.
 
 ### ISO binding regressions
 `tests/test_m15_iso_binding.py` exercises the real xorriso/FAT/partition tools on an explicitly NOT BOOTABLE signed fixture. It accepts the correct final-image layout and rejects a modified actual ESP extent or missing hybrid EFI partition. These checks supplement, rather than replace, real-kernel normal-pipeline read-back. Result reports remain scoped by exact ISO hash and pipeline outcome.
+
+### Root/unprivileged evidence boundary and actual-image limitation
+The binary hook creates public evidence under privileged live-build. The normal wrapper copies it into runner-owned `out/m15/` before the independent unprivileged ISO verifier writes reports. Run 42706847403 proved signing/rejection controls but failed at this ownership boundary; it is retained as failure evidence, not accepted as a successful pipeline. A regression exercises a non-writable source bundle. Real-image diagnostics and a fresh normal build must both be classified accurately.
+
+The generated large ESP exceeds the legacy El Torito 65535-sector load-size field; xorriso encodes zero with a warning. Exact extent/signature checks do not prove any particular firmware can boot/enforce this development path. No firmware enforcement or physical boot claim is made by M15's development-only signing acceptance.
