@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+set -u
+
+umask 077
+reason="unknown"
+if [[ "${1:-}" == "--reason" && -n "${2:-}" ]]; then
+  reason="$2"
+fi
+
+base="${BLACKCAT_DIAGNOSTICS_DIR:-/run/blackcat/diagnostics}"
+collector_timeout="${BLACKCAT_COLLECTOR_TIMEOUT:-5}"
+boot_id="$(cat /proc/sys/kernel/random/boot_id 2>/dev/null || printf unknown)"
+report_dir="$base/$boot_id"
+mkdir -p "$report_dir"
+chmod 0700 "$base" "$report_dir" 2>/dev/null || true
+status_file="$report_dir/collector-status.tsv"
+: > "$status_file"
+
+sanitize() {
+  sed -E \
+    -e 's/([Pp]assword|[Tt]oken|[Ss]ecret|[Aa]uthorization|[Aa]pi[_-]?[Kk]ey)=([^[:space:]]+)/\1=REDACTED/g' \
+    -e 's/([[:xdigit:]]{2}:){5}[[:xdigit:]]{2}/REDACTED-MAC/g' \
+    -e 's/([Ss]erial([[:space:]_-]*[Nn]umber)?[=:[:space:]]+)[^[:space:]]+/\1REDACTED/g' \
+    -e 's#(/home/)[^/[:space:]]+#\1USER#g'
+}
+
+capture() {
+  local name="$1"
+  shift
+  local tmp="$report_dir/.${name}.tmp" rc=0 state=complete
+  if timeout --signal=TERM "$collector_timeout" "$@" >"$tmp" 2>&1; then
+    rc=0
+  else
+    rc=$?
+    if [[ "$rc" -eq 124 ]]; then state=timed-out; else state=partial; fi
+  fi
+  tail -c 1048576 "$tmp" 2>/dev/null | sanitize > "$report_dir/${name}.log" || true
+  rm -f "$tmp"
+  [[ -s "$report_dir/${name}.log" ]] || state=unavailable
+  printf '%s\t%s\t%s\n' "$name" "$state" "$rc" >> "$status_file"
+}
+
+capture kernel-command-line bash -c 'cat /proc/cmdline'
+capture failed-units systemctl --failed --no-pager --plain
+capture system-jobs systemctl list-jobs --no-pager --plain
+capture lightdm-status systemctl status lightdm.service --no-pager -l
+capture lightdm-journal journalctl -b -u lightdm.service --no-pager -o short-monotonic
+capture boot-warnings journalctl -b -p warning --no-pager -o short-monotonic
+capture xorg-logs bash -c 'for f in /var/log/Xorg.*.log /home/*/.local/share/xorg/Xorg.*.log; do [[ -r "$f" ]] && { echo "FILE: $f"; cat "$f"; }; done'
+capture session-logs bash -c 'for f in /home/*/.xsession-errors /home/*/.cache/sessions/*; do [[ -r "$f" && -f "$f" ]] && { echo "FILE: $f"; tail -n 200 "$f"; }; done'
+capture graphics-pci bash -c 'lspci -nnk 2>/dev/null | sed -n "/VGA compatible controller/,+4p; /3D controller/,+4p; /Display controller/,+4p"'
+capture drm-state bash -c 'for f in /sys/class/drm/card*/device/uevent /sys/class/drm/card*-*/status; do [[ -r "$f" ]] && { echo "FILE: $f"; cat "$f"; }; done'
+capture firmware-and-drm-errors bash -c 'journalctl -b -k --no-pager | grep -Ei "drm|gpu|firmware|amdgpu|i915|nouveau|nvidia|simpledrm|fbcon|ACPI Error" || true'
+capture live-media-errors bash -c 'journalctl -b -k --no-pager | grep -Ei "I/O error|Buffer I/O|squashfs|usb-storage|reset .*USB|medium error" || true'
+capture resources bash -c 'free -m; df -h /run / 2>/dev/null; uname -a; printf "\nOS:\n"; cat /etc/os-release'
+capture package-versions bash -c 'dpkg-query -W -f="\${Package}\t\${Version}\n" lightdm xserver-xorg-core xfce4 linux-image-amd64 firmware-linux-free 2>/dev/null || true'
+
+collectors='[]'
+if command -v jq >/dev/null 2>&1; then
+  collectors="$(jq -Rn '[inputs | split("\t") | {collector:.[0],status:.[1],exit_code:(.[2]|tonumber)}]' < "$status_file" 2>/dev/null || printf '[]')"
+fi
+
+build='{}'
+if [[ -r /usr/share/blackcat/build-source.json ]] && command -v jq >/dev/null 2>&1; then
+  build="$(jq -c . /usr/share/blackcat/build-source.json 2>/dev/null || printf '{}')"
+fi
+
+started="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+if command -v jq >/dev/null 2>&1; then
+  jq -n \
+    --arg schema_version "0.1" \
+    --arg product "Black Cat" \
+    --arg evidence_class "OBSERVED" \
+    --arg boot_id "$boot_id" \
+    --arg reason "$reason" \
+    --arg collected_utc "$started" \
+    --arg local_image_identity "UNKNOWN_UNLESS_BUILD_METADATA_AND_LOCAL_HASH_ARE_VERIFIED" \
+    --argjson build "$build" \
+    --argjson collectors "$collectors" \
+    '{schema_version:$schema_version,product:$product,evidence_class:$evidence_class,boot_id:$boot_id,trigger:$reason,collected_utc:$collected_utc,local_image_identity:$local_image_identity,build:$build,collectors:$collectors}' \
+    > "$report_dir/report.json"
+else
+  printf '{"schema_version":"0.1","product":"Black Cat","evidence_class":"OBSERVED","boot_id":"%s","trigger":"%s"}\n' "$boot_id" "$reason" > "$report_dir/report.json"
+fi
+
+payload_sha="$(sha256sum "$report_dir/report.json" | awk '{print $1}')"
+report_id="${payload_sha:0:16}"
+printf '{"schema_version":"0.1","payload":"report.json","payload_sha256":"%s","report_id":"%s"}\n' "$payload_sha" "$report_id" > "$report_dir/report-envelope.json"
+
+complete="$(awk -F '\t' '$2=="complete" {n++} END {print n+0}' "$status_file")"
+partial="$(awk -F '\t' '$2!="complete" {n++} END {print n+0}' "$status_file")"
+cat > "$report_dir/summary.txt" <<EOF
+BLACK CAT - AUTOMATIC BOOT DIAGNOSTICS
+Status: DESKTOP STARTUP FAILED OR BECAME UNRESPONSIVE
+Trigger: $reason
+Evidence: OBSERVED; cause remains UNKNOWN until logs are reviewed
+Report ID: $report_id
+Boot ID: $boot_id
+Collectors complete: $complete
+Collectors partial/unavailable/timed-out: $partial
+
+No internal disk was mounted by this collector.
+No report was uploaded. Full evidence is held in RAM until reboot or export.
+EOF
+
+find "$report_dir" -type f -size +2097152c -exec sh -c 'for f do tail -c 2097152 "$f" > "$f.trim" && mv "$f.trim" "$f"; done' sh {} + 2>/dev/null || true
+ln -sfn "$report_dir" "$base/latest"
+printf '%s\n' "$report_dir"

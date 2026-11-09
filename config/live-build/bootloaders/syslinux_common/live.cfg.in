@@ -1,0 +1,28 @@
+# Black Cat BIOS/Syslinux menu.
+# The splash is cosmetic; menu entries remain ordinary bootable labels.
+menu background splash.png
+
+label blackcat
+    menu label ^Black Cat - Start
+    menu default
+    linux @LINUX@
+    initrd @INITRD@
+    append @APPEND_LIVE@
+
+label blackcat-basic-graphics
+    menu label Black Cat - Basic ^graphics (temporary)
+    linux @LINUX@
+    initrd @INITRD@
+    append @APPEND_LIVE@ nomodeset blackcat.basic_graphics=1
+
+label blackcat-check
+    menu label Black Cat - ^System Check (no typing)
+    linux @LINUX@
+    initrd @INITRD@
+    append @APPEND_LIVE@ blackcat.check=1
+
+label blackcat-failsafe
+    menu label Black Cat - ^Fail-safe mode
+    linux @LINUX@
+    initrd @INITRD@
+    append @APPEND_LIVE_FAILSAFE@

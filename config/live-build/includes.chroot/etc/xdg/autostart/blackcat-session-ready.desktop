@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Black Cat desktop readiness probe
+Comment=Reports bounded graphical-session readiness to the boot monitor
+Exec=/usr/local/bin/blackcat-session-ready
+OnlyShowIn=XFCE;
+Terminal=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

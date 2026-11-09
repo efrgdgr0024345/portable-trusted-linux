@@ -1,0 +1,149 @@
+name: Black Cat Graphical Development Build
+
+# Temporary, branch-scoped development-only entry point. This exists because
+# PR #6 has merge conflicts and pull_request builds are not being scheduled.
+on:
+  push:
+    branches:
+      - build/graphical-iso-2026-09-16
+      - codex/graphical-evidence-review
+      - codex/automatic-boot-recovery
+    paths:
+      - .github/workflows/graphical-development-build.yml
+      - build/**
+      - config/**
+      - assets/design/**
+      - design/**
+      - tests/05-boot-recovery-check.sh
+      - tests/03-existing-candidate-boot.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: blackcat-graphical-development-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Static check, build and fingerprint development ISO
+    # Legacy entry point retired: use trusted main M15 workflow.
+    if: ${{ false }}
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 60
+    env:
+      PTL_BUILD_WORK_DIR: /var/tmp/ptl-gui-${{ github.run_id }}-${{ github.run_attempt }}
+      PTL_SOURCE_COMMIT: ${{ github.sha }}
+      PTL_SOURCE_REF: ${{ github.ref_name }}
+    steps:
+      - name: Check out exact build commit
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+
+      - name: Verify source identity and static UI
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          test "$(git rev-parse HEAD)" = "$PTL_SOURCE_COMMIT"
+          echo "SOURCE_COMMIT=$PTL_SOURCE_COMMIT"
+          echo "SOURCE_REF=$PTL_SOURCE_REF"
+          bash tests/02-session-ui-check.sh
+          bash tests/05-boot-recovery-check.sh
+          bash build/00-host-check.sh
+
+      - name: Build development-only ISO
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bash build/20-build-live.sh
+          bash build/30-artifact-manifest.sh
+
+      - name: Observe normal GUI, System Check and automatic recovery failure path
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ISO="$(find out -maxdepth 1 -type f -name '*.iso' -print -quit)"
+          test -n "$ISO"
+          ISO_SHA="$(sha256sum "$ISO" | awk '{print $1}')"
+          ISO_SIZE="$(stat -c %s "$ISO")"
+          BLACKCAT_EVIDENCE_ISO="$ISO" \
+          BLACKCAT_EVIDENCE_SHA="$ISO_SHA" \
+          BLACKCAT_EVIDENCE_SIZE="$ISO_SIZE" \
+          BLACKCAT_EVIDENCE_SOURCE="$PTL_SOURCE_COMMIT" \
+          BLACKCAT_EVIDENCE_BUILD_RUN="$GITHUB_RUN_ID" \
+          BLACKCAT_EVIDENCE_MODES=gui,check,recovery \
+            python3 tests/03-existing-candidate-boot.py
+          mkdir -p artifacts/vm-evidence
+          cp -a "$HOME/blackcat-evidence/run-$GITHUB_RUN_ID/." artifacts/vm-evidence/
+
+      - name: Report resulting identity or failure
+        if: always()
+        shell: bash
+        run: |
+          echo '--- ISO and logs ---'
+          ls -lah out/ 2>/dev/null || true
+          echo '--- ISO SHA-256 ---'
+          cat out/*.sha256 2>/dev/null || true
+          echo '--- build manifest ---'
+          cat out/build-manifest.json 2>/dev/null || true
+          echo 'DEVELOPMENT BUILD ONLY; NOT VERIFIED OR APPROVED'
+
+      # The runner is self-hosted and persistent. Keep a local recovery copy
+      # before attempting GitHub artifact upload so an account quota problem
+      # cannot discard an otherwise successful development build.
+      - name: Preserve local builder recovery copy
+        if: always()
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          retain="$HOME/blackcat-builds/run-${GITHUB_RUN_ID}-attempt-${GITHUB_RUN_ATTEMPT}"
+          mkdir -p "$retain"
+          if [ -d out ]; then
+            cp -a out/. "$retain/"
+          fi
+          if compgen -G 'artifacts/*/prepare.json' >/dev/null; then
+            mkdir -p "$retain/prepare-evidence"
+            cp -a artifacts/*/prepare.json "$retain/prepare-evidence/" || true
+          fi
+          printf '%s\n' "$PTL_SOURCE_COMMIT" > "$retain/source-commit.txt"
+          printf '%s\n' "$PTL_SOURCE_REF" > "$retain/source-ref.txt"
+          echo "LOCAL_RECOVERY_DIR=$retain"
+          du -sh "$retain" || true
+
+      # GitHub-hosted artifact storage is useful but not part of the build's
+      # correctness. A quota failure is reported as an upload problem rather
+      # than relabelling a successfully built ISO as a failed ISO build.
+      - name: Preserve GitHub test artifact and evidence
+        id: github_artifact_upload
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: blackcat-graphical-development-${{ github.run_id }}
+          path: |
+            out/**
+            artifacts/**/prepare.json
+          if-no-files-found: warn
+          compression-level: 0
+          retention-days: 1
+
+      - name: Classify artifact publication result
+        if: always()
+        shell: bash
+        env:
+          UPLOAD_OUTCOME: ${{ steps.github_artifact_upload.outcome }}
+        run: |
+          {
+            echo '## Black Cat development build publication'
+            echo
+            echo "GitHub artifact upload outcome: **${UPLOAD_OUTCOME:-unknown}**"
+            if [ "${UPLOAD_OUTCOME:-unknown}" != success ]; then
+              echo
+              echo '> WARNING: GitHub artifact publication failed or was skipped. This does not change the result of the ISO construction step. A recovery copy was written on the self-hosted builder under `$HOME/blackcat-builds/`.'
+            fi
+            echo
+            echo 'DEVELOPMENT BUILD ONLY — NOT VERIFIED OR APPROVED.'
+          } >> "$GITHUB_STEP_SUMMARY"

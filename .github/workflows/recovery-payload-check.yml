@@ -1,0 +1,40 @@
+name: Recovery payload static checks
+
+on:
+  push:
+    branches: [recovery-verify-ubuntu-26041]
+    paths:
+      - 'recovery/**'
+      - '.github/workflows/recovery-payload-check.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'recovery/**'
+      - '.github/workflows/recovery-payload-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - name: Bash syntax
+        run: bash -n recovery/rewrite-usb.sh
+      - name: ShellCheck
+        run: shellcheck recovery/rewrite-usb.sh
+      - name: Verify pinned recovery constants
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -F 'EXPECTED_SHA="601e30fbf5d97759367c632e2c33630665039b7e2158fd068403da3ccf1bda1f"' recovery/rewrite-usb.sh
+          grep -F 'EXPECTED_SIZE="6482409472"' recovery/rewrite-usb.sh
+          grep -F 'EXPECTED_CDIMAGE_FPR="843938DF228D22F7B3742BC0D94AA3F0EFE21092"' recovery/rewrite-usb.sh
+          grep -F 'grep -qw toram /proc/cmdline' recovery/rewrite-usb.sh
+          grep -F 'if [[ "$TARGET" == /dev/nvme* ]]' recovery/rewrite-usb.sh
+          grep -F 'head -c "$EXPECTED_SIZE" "$TARGET"' recovery/rewrite-usb.sh
+          echo "RECOVERY_PAYLOAD_SHA256=$(sha256sum recovery/rewrite-usb.sh | awk '{print $1}')"

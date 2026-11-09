@@ -1,0 +1,19 @@
+{
+  "archive/2026-09-16-pre-integration-118224d5": "118224d5b696e5e8cc0ec45841adbb2930febb3b",
+  "build/graphical-iso-2026-09-16": "86ddbb8eac1a0dbf912c035d5b916b70453dff88",
+  "codex/automatic-boot-recovery": "ab5ebe0093bc78b9145fb670090520168be24e04",
+  "codex/candidate-malware-scan": "3d0098b00f041a71f2ddc8fff0cb3d3a0331d6aa",
+  "codex/dependency-verification": "cc79c94934dd9e991161ef369c38d561618746ca",
+  "codex/first-live-build": "c0a302b663ad9b875016abbb51f6f36e8c4f4e02",
+  "codex/graphical-evidence-review": "df46ad1504815d9799e2009aa3706b25fcb72f68",
+  "codex/live-build-attempt-2": "b2eb461e5c4581b391a83dd50f84de7e2be223f8",
+  "codex/m15-signed-uki-development": "64dbd49a3de8103de5b163c808f46e975372b561",
+  "codex/remove-chroot-systemd-boot": "fa2d3c84ae1148b55587fb10d179ad469c3dd41b",
+  "codex/runner-smoke-test": "8a47e7de4530ecc1600f716e72763d0bae6a287d",
+  "codex/systemd-boot-state-diagnostic": "5e6adb7edf61abf24cd0a1071d557d4831d6091c",
+  "main": "15697b2fb4261cc2785082550c9aeae3fa4668dc",
+  "ops/makephone-viewer-20260920": "8d9a196f089930751ca6bcb7b903d2fb6ad32c7d",
+  "ops/runner-recovery-20261110": "cd3966b805c7376d327154d332b6e217af41a452",
+  "project-status-live": "f7d5db61313cf0e28b29a8b05641045934bbba23",
+  "recovery-verify-ubuntu-26041": "d27c70b08a5c39d3974ca03a328c8d40dcd27718"
+}

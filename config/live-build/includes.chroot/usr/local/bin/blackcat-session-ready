@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -u
+
+boot_id="$(cat /proc/sys/kernel/random/boot_id 2>/dev/null || printf unknown)"
+runtime="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+marker="$runtime/blackcat-session-ready"
+mkdir -p "$runtime" 2>/dev/null || true
+rm -f "$marker"
+trap 'rm -f "$marker"' EXIT HUP INT TERM
+
+healthy() {
+  [[ -n "${DISPLAY:-}" ]] || return 1
+  xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 || return 1
+  pgrep -x xfwm4 >/dev/null 2>&1 || return 1
+  pgrep -x xfce4-panel >/dev/null 2>&1 || return 1
+}
+
+stable=0
+for _ in $(seq 1 90); do
+  if healthy; then
+    stable=$((stable + 1))
+    if (( stable >= 10 )); then break; fi
+  else
+    stable=0
+  fi
+  sleep 1
+done
+
+(( stable >= 10 )) || exit 1
+printf '%s\n' "$boot_id" > "$marker.tmp"
+mv "$marker.tmp" "$marker"
+
+while healthy; do
+  touch "$marker"
+  sleep 10
+done
+exit 1

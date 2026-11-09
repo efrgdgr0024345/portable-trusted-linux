@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+set -u
+
+runtime=/run/blackcat
+summary="$runtime/diagnostics/latest/summary.txt"
+reason="$(cat "$runtime/recovery-reason" 2>/dev/null || printf unknown)"
+boot_id="$(cat /proc/sys/kernel/random/boot_id 2>/dev/null || printf unknown)"
+
+timeout 3 plymouth quit 2>/dev/null || true
+chvt 1 2>/dev/null || true
+
+pause() {
+  printf '\nPress Enter to return to recovery. '
+  read -r _
+}
+
+desktop_ready() {
+  local marker
+  for marker in /run/user/*/blackcat-session-ready; do
+    [[ -f "$marker" ]] || continue
+    [[ "$(cat "$marker" 2>/dev/null || true)" == "$boot_id" ]] && return 0
+  done
+  return 1
+}
+
+while :; do
+  clear 2>/dev/null || true
+  echo '============================================================'
+  echo '             BLACK CAT - DESKTOP RECOVERY'
+  echo '============================================================'
+  echo 'The graphical desktop could not start or stopped responding.'
+  printf 'Observed trigger: %s\n' "$reason"
+  if [[ -r "$summary" ]]; then
+    sed -n '1,10p' "$summary"
+  else
+    echo 'Diagnostic summary unavailable; classification: FAILED.'
+  fi
+  echo '------------------------------------------------------------'
+  echo '1) Retry the desktop once'
+  echo '2) Reboot and select Basic graphics at the boot menu'
+  echo '3) View diagnostic summary'
+  echo '4) Export full report to a separate USB'
+  echo '5) Reboot'
+  echo '6) Shut down'
+  echo '------------------------------------------------------------'
+  printf 'Choose 1-6: '
+  read -r choice
+  case "$choice" in
+    1)
+      if [[ -e "$runtime/retry-used" ]]; then
+        echo 'The one bounded desktop retry has already been used.'
+        pause
+        continue
+      fi
+      : > "$runtime/retry-used"
+      echo 'Retrying desktop for up to 60 seconds...'
+      systemctl reset-failed lightdm.service 2>/dev/null || true
+      systemctl restart lightdm.service 2>/dev/null || true
+      success=0
+      for _ in $(seq 1 60); do
+        if desktop_ready; then success=1; break; fi
+        sleep 1
+      done
+      if (( success == 1 )); then
+        printf 'DESKTOP_READY_AFTER_RETRY\n' > "$runtime/boot-state"
+        exit 0
+      fi
+      reason=desktop-retry-failed
+      printf '%s\n' "$reason" > "$runtime/recovery-reason"
+      timeout --signal=TERM 45 /usr/local/sbin/blackcat-diagnostics --reason "$reason" || true
+      summary="$runtime/diagnostics/latest/summary.txt"
+      ;;
+    2)
+      echo
+      echo 'At the Black Cat boot menu, select:'
+      echo '  Black Cat - Basic graphics (temporary)'
+      echo 'This changes only that boot and does not install a driver.'
+      printf 'Press Enter to reboot, or type B to go back: '
+      read -r answer
+      [[ "$answer" == B || "$answer" == b ]] || systemctl reboot
+      ;;
+    3)
+      clear 2>/dev/null || true
+      if [[ -r "$summary" ]]; then cat "$summary"; else echo 'Summary unavailable.'; fi
+      pause
+      ;;
+    4)
+      /usr/local/sbin/blackcat-export-report || true
+      pause
+      ;;
+    5)
+      printf 'Press Enter to reboot, or type B to go back: '
+      read -r answer
+      [[ "$answer" == B || "$answer" == b ]] || systemctl reboot
+      ;;
+    6)
+      printf 'Press Enter to shut down, or type B to go back: '
+      read -r answer
+      [[ "$answer" == B || "$answer" == b ]] || systemctl poweroff
+      ;;
+  esac
+done

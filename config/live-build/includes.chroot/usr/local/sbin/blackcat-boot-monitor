@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+set -u
+
+runtime=/run/blackcat
+mkdir -p "$runtime"
+chmod 0700 "$runtime" 2>/dev/null || true
+boot_id="$(cat /proc/sys/kernel/random/boot_id 2>/dev/null || printf unknown)"
+printf 'BOOTING\n' > "$runtime/boot-state"
+rm -f "$runtime/recovery-reason"
+
+cmdline=" $(cat /proc/cmdline 2>/dev/null) "
+deadline=120
+case "$cmdline" in
+  *" blackcat.recovery_test=1 "*) deadline=15 ;;
+esac
+
+shutdown_in_progress() {
+  systemctl list-jobs --no-legend 2>/dev/null | grep -Eq '(shutdown|reboot|poweroff|halt)\.target'
+}
+
+ready_marker() {
+  local marker value
+  for marker in /run/user/*/blackcat-session-ready; do
+    [[ -f "$marker" ]] || continue
+    value="$(cat "$marker" 2>/dev/null || true)"
+    [[ "$value" == "$boot_id" ]] || continue
+    printf '%s\n' "$marker"
+    return 0
+  done
+  return 1
+}
+
+start="$(date +%s)"
+reason=""
+marker=""
+while :; do
+  if marker="$(ready_marker)"; then
+    printf 'DESKTOP_READY\n' > "$runtime/boot-state"
+    break
+  fi
+  if systemctl is-failed --quiet lightdm.service; then
+    reason=lightdm-failed
+    break
+  fi
+  now="$(date +%s)"
+  if (( now - start >= deadline )); then
+    reason=desktop-readiness-timeout
+    break
+  fi
+  sleep 2
+done
+
+if [[ -z "$reason" ]]; then
+  while :; do
+    shutdown_in_progress && exit 0
+    if [[ ! -f "$marker" || "$(cat "$marker" 2>/dev/null || true)" != "$boot_id" ]]; then
+      reason=session-heartbeat-lost
+      break
+    fi
+    now="$(date +%s)"
+    modified="$(stat -c %Y "$marker" 2>/dev/null || printf 0)"
+    if (( now - modified > 35 )); then
+      reason=session-heartbeat-stale
+      break
+    fi
+    sleep 10
+  done
+fi
+
+shutdown_in_progress && exit 0
+printf '%s\n' "$reason" > "$runtime/recovery-reason"
+printf 'COLLECTING_DIAGNOSTICS\n' > "$runtime/boot-state"
+timeout --signal=TERM 45 /usr/local/sbin/blackcat-diagnostics --reason "$reason" || true
+printf 'RECOVERY\n' > "$runtime/boot-state"
+systemctl start --no-block blackcat-recovery.service
+exit 0

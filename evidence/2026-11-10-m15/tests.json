@@ -1,0 +1,58 @@
+{
+  "positive": {
+    "status": "VERIFIED",
+    "scope": "Signature and bound inputs relative to supplied development certificate and manifest; not firmware enforcement",
+    "uki_sha256": "e42219c658b6cfe285c02f1c667ce505768dcf32bfd7c78fdf10570e27cfddeb",
+    "certificate_der_sha256": "af0794b4e3d1e1830f3610cf4532ed362df639864225ab45d654e4b0c9949193",
+    "sections": {
+      ".cmdline": {
+        "sha256": "b414a438e165804f2f58aec5b60089781cb1a8152dcc1b1f396b5ace061da968",
+        "size": 26
+      },
+      ".initrd": {
+        "sha256": "9641a837ab9e67ee6f1b4753de8dbe450ad19b6f9ff511c0c7015902225aeecf",
+        "size": 55699155
+      },
+      ".linux": {
+        "sha256": "a21f79197954256e75fd352692e63263face31601f671c14c9c9d8803785a6c3",
+        "size": 12167104
+      },
+      ".osrel": {
+        "sha256": "f325ce0d1a3607ec9ca611f0ebbe8f5545cf66a918ef4de92c416d5d5380d9de",
+        "size": 385
+      },
+      ".sbat": {
+        "sha256": "21480310a1facf66e17a115fa5e1f18253131cd96db7a19010d977138303ef2e",
+        "size": 351
+      },
+      ".uname": {
+        "sha256": "1d13be3d536ea7923730276d7ffb01b2f20acf8f601fd4731e9516b5f8c803e9",
+        "size": 20
+      }
+    },
+    "signature_output": "Signature verification OK"
+  },
+  "negative-tampered": {
+    "status": "VERIFIED",
+    "meaning": "Expected signature rejection",
+    "fixture_sha256": "8d225999209f707fda3eea5ca19fd8321a8070e466701b9a62b17168652f5e6c"
+  },
+  "negative-wrong-key": {
+    "status": "VERIFIED",
+    "meaning": "Expected signature rejection",
+    "fixture_sha256": "e42219c658b6cfe285c02f1c667ce505768dcf32bfd7c78fdf10570e27cfddeb"
+  },
+  "negative-unsigned": {
+    "status": "VERIFIED",
+    "meaning": "Expected signature rejection",
+    "fixture_sha256": "fbf1fa7318185b7e6435ae5860d6448b46276fbcac46e6d06b58fb3243f98951"
+  },
+  "negative-bound-command-line": {
+    "status": "VERIFIED",
+    "meaning": "Expected command-line binding rejection"
+  },
+  "private_key_cleanup": {
+    "status": "OBSERVED",
+    "meaning": "TemporaryDirectory exited; private key paths unlinked from tmpfs; not proof of RAM erasure"
+  }
+}

@@ -1,8 +1,11 @@
 # Portable Trusted Linux Prototype 1 package seed
-# Keep this deliberately small. Exact installed versions are recorded per build.
+# Keep security claims tied to actual verification, not UI appearance.
+# Do not seed the full systemd-boot integration package into the live root.
+# It registers kernel/dpkg hooks that expect an ESP and can fail inside the
+# live-build chroot. UKI tooling remains available through systemd-ukify;
+# boot-manager binaries can be staged separately when the UKI phase requires them.
 
 systemd
-systemd-boot
 systemd-ukify
 linux-image-amd64
 cryptsetup-bin
@@ -16,3 +19,13 @@ pciutils
 usbutils
 util-linux
 kmod
+procps
+kbd
+x11-utils
+
+# Graphical UI prototype; not a security-enforcing module loader.
+xserver-xorg
+lightdm
+xfce4
+python3-tk
+fonts-dejavu-core

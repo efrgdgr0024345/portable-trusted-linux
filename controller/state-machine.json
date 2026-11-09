@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "engineering_states": [
+    "DEVELOPING",
+    "AUTOMATED_TESTING",
+    "BUILDING",
+    "VERIFYING_ARTIFACT",
+    "CANDIDATE_READY",
+    "AWAITING_PHYSICAL_TEST",
+    "PHYSICAL_TEST_REVIEW",
+    "DEFECT_FOUND",
+    "RELEASE_ENGINEERING",
+    "PAUSED_SECURITY"
+  ],
+  "human_gates": [
+    "NONE",
+    "PHYSICAL_USB_WRITE",
+    "PHYSICAL_BOOT_TEST",
+    "FIRMWARE_CHANGE",
+    "TPM_OWNERSHIP_CHANGE",
+    "CREDENTIAL_REQUIRED",
+    "SECURITY_POLICY_DECISION",
+    "RELEASE_APPROVAL",
+    "DESTRUCTIVE_ACTION",
+    "FINANCIAL_OR_LEGAL_COMMITMENT"
+  ],
+  "priority_order": [
+    "SECURITY_AND_CONTAINMENT",
+    "CORRECTNESS_AND_DETERMINISTIC_STATE",
+    "AUDITABILITY_AND_PROVENANCE",
+    "LEAST_PRIVILEGE",
+    "RELIABILITY_AND_RECOVERABILITY",
+    "HUMAN_GATE_CLARITY",
+    "AUTONOMY",
+    "LATENCY",
+    "CONVENIENCE"
+  ],
+  "invariants": {
+    "main_direct_write_by_agent": false,
+    "release_promotion_by_agent": false,
+    "physical_action_by_agent": false,
+    "trust_ownership_change_by_agent": false,
+    "stale_state_fallback": false,
+    "latest_artifact_without_exact_identity": false,
+    "secret_values_in_model_context": false,
+    "deterministic_logic_precedes_ai": true,
+    "github_is_durable_project_authority": true
+  }
+}

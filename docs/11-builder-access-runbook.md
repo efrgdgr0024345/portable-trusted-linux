@@ -165,3 +165,56 @@ Never record in GitHub:
 - recovery codes or passwords.
 
 If a secret is accidentally committed, treat it as compromised, rotate it, and do not rely on deleting the Git history as the only remediation.
+
+
+## 2026-11-10 — Disposable builder runner recovery (in progress)
+
+### Evidence and scope
+
+The operator supplied a root-console transcript identifying ptl-builder-01, and later supplied successful package setup, runner archive checksum verification and Runner.Listener version 2.338.2. This is **OBSERVED operator-supplied evidence**, not independent proof of a clean rebuild or a working CI connection. The OS rebuild, absence of other workloads, registration, service, administrative execution and full PTL toolchain remain **UNKNOWN** until checked.
+
+Recovery development branch: `ops/runner-recovery-20261110`, based on project-status-live commit `973ce3e68c80aa1bea0c7776dcdcab5f6f34fefe`. Main and the published status branch are not changed by this recovery preparation.
+
+### Reconstruct the installation
+
+On the disposable Debian 13 amd64 builder, as root:
+
+1. Refuse to overwrite an existing `/home/github-runner/actions-runner/.runner`; investigate its registration first.
+2. Run `apt-get update`, then install `ca-certificates curl git jq sudo tar gzip libicu76 libssl3t64 libkrb5-3 zlib1g`.
+3. Create github-runner with `useradd --create-home --shell /bin/bash github-runner` if absent.
+4. Create its runner directory with owner/group github-runner and mode 0755.
+5. As github-runner, download the official HTTPS archive:
+   https://github.com/actions/runner/releases/download/v2.338.2/actions-runner-linux-x64-2.338.2.tar.gz
+6. Require SHA-256 `baebf204307bac6193480852732f0aba2ae97b6c5597c244f4d5558390147c40` before extracting. This value was retrieved from the official GitHub release API and release notes, not an independent signing authority.
+7. Extract as github-runner and require `./bin/Runner.Listener --version` to report 2.338.2.
+
+Do not reconstruct credentials from GitHub. Obtain a short-lived registration token through the repository's Settings / Actions / Runners / New self-hosted runner interface and enter it only in the builder's interactive console. Do not put the token in chat, Git, shell command history or workflow logs.
+
+### Registration isolation
+
+Register interactively, without starting a listener:
+
+```bash
+runuser -l github-runner -c 'cd /home/github-runner/actions-runner && ./config.sh --url https://github.com/efrgdgr0024345/portable-trusted-linux --name ptl-builder-01-recovery --no-default-labels --labels ptl-trusted-20261110 --work _work'
+```
+
+Use the console-only token at its prompt. Keep the default runner group and the specified work directory when prompted. If an existing runner name conflicts, investigate rather than silently replacing it.
+
+The restored runner must have custom label `ptl-trusted-20261110` and **no default self-hosted/Linux/X64 labels**. Current main workflows execute pull-request code on the generic labels; restoring those labels together with sudo would expose the privileged builder to that code. Do not start `run.sh` or the service before verifying registration labels.
+
+The recovery workflow is restricted to push/workflow_dispatch on the exact recovery branch and repository. It does not check out PR code. Its JSON serialization is valid YAML and permits standard-library Python regression checks. Run `python3 tests/test_runner_recovery_policy.py` from the repository checkout. Five local tests passed during preparation, including negative event/ref/repository cases. These are configuration regression checks, not an end-to-end hostile-PR execution test or proof of GitHub scheduler isolation.
+
+### Administrative-access boundary
+
+The operator explicitly authorized passwordless sudo on this disposable builder for unattended development. It is **root-equivalent**, even while the listener runs as github-runner. This is a temporary control, not a hardened production builder.
+
+Before enabling it and starting the service: verify dedicated label routing, review pending jobs, validate any root-owned sudoers file with visudo, and confirm the service uses github-runner. The smoke workflow then checks exact hostname, non-root account, x86-64 and `sudo -n /usr/bin/id -u` returning zero. No sudoers rule or service startup has yet been confirmed.
+
+Trust assumption: repository writers, GitHub Actions, runner distribution and build inputs are trusted for this disposable environment. A repository writer can add another workflow targeting the custom label; labels are scheduling controls, not an authorization boundary against repository writers. Compromise of a trusted job/dependency can obtain root. Do not keep production signing material or unrelated workloads here. The stronger replacement is isolated per-job builders with bounded administration and verified trusted-workflow controls; delete this transitional host when no longer needed.
+
+### Pending verification
+
+Recovery workflow source commit: 7479923b2eec4d9e7cc834fda018d50255dd5635.
+Runs 42691361475 and 42691382043 were queued/pending before registration. They run the same bounded host/sudo checks and do not build or write devices. Recheck queue state immediately before service startup.
+
+Registration, online status, sudo smoke evidence, full PTL dependencies and negative routing behavior on GitHub remain pending. Historical ISO bytes and development private keys must not be assumed recoverable from source. If a rebuild destroyed an unarchived artifact, record that loss and produce a newly identified candidate; never transfer old-image evidence to a new build.

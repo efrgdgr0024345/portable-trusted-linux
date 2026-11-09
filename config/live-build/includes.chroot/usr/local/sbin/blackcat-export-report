@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+set -u
+
+report_dir=/run/blackcat/diagnostics/latest
+[[ -d "$report_dir" ]] || { echo 'No diagnostic report is available.'; exit 1; }
+report_id="$(sed -n 's/.*"report_id":"\([^"]*\)".*/\1/p' "$report_dir/report-envelope.json" 2>/dev/null)"
+[[ -n "$report_id" ]] || report_id=unknown
+
+devices=()
+while read -r name type pkname fstype mountpoint; do
+  [[ "$type" == part || "$type" == disk ]] || continue
+  [[ -n "$fstype" ]] || continue
+  disk="${pkname:-${name##*/}}"
+  disk="${disk##*/}"
+  [[ -r "/sys/class/block/$disk/removable" ]] || continue
+  [[ "$(cat "/sys/class/block/$disk/removable" 2>/dev/null)" == 1 ]] || continue
+  options="$(findmnt -no OPTIONS --source "$name" 2>/dev/null || true)"
+  [[ ",$options," == *,ro,* ]] && continue
+  devices+=("$name|$fstype|$mountpoint")
+done < <(lsblk -nrpo NAME,TYPE,PKNAME,FSTYPE,MOUNTPOINT 2>/dev/null)
+
+if (( ${#devices[@]} == 0 )); then
+  echo 'No writable removable filesystem was found.'
+  echo 'Insert a separate formatted USB drive and choose Export again.'
+  return 1 2>/dev/null || exit 1
+fi
+
+echo 'Writable removable destinations:'
+for i in "${!devices[@]}"; do
+  IFS='|' read -r name fstype mountpoint <<< "${devices[$i]}"
+  printf '  %d) %s  filesystem=%s  mounted=%s\n' "$((i+1))" "$name" "$fstype" "${mountpoint:-no}"
+done
+printf 'Select destination number, or 0 to cancel: '
+read -r choice
+[[ "$choice" =~ ^[0-9]+$ ]] || { echo 'Cancelled.'; exit 1; }
+(( choice >= 1 && choice <= ${#devices[@]} )) || { echo 'Cancelled.'; exit 1; }
+
+IFS='|' read -r device fstype mountpoint <<< "${devices[$((choice-1))]}"
+mounted_here=0
+if [[ -z "$mountpoint" ]]; then
+  mountpoint=/run/blackcat/export
+  mkdir -p "$mountpoint"
+  if ! mount -o rw,nodev,nosuid,noexec "$device" "$mountpoint"; then
+    echo 'Could not mount that filesystem read-write.'
+    exit 1
+  fi
+  mounted_here=1
+fi
+
+destination="$mountpoint/BLACKCAT-DIAGNOSTICS-$report_id"
+if [[ -e "$destination" ]]; then
+  destination="$destination-$(date -u +%H%M%S)"
+fi
+mkdir -p "$destination"
+cp -a "$report_dir/." "$destination/"
+(
+  cd "$destination" || exit 1
+  find . -type f ! -name MANIFEST.sha256 -print0 | sort -z | xargs -0 sha256sum > MANIFEST.sha256
+  sha256sum -c MANIFEST.sha256
+) || {
+  echo 'Export verification failed.'
+  (( mounted_here == 1 )) && umount "$mountpoint" 2>/dev/null || true
+  exit 1
+}
+sync
+if (( mounted_here == 1 )); then
+  umount "$mountpoint" || { echo 'Export copied, but safe unmount failed.'; exit 1; }
+fi
+echo "Export verified: $destination"
+echo 'You may remove the destination USB when the activity light has stopped.'

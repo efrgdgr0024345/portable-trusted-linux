@@ -13,9 +13,17 @@ on:
 permissions:
   contents: read
 
+# The self-hosted build can create chroots/mounts. Keep the active run intact,
+# but collapse older queued runs so one PR cannot build every intermediate commit.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
 jobs:
   live-build:
     name: Build and fingerprint Debian Live ISO
+    # Legacy entry point retired: use trusted main M15 workflow.
+    if: ${{ false }}
     runs-on: [self-hosted, Linux, X64]
     timeout-minutes: 60
     env:
@@ -23,12 +31,18 @@ jobs:
       # mounts /tmp as nodev tmpfs on this builder, so use /var/tmp on the
       # root ext4 filesystem instead.
       PTL_BUILD_WORK_DIR: /var/tmp/ptl-live-build-${{ github.run_id }}-${{ github.run_attempt }}
+      # Record the source revision explicitly. Pull-request workflows otherwise
+      # default to a synthetic merge commit, which is useful for CI but
+      # ambiguous as release/build provenance.
+      PTL_SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+      PTL_SOURCE_REF: ${{ github.head_ref || github.ref_name }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Confirm builder state
         shell: bash
@@ -38,6 +52,9 @@ jobs:
           echo "USER=$(id -un)"
           echo "ARCH=$(uname -m)"
           echo "PTL_BUILD_WORK_DIR=$PTL_BUILD_WORK_DIR"
+          echo "PTL_SOURCE_COMMIT=$PTL_SOURCE_COMMIT"
+          echo "PTL_SOURCE_REF=$PTL_SOURCE_REF"
+          echo "CHECKED_OUT_COMMIT=$(git rev-parse HEAD)"
           bash build/00-host-check.sh
 
       - name: Build Debian Live artifact
@@ -71,6 +88,157 @@ jobs:
           path: |
             out/**
             artifacts/**/prepare.json
+          if-no-files-found: warn
+          compression-level: 0
+          retention-days: 7
+
+  boot-smoke:
+    name: Boot Black Cat ISO in QEMU
+    needs: live-build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Download built ISO
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: ptl-first-live-build-${{ github.run_id }}
+          path: smoke-input
+
+      - name: Install disposable VM test tools
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            qemu-system-x86 ovmf xorriso socat imagemagick tesseract-ocr
+
+      - name: Verify boot menu is embedded in ISO
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ISO="$(find smoke-input -type f -name '*.iso' -print -quit)"
+          [[ -n "$ISO" ]] || { echo 'No ISO found in downloaded build artifact' >&2; exit 1; }
+          echo "ISO=$ISO"
+          mkdir -p smoke/mnt
+          sudo mount -o loop,ro "$ISO" smoke/mnt
+          trap 'sudo umount smoke/mnt 2>/dev/null || true' EXIT
+          echo '--- Black Cat menu strings inside ISO ---'
+          grep -RIna --include='*.cfg' 'Black Cat' smoke/mnt | tee smoke/menu-strings.txt
+          grep -Riq --include='*.cfg' 'Black Cat - System Check' smoke/mnt
+          KERNEL="$(find smoke/mnt/live -maxdepth 1 -type f -name 'vmlinuz*' -print -quit)"
+          INITRD="$(find smoke/mnt/live -maxdepth 1 -type f \( -name 'initrd*' -o -name 'initrd.img*' \) -print -quit)"
+          [[ -n "$KERNEL" && -n "$INITRD" ]] || { echo 'Kernel/initrd missing from live ISO' >&2; exit 1; }
+          cp "$KERNEL" smoke/vmlinuz
+          cp "$INITRD" smoke/initrd.img
+          sudo umount smoke/mnt
+          trap - EXIT
+
+      - name: UEFI boot ISO and capture menu framebuffer
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ISO="$(find smoke-input -type f -name '*.iso' -print -quit)"
+          CODE="$(find /usr/share/OVMF -maxdepth 1 -type f \( -name 'OVMF_CODE_4M.fd' -o -name 'OVMF_CODE.fd' \) -print -quit)"
+          [[ -n "$CODE" ]] || { echo 'OVMF code firmware not found' >&2; exit 1; }
+
+          VARS_TEMPLATE=''
+          if [[ "$CODE" == *'_4M.fd' ]]; then
+            VARS_TEMPLATE="$(find /usr/share/OVMF -maxdepth 1 -type f -name 'OVMF_VARS_4M.fd' -print -quit)"
+          else
+            VARS_TEMPLATE="$(find /usr/share/OVMF -maxdepth 1 -type f -name 'OVMF_VARS.fd' -print -quit)"
+          fi
+          [[ -n "$VARS_TEMPLATE" ]] || { echo 'Matching OVMF variable store not found' >&2; exit 1; }
+          cp "$VARS_TEMPLATE" smoke/OVMF_VARS.fd
+
+          rm -f smoke/qemu-monitor smoke/qemu.pid
+          set +e
+          qemu-system-x86_64 \
+            -machine accel=tcg \
+            -m 1024 \
+            -drive if=pflash,format=raw,readonly=on,file="$CODE" \
+            -drive if=pflash,format=raw,file=smoke/OVMF_VARS.fd \
+            -cdrom "$ISO" \
+            -boot d \
+            -display none \
+            -serial file:smoke/uefi-serial.log \
+            -monitor unix:smoke/qemu-monitor,server,nowait \
+            -D smoke/qemu-debug.log \
+            -no-reboot \
+            >smoke/qemu-stdout.log 2>smoke/qemu-stderr.log &
+          QPID=$!
+          set -e
+          echo "$QPID" > smoke/qemu.pid
+
+          for i in $(seq 1 20); do
+            [[ -S smoke/qemu-monitor ]] && break
+            kill -0 "$QPID" 2>/dev/null || break
+            sleep 1
+          done
+
+          if ! kill -0 "$QPID" 2>/dev/null; then
+            echo 'QEMU exited during UEFI boot.' >&2
+            cat smoke/qemu-stderr.log >&2 || true
+            exit 1
+          fi
+          [[ -S smoke/qemu-monitor ]] || {
+            echo 'QEMU monitor socket was not created.' >&2
+            cat smoke/qemu-stderr.log >&2 || true
+            kill "$QPID" 2>/dev/null || true
+            exit 1
+          }
+
+          sleep 12
+          printf 'info status\n' | socat - UNIX-CONNECT:smoke/qemu-monitor | tee smoke/qemu-status.txt
+          printf 'screendump smoke/uefi-menu.ppm\n' | socat - UNIX-CONNECT:smoke/qemu-monitor
+          sleep 2
+          printf 'quit\n' | socat - UNIX-CONNECT:smoke/qemu-monitor || true
+          wait "$QPID" 2>/dev/null || true
+
+          test -s smoke/uefi-menu.ppm || {
+            echo 'UEFI framebuffer capture was not produced.' >&2
+            cat smoke/qemu-stderr.log >&2 || true
+            exit 1
+          }
+          convert smoke/uefi-menu.ppm smoke/uefi-menu.png
+          tesseract smoke/uefi-menu.png stdout > smoke/uefi-menu-ocr.txt 2>/dev/null || true
+          echo '--- UEFI framebuffer OCR (informational) ---'
+          cat smoke/uefi-menu-ocr.txt || true
+          echo 'BLACK CAT UEFI ISO BOOT: PASS'
+
+      - name: Boot live userspace and require Black Cat quick check
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ISO="$(find smoke-input -type f -name '*.iso' -print -quit)"
+          set +e
+          timeout 180s qemu-system-x86_64 \
+            -machine accel=tcg \
+            -m 1536 \
+            -kernel smoke/vmlinuz \
+            -initrd smoke/initrd.img \
+            -cdrom "$ISO" \
+            -append 'boot=live components blackcat.check=1 console=ttyS0,115200' \
+            -nographic \
+            -no-reboot \
+            > smoke/live-serial.log 2>&1
+          rc=$?
+          set -e
+          echo "QEMU_EXIT=$rc"
+          echo '--- tail of live serial log ---'
+          tail -n 180 smoke/live-serial.log || true
+          if ! grep -Fq 'BLACK CAT - QUICK CHECK' smoke/live-serial.log; then
+            echo 'Black Cat quick-check marker was not observed during VM boot.' >&2
+            exit 1
+          fi
+          echo 'BLACK CAT VM BOOT SMOKE TEST: PASS'
+
+      - name: Preserve boot smoke evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: blackcat-boot-smoke-${{ github.run_id }}
+          path: smoke/**
           if-no-files-found: warn
           compression-level: 0
           retention-days: 7

@@ -1,0 +1,100 @@
+BLACK CAT LINUX — BRAND & DESIGN NOTES
+Date: 16 September 2026
+
+CORE TAGLINE
+Stealth. Intelligence. Independence.
+
+WHY THESE THREE WORDS MATTER
+
+1. STEALTH — Visibility on your terms
+Black Cat Linux is not about forcing users to hide.
+It is about giving people deliberate control over how visible they are.
+
+A user may choose to be:
+- highly private
+- anonymous or pseudonymous
+- selectively visible to trusted people or services
+- openly public
+- fully auditable in selected areas
+
+The system should make those choices understandable and intentional.
+
+Example future modes:
+- Hidden
+- Private
+- Trusted
+- Public
+- Transparent
+
+A user could even choose to publish:
+- lists of websites visited
+- selected browsing/activity logs
+- chosen application activity
+- selected personal or project records
+
+The principle is:
+Stealth when you want it. Public when you choose it. Trusted either way.
+
+Nothing should quietly change the user's visibility level without their knowledge.
+
+2. INTELLIGENCE — Technology that strengthens human thought
+The goal is not to create an operating system that thinks instead of people.
+
+The goal is to create an operating system that helps people:
+- think for themselves
+- understand information
+- create more freely
+- explore ideas
+- make their own decisions
+- bring out human kindness, curiosity, creativity and love of life
+
+AI should support human judgment rather than manipulate it.
+
+The system should work for the user's interests, not for an advertising platform,
+data broker, app-store gatekeeper or remote corporate agenda.
+
+3. INDEPENDENCE — Build and act without permission
+Black Cat Linux should reduce dependence on large centralized technology companies.
+
+Users should be able to:
+- build their own apps quickly
+- create their own workflows
+- create their own digital identities
+- modify the system
+- automate personal tasks
+- choose their own services
+- keep important capabilities local
+- operate without needing approval from a large platform
+
+The system should make software creation accessible even to people who are not
+traditional programmers.
+
+THE CENTRAL PHILOSOPHY
+
+Privacy is not secrecy.
+Transparency is not surrender.
+The user controls the boundary.
+
+A Black Cat Linux user should be able to choose exactly what the world sees,
+understand what the system is doing, and build what they need.
+
+SHORT BRAND STATEMENT
+
+Stealth. Intelligence. Independence.
+
+Choose what the world sees.
+Understand what the system does.
+Build what you need.
+
+PROJECT DIRECTION
+
+Black Cat Linux should become a trusted personal computing environment that:
+- protects user agency
+- reduces unnecessary tracking
+- makes privacy understandable
+- allows intentional public transparency
+- supports local intelligence
+- helps people create their own tools
+- keeps the user, not the platform, in control
+
+This document records the core branding and philosophy agreed on 16 September 2026.

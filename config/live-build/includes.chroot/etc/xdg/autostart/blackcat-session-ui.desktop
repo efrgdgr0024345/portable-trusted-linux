@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Black Cat Session Preview
+Comment=Development-only module selection mockup; no modules activated
+Exec=/usr/local/bin/blackcat-session-start
+Terminal=false
+OnlyShowIn=XFCE;
+X-GNOME-Autostart-enabled=true

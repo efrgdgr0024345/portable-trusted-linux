@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+set -u
+
+REPORT_DIR=/run/blackcat
+REPORT_TXT="${REPORT_DIR}/quick-check.txt"
+REPORT_JSON="${REPORT_DIR}/quick-check.json"
+mkdir -p "$REPORT_DIR"
+
+boot_mode="LEGACY_OR_UNKNOWN"
+secure_boot="UNKNOWN"
+tpm="NOT_EXPOSED"
+event_log="NOT_EXPOSED"
+verity="NOT_ACTIVE"
+network="NO_ACTIVE_LINK_OBSERVED"
+
+if [[ -d /sys/firmware/efi ]]; then
+  boot_mode="UEFI"
+fi
+
+if [[ -d /sys/firmware/efi/efivars ]]; then
+  sb_var="$(find /sys/firmware/efi/efivars -maxdepth 1 -name 'SecureBoot-*' -print -quit 2>/dev/null || true)"
+  if [[ -n "$sb_var" && -r "$sb_var" ]]; then
+    sb_value="$(od -An -t u1 "$sb_var" 2>/dev/null | awk '{for (i=1;i<=NF;i++) v=$i} END {print v}')"
+    case "$sb_value" in
+      1) secure_boot="ENABLED" ;;
+      0) secure_boot="DISABLED" ;;
+      *) secure_boot="UNKNOWN" ;;
+    esac
+  fi
+fi
+
+if [[ -e /dev/tpmrm0 || -e /dev/tpm0 ]]; then
+  tpm="DEVICE_FOUND"
+fi
+
+if [[ -e /sys/kernel/security/tpm0/binary_bios_measurements ]]; then
+  event_log="FOUND"
+fi
+
+for uuid_file in /sys/block/dm-*/dm/uuid; do
+  [[ -r "$uuid_file" ]] || continue
+  if grep -q '^CRYPT-VERITY-' "$uuid_file" 2>/dev/null; then
+    verity="ACTIVE"
+    break
+  fi
+done
+
+up_links=()
+for state_file in /sys/class/net/*/operstate; do
+  [[ -r "$state_file" ]] || continue
+  iface="$(basename "$(dirname "$state_file")")"
+  [[ "$iface" == "lo" ]] && continue
+  if [[ "$(cat "$state_file" 2>/dev/null || true)" == "up" ]]; then
+    up_links+=("$iface")
+  fi
+done
+if (( ${#up_links[@]} > 0 )); then
+  network="LINK_UP:$(IFS=,; echo "${up_links[*]}")"
+fi
+
+kernel="$(uname -r 2>/dev/null || echo unknown)"
+arch="$(uname -m 2>/dev/null || echo unknown)"
+
+{
+  echo
+  echo "============================================================"
+  echo "                 BLACK CAT - QUICK CHECK"
+  echo "============================================================"
+  printf '%-22s %s\n' "BOOT MODE" "$boot_mode"
+  printf '%-22s %s\n' "SECURE BOOT" "$secure_boot"
+  printf '%-22s %s\n' "TPM" "$tpm"
+  printf '%-22s %s\n' "TCG EVENT LOG" "$event_log"
+  printf '%-22s %s\n' "DM-VERITY ROOT" "$verity"
+  printf '%-22s %s\n' "NETWORK LINK" "$network"
+  printf '%-22s %s\n' "KERNEL" "$kernel"
+  printf '%-22s %s\n' "ARCHITECTURE" "$arch"
+  echo "------------------------------------------------------------"
+  echo "Evidence class: OBSERVED unless independently verified."
+  echo "This screen does NOT mean the computer is universally safe."
+  echo "============================================================"
+  echo
+} | tee "$REPORT_TXT"
+
+if command -v jq >/dev/null 2>&1; then
+  jq -n \
+    --arg product "Black Cat" \
+    --arg boot_mode "$boot_mode" \
+    --arg secure_boot "$secure_boot" \
+    --arg tpm "$tpm" \
+    --arg event_log "$event_log" \
+    --arg dm_verity "$verity" \
+    --arg network_link "$network" \
+    --arg kernel "$kernel" \
+    --arg architecture "$arch" \
+    '{schema_version:"0.1", product:$product, evidence_class:"OBSERVED", boot_mode:$boot_mode, secure_boot:$secure_boot, tpm:$tpm, tcg_event_log:$event_log, dm_verity_root:$dm_verity, network_link:$network_link, kernel:$kernel, architecture:$architecture}' \
+    > "$REPORT_JSON" 2>/dev/null || true
+fi
+
+printf 'Report: %s\n' "$REPORT_TXT"
+[[ -s "$REPORT_JSON" ]] && printf 'JSON:   %s\n' "$REPORT_JSON"
