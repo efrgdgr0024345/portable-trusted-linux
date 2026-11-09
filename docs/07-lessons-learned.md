@@ -1061,3 +1061,21 @@ The production page returned uncached data and truthfully displayed its configur
 ### Decision and lesson
 
 Candidate publication is now a priority fail-closed rule. The viewer targets a stable `project-status-live` source. Before any download or physical-test request, the live HTTPS page itself must match the evidence record across exact bytes, hash, source, run, artifact and URL. A chat link is not an acceptable bypass. Deployment capability and physical-write approval remain separate boundaries.
+
+
+## 2026-11-10 — Runner recovery must restore execution boundaries as well as packages
+
+### What was attempted
+Restore unattended development on disposable ptl-builder-01, using repository records and an operator-provided root console.
+
+### What actually happened
+The operator reported installation of prerequisites, a checksum match for the official Linux x64 runner 2.338.2 archive and successful version output. GitHub API inspection of main at 15697b2fb4261cc2785082550c9aeae3fa4668dc found generic self-hosted pull-request workflows, including live-build. Initially no queued, pending, requested, waiting or in-progress runs were returned. A new recovery-only workflow and dedicated label were prepared on ops/runner-recovery-20261110; five local policy regression tests passed, including negative event/ref/repository cases. Its smoke runs are now queued/pending; registration and startup have not happened.
+
+### Why it matters
+Running the restored machine with unrestricted sudo and generic default runner labels would let existing pull-request jobs select a root-capable builder. Reinstalling binaries alone does not restore a controlled engineering environment. Source reconstruction also cannot be assumed to restore secrets, historical ISO bytes or uncommitted state.
+
+### Decision / change
+Register with --no-default-labels and only ptl-trusted-20261110; keep the service stopped until label/queue checks. Limit the recovery workflow to trusted-branch push/dispatch. Record sudo as a temporary root-equivalent control explicitly authorized by the operator. Preserve pre-recovery status and candidate identities; do not claim a fresh build reproduces a lost artifact. The runbook now records reconstructable package/archive/registration requirements and remaining tests.
+
+### Evidence classification
+**OBSERVED** operator-supplied installation and checksum output. **VERIFIED** five local configuration regression checks relative to the prepared workflow. **WARNING** public-repository generic PR routing and root-equivalent sudo exposure. Registration, remote execution, sudo verification, scheduler isolation and full rebuild reproducibility are **UNKNOWN / PENDING**. This preparation does not close M15 or approve a Black Cat ISO.
