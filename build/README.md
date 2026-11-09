@@ -37,7 +37,7 @@ The live-build stages prepare and build a Debian Live artifact and generate prov
 - amd64 / x86-64
 - UEFI-first
 - Debian `live-build`
-- authenticated release signing: M14 current
+- authenticated release signing: M14 development-tested; production custody remains HUMAN_GATE
 - mandatory systemd `ukify` + ephemeral development-signing stage (M15; acceptance evidence in docs/17)
 - TPM 2.0 optional for lower assurance, required for attested levels
 - dm-verity read-only trusted root planned

@@ -138,3 +138,6 @@ The product SBAT row is supplied together with the standard `sbat,1,...` header.
 The binary hook creates public evidence under privileged live-build. The normal wrapper copies it into runner-owned `out/m15/` before the independent unprivileged ISO verifier writes reports. Run 42706847403 proved signing/rejection controls but failed at this ownership boundary; it is retained as failure evidence, not accepted as a successful pipeline. A regression exercises a non-writable source bundle. Real-image diagnostics and a fresh normal build must both be classified accurately.
 
 The generated large ESP exceeds the legacy El Torito 65535-sector load-size field; xorriso encodes zero with a warning. Exact extent/signature checks do not prove any particular firmware can boot/enforce this development path. No firmware enforcement or physical boot claim is made by M15's development-only signing acceptance.
+
+### Standalone tool resolution
+The ISO verifier locates sfdisk through caller PATH or the standard system sbin directories. A service shell can omit those even after package installation; run 42709997738 failed on that lookup after signature/El Torito checks. Actual-layout tests now cover an installed but hidden tool and a genuinely missing tool. The verifier remains unprivileged and fail-closed.

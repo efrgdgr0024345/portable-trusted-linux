@@ -1315,3 +1315,18 @@ Preserve the old candidate identity/history but remove its stale readiness claim
 
 ### Evidence classification
 OBSERVED empty historical artifact listing and cloud proxy refusal; historical local-copy availability and live-page content UNKNOWN. M15 public-key/ledger retention is being prepared; no M15 completion claim follows until the fresh pipeline passes. No release or physical-test handoff was authorized.
+
+## 2026-11-10 — Keep the build specification explicit about the development gate's missing root binding
+
+The affected build guide and UKI subsection now identify the actual hook/post-ISO scripts and component provenance locations. They distinguish M14 development mechanics from production custody, and M15 kernel/initrd/metadata signing from the final design's still-unimplemented dm-verity root-hash binding. This closes documentation ambiguity without expanding the threat model, adding a new feature or claiming full OS verification. Clean-pipeline acceptance remains pending; old image observations remain historical.
+
+## 2026-11-10 — Standalone ISO verification must resolve installed administrative tools outside service PATH
+
+### Attempt and result
+Run 42709997738 passed the 26 source tests and the retained real ISO's signature/El Torito checks, then failed with No such file or directory: sfdisk. The package was installed; the service PATH omitted /usr/sbin. The normal wrapper had a deterministic PATH, but the standalone diagnostic did not inherit it from an earlier workflow step.
+
+### Decision / significance
+Resolve sfdisk from caller PATH or explicit standard /usr/sbin:/sbin paths, and refuse clearly if genuinely unavailable. Do not elevate the verifier or change image/security policy to hide a capability error. Two actual-layout regressions exercise a hidden installed tool and a missing tool. All 28 M15 tests pass locally. This repeats the earlier service-PATH lesson at a new standalone entry point; preflight normalization alone is insufficient.
+
+### Evidence classification
+OBSERVED actual reduced-PATH failure; VERIFIED actual-tool reduced-PATH and missing-tool regressions. The source command/metadata/ownership fixes remain in place. A fresh corrected normal pipeline is still required; no production key, firmware enrollment or target write occurred.

@@ -6,6 +6,7 @@ import importlib.util
 import json
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -15,6 +16,15 @@ SOURCE = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("ptl_uki_verify", SOURCE / "verifier/verify-development-uki.py")
 v = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(v)
+SYSTEM_SBIN_PATH = "/usr/sbin:/sbin"
+
+
+def partition_tool():
+    # Service and ordinary non-root shells may omit administrative tool paths.
+    tool = shutil.which("sfdisk") or shutil.which("sfdisk", path=SYSTEM_SBIN_PATH)
+    if tool is None:
+        raise ValueError("Required partition inspection tool sfdisk is unavailable")
+    return tool
 
 
 def extent_digest(iso, offset, length):
@@ -70,7 +80,7 @@ def check(iso, bundle):
         if extent_digest(iso, lbas[0] * 2048, size) != provenance["esp_sha256"]:
             raise ValueError("Actual El Torito UEFI boot extent differs from verified ESP")
         report["el_torito_uefi_lba"] = lbas[0]
-        table = json.loads(v.command(["sfdisk", "--json", iso]))
+        table = json.loads(v.command([partition_tool(), "--json", iso]))
         (bundle / "partition-table.json").write_text(json.dumps(table, indent=2) + "\n")
         pt = table["partitiontable"]
         sector_size = pt.get("sectorsize", 512)

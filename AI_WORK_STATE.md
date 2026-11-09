@@ -5,7 +5,9 @@
 - Development branch: codex/m15-signed-uki-development; based on completed runner recovery cd3966b805c7376d327154d332b6e217af41a452. No main merge.
 - Runner execution/sudo checks passed in runs 42691361475 and 42691382043. Toolchain restore/probe run 42699169946 passed.
 - Toolchain: Debian 13.7, systemd-ukify 257.13, sbsigntool 0.9.4, live-build 20250505.
-- Implementation IN PROGRESS: run 42706847403 built the real ISO and passed signature/negative tests, then failed when the unprivileged post-verifier wrote into root-owned evidence. Corrected normal pipeline copies public evidence to runner-owned out/m15 first; 26 local M15 tests pass. Verify the retained actual ISO diagnostically, then require a fresh normal build. No M15 closure yet.
+- Implementation IN PROGRESS: normal runs 42706847403 and 42708392120 built real signed UKIs and passed mandatory signature/negative tests but failed at the root-owned report directory. Public evidence is now copied to runner-owned out/m15 before unprivileged read-back.
+- Retained real ISO run 42709997738 then passed signature/El Torito checks but could not locate installed sfdisk in the service PATH. Standard system-path fallback and actual reduced-PATH/missing-tool regressions are now included. All 28 local M15 tests pass.
+- Next acceptance run: inspect the latest M15 workflow on this branch after this correction; require retained-ISO diagnostic success AND a fresh normal pipeline, ISO read-back and artifact upload. No failed/retained diagnostic is clean acceptance.
 - No production keys, firmware enrollment, TPM ownership changes, physical device writes or UI features are authorized by this task.
 
 ## Current exact test candidate
@@ -18,7 +20,7 @@ Run the normal build pipeline on the trusted dedicated-label runner; inspect pos
 Production signing/custody, real firmware enrollment, platform ownership changes, physical media writes/tests, main merges and release promotion remain gates. Ephemeral M15 development keys are explicitly authorized. A blocked tool is a capability/approval-review boundary, not a reason to broaden GitHub account OAuth. Broad CLI OAuth was cancelled and its helper is retired.
 
 ## Context health
-AMBER heuristic after tool-heavy recovery and substantial selective reads; no exact context percentage is known. Context pressure itself is never a human-approval gate. Keep this checkpoint compact and load only needed source/evidence.
+AMBER heuristic after extended tool-heavy UKI integration, several large log/source reads and a workspace restart. State was selectively recovered from checkpoint/GitHub; no exact continuity-loss measurement is available; no exact context percentage is known. Context pressure itself is never a human-approval gate. Keep this checkpoint compact and load only needed source/evidence.
 
 ## Recovery sequence
 Read this file, inspect latest M15 workflow runs on the active branch, then docs/17-signed-uki-development-plan.md and the relevant build/verifier scripts. Never equate local signature verification with firmware enforcement or authenticated root; dm-verity binding remains M17. Read only relevant lessons. The live viewer reads project-status-live, not this development branch; do not claim public synchronization without checking it.

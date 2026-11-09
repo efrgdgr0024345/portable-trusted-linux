@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[1]
@@ -105,6 +106,19 @@ class IsoBindingTests(unittest.TestCase):
         self.make_iso(nonhybrid, False)
         with self.assertRaisesRegex(ValueError, "sfdisk failed|Require one hybrid-media EFI partition"):
             self.run_check(nonhybrid)
+
+    def test_actual_readback_with_sfdisk_hidden_from_service_path(self):
+        installed = Path(shutil.which("sfdisk")).parent
+        reduced = os.pathsep.join(p for p in os.environ["PATH"].split(os.pathsep)
+                                  if p and Path(p).resolve() != installed.resolve())
+        with mock.patch.dict(os.environ, PATH=reduced), \
+             mock.patch.object(iso_check, "SYSTEM_SBIN_PATH", str(installed)):
+            self.run_check(self.iso)
+
+    def test_missing_partition_tool_fails_closed(self):
+        with mock.patch.object(iso_check.shutil, "which", return_value=None):
+            with self.assertRaisesRegex(ValueError, "sfdisk is unavailable"):
+                self.run_check(self.iso)
 
 
 if __name__ == "__main__":

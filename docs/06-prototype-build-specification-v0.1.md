@@ -172,6 +172,14 @@ The output UKI must be hashed and its SHA-256 recorded in the build manifest.
 
 A deliberately modified/unsigned test UKI must be included in negative testing and must not be reported as an authorised Secure-Boot success.
 
+### Current M15 development implementation (2026-11-10)
+
+The normal `build/20-build-live.sh` path now includes the live-build binary hook `build/50-build-development-uki.py` and post-ISO `build/52-verify-development-uki-iso.py`. Implementation acceptance is tracked in `docs/17-signed-uki-development-plan.md`; a generated file or a passing retained-input diagnostic alone does not close the clean-pipeline gate.
+
+UKI provenance, whole-file SHA-256, explicit development certificate/public-key fingerprints, exact commands and section/input identities are recorded in `out/m15/provenance.json`, `inputs.json`, `commands.jsonl` and verification logs. The outer ISO provenance remains `out/build-manifest.json`. The development UEFI fallback and actual ISO EFI extents must contain the verified signed UKI. Each build creates new temporary development keys; no production identity or firmware enrollment is used.
+
+The implemented M15 scope binds kernel, initrd, command line, OS release, kernel version and SBAT. The final-design dm-verity root-hash binding listed above remains **NOT IMPLEMENTED / M17**. The root squashfs is not authenticated by this development gate, legacy BIOS is outside its signature guarantee, and firmware enforcement/physical boot are **NOT VERIFIED**. No approved ISO follows from this work.
+
 ## 7. Secure Boot evidence
 
 The attestation collector must distinguish:
