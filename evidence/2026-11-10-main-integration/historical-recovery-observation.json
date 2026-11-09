@@ -1,0 +1,45 @@
+{
+  "run_id": 35268766563,
+  "job_id": 105362480213,
+  "run_conclusion": "success",
+  "report_from_retained_job_log": {
+    "iso_sha256": "ada9d032a4c957a995f874c693b6181014f64863c312dc0c86b892ec1d1fde65",
+    "size_bytes": 778043392,
+    "source_commit": "ab5ebe0093bc78b9145fb670090520168be24e04",
+    "build_run": 35268766563,
+    "network": "no guest NIC",
+    "scope": "development VM observations, no release approval",
+    "gui": {
+      "status": "GUI_INTERACTIONS_OBSERVED",
+      "frames": {
+        "selected": "gui-selected.png",
+        "cleared": "gui-cleared.png",
+        "desktop": "gui-desktop.png",
+        "desktop_settled": "gui-desktop-settled.png"
+      },
+      "checkbox": "Browser summary observed",
+      "clear": "none summary observed",
+      "open_desktop": "preview absent from two successive frames; screenshots retained"
+    },
+    "check": {
+      "status": "QUICK_CHECK_SETTLED_PROMPT_OBSERVED",
+      "frame": "check-140.png",
+      "selected_menu": true,
+      "elapsed_seconds": 140
+    },
+    "recovery": {
+      "status": "AUTOMATIC_RECOVERY_MENU_OBSERVED",
+      "frame": "recovery-140.png",
+      "elapsed_seconds": 140,
+      "injection": "LightDM masked; short test-only readiness deadline",
+      "scope": "VM failure-injection observation; not physical GPU compatibility"
+    }
+  },
+  "historical_artifact": {
+    "id": 10518144528,
+    "zip_sha256": "21c2c6fed4fe542a96dd8b7f4d2d54256c1268b4bce6c3039398b22b837fd4f6",
+    "availability": "NOT LISTED by current artifacts API; reason UNKNOWN",
+    "builder_copy_availability": "UNKNOWN"
+  },
+  "scope": "Historical exact-image VM observations; no transfer to current signed-UKI image or physical GPU assurance"
+}

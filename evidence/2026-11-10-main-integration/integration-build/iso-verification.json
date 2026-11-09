@@ -1,0 +1,44 @@
+{
+  "status": "VERIFIED",
+  "iso_sha256": "60eebada83aad6ba0799083318ae80d248cebbbb42cfe0a1976f29c1e4ef4635",
+  "iso_size": 997658624,
+  "source_commit": "f2bca2c189328f492c3a0c6be18d63fd3e8dc36a",
+  "firmware_enforcement": "NOT VERIFIED",
+  "scope": "Read-back of signed UKI and expected live inputs from actual ISO/boot extents",
+  "signature": {
+    "status": "VERIFIED",
+    "scope": "Signature and bound inputs relative to supplied development certificate and manifest; not firmware enforcement",
+    "uki_sha256": "c532696d3750933ee163f789d56042aef603c6267f3642f8f75b9085f06f2fde",
+    "certificate_der_sha256": "2c58014dcc3f5895a152d135f2219634f44426dfb137b0bd9fdfbe6ab176e3b0",
+    "sections": {
+      ".cmdline": {
+        "sha256": "b414a438e165804f2f58aec5b60089781cb1a8152dcc1b1f396b5ace061da968",
+        "size": 26
+      },
+      ".initrd": {
+        "sha256": "17a090914bce0873197c29c03adff21fbf17bfebb1311e7fa20349be148430dc",
+        "size": 55699129
+      },
+      ".linux": {
+        "sha256": "a21f79197954256e75fd352692e63263face31601f671c14c9c9d8803785a6c3",
+        "size": 12167104
+      },
+      ".osrel": {
+        "sha256": "c9f4c843952add425588a269c5b1030621967b8bc3a23ebd552c38e63cf1644e",
+        "size": 385
+      },
+      ".sbat": {
+        "sha256": "21480310a1facf66e17a115fa5e1f18253131cd96db7a19010d977138303ef2e",
+        "size": 351
+      },
+      ".uname": {
+        "sha256": "1d13be3d536ea7923730276d7ffb01b2f20acf8f601fd4731e9516b5f8c803e9",
+        "size": 20
+      }
+    },
+    "signature_output": "Signature verification OK"
+  },
+  "el_torito_uefi_lba": 100,
+  "hybrid_efi_start_sector": 400,
+  "hybrid_efi_sector_size": 512
+}

@@ -1,0 +1,32 @@
+{
+  "scope": "Read-only source/history audit; not runtime or host attestation",
+  "source_commit": "f2bca2c189328f492c3a0c6be18d63fd3e8dc36a",
+  "all_17_starting_branch_tips_are_ancestors": true,
+  "m15_security_code_unchanged_from_3125a1c99342b961ac614878d3ce9b3f874de33e": {
+    "build/50-build-development-uki.py": "26d789057b5d678e603e2da51eec8b28b775c0654b8bff3cdc8c3ccf4b85dac2",
+    "build/52-verify-development-uki-iso.py": "8e9afe4190afcfd3856e2317b210be855e56c9ad7df8850bd07732d21588d6e9",
+    "verifier/verify-development-uki.py": "b08b3e73a0e49c91ad37d12038a56cc00df774ae530f9db395165a4532142bc5"
+  },
+  "main_only_commits_retained": [
+    "15697b2fb4261cc2785082550c9aeae3fa4668dc",
+    "ac025247e22df27b1b34cd718af4e243570b8fda",
+    "f55a6bbe80a3a3e512e11541501e6510c1835924",
+    "1379efa67257cbbe21345c119683d0e75d744e77",
+    "7f000efcc1d63acb98468122ed8476e762d225b4",
+    "f5b341f4e55c6f288041fc79d5787fc96730bcaa",
+    "ed3037b8dca24334adf2940330de4f80e1233f48",
+    "58771d00d494507096692323ea90f19b057c8b7f"
+  ],
+  "legacy_privileged_pr_routes": "Explicitly disabled; actual PR runs skipped; new routing has negative event/ref/repository checks",
+  "existing_standalone_device_firewall_preview_source": "Preserved unchanged; not executed or deployed by consolidation",
+  "live_page": {
+    "url": "https://easyai.com.au/USB/project.php",
+    "status": "UNKNOWN",
+    "latest_read_attempt": "HTTP 403 from this cloud environment; no content obtained"
+  },
+  "limitations": [
+    "Branch-protection administration read returned 403; normal GitHub merge enforcement must be respected.",
+    "No exact-image GUI/recovery VM or physical evidence established.",
+    "No firmware enforcement or authenticated root claim."
+  ]
+}

@@ -1,0 +1,184 @@
+{
+  "schema": "blackcat-main-integration-v1",
+  "status": "VERIFIED",
+  "scope": "Main consolidation and development-key normal pipeline acceptance only",
+  "date_local": "2026-11-10",
+  "timezone": "Australia/Perth",
+  "author": "Codex, GPT-6 family; exact deployed variant unknown",
+  "authorization": "Operator explicitly instructed consolidation of all existing work onto one main; session-specific main merge authorized",
+  "starting_main": "15697b2fb4261cc2785082550c9aeae3fa4668dc",
+  "integration_commit": "f2bca2c189328f492c3a0c6be18d63fd3e8dc36a",
+  "merge_commit": "eb7b969f95ba419acc5a2e16ffe587c40c42446d",
+  "pull_request": 9,
+  "pull_request_url": "https://github.com/efrgdgr0024345/portable-trusted-linux/pull/9",
+  "starting_branch_count": 17,
+  "all_starting_tips_are_ancestors_of_actual_main": true,
+  "branch_inventory": "branch-tips.json",
+  "force_push_or_history_deletion": false,
+  "open_pull_requests_after_merge": [],
+  "integration_build": {
+    "source_commit": "f2bca2c189328f492c3a0c6be18d63fd3e8dc36a",
+    "run_id": 42718280786,
+    "job_id": 129505353931,
+    "conclusion": "success",
+    "run_url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42718280786",
+    "uki_sha256": "c532696d3750933ee163f789d56042aef603c6267f3642f8f75b9085f06f2fde",
+    "certificate_der_sha256": "2c58014dcc3f5895a152d135f2219634f44426dfb137b0bd9fdfbe6ab176e3b0",
+    "public_key_spki_sha256": "8f0523112349400628391aed1f2fdf48d8ac780e920523e7400e21ff9fd33342",
+    "iso_sha256": "60eebada83aad6ba0799083318ae80d248cebbbb42cfe0a1976f29c1e4ef4635",
+    "artifact": {
+      "id": 13720190466,
+      "name": "blackcat-m15-development-evidence-42718280786",
+      "size_bytes": 68474779,
+      "zip_sha256": "86a37bb7f3cface5caf9e057a7f6f0e6927bca2f5f4798e12bd51f24058aaa84",
+      "expires_at": "2026-11-16T23:24:36Z",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42718280786/artifacts/13720190466"
+    },
+    "evidence_record": "evidence/2026-11-10-main-integration/integration-build/",
+    "acceptance": "Fresh normal pipeline, correct key and exact bindings, tamper/wrong-key/unsigned/changed-cmdline rejection, actual ISO filesystem and boot extent read-back"
+  },
+  "main_build": {
+    "source_commit": "eb7b969f95ba419acc5a2e16ffe587c40c42446d",
+    "run_id": 42720596290,
+    "job_id": 129513260667,
+    "conclusion": "success",
+    "run_url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42720596290",
+    "uki_sha256": "4b39292b6fd5cb3c2c0ed92ec232b0ac20630980d5027f28bb7b58c8c52b4fe8",
+    "uki_size_bytes": 67962376,
+    "certificate_der_sha256": "948e5ed840a78cda310c73b140512d0a9020d0094c4b1ca8a894da4a6ff69ab2",
+    "public_key_spki_sha256": "85b9c7dfd670e9b34ee95fb6b6afdab807ef608e36b38e18d2c6333838ef60fb",
+    "iso_sha256": "fa7a98cfcdab956969e9c11289a0d9779b57080f3f2257852785fae7bb4aa466",
+    "artifact": {
+      "id": 13720897217,
+      "name": "blackcat-m15-development-evidence-42720596290",
+      "size_bytes": 68477219,
+      "zip_sha256": "d00ff23c689bfe16fbaf92df23c1997e479d25f01a4fa23c86a69ea40f49bd1f",
+      "expires_at": "2026-11-16T23:41:40Z",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42720596290/artifacts/13720897217"
+    },
+    "evidence_record": "evidence/2026-11-10-main-integration/main-build/",
+    "acceptance": "Fresh normal pipeline, correct key and exact bindings, tamper/wrong-key/unsigned/changed-cmdline rejection, actual ISO filesystem and boot extent read-back",
+    "m15_regressions_passed": 28,
+    "runner_regressions_passed": 12,
+    "source_and_M14_negative_checks": "passed",
+    "local_public_key_checks": "Certificate/public-key DER/SPKI hashes and certificate-derived key equality independently checked locally; actual UKI signature and ISO verified in CI, not claimed as local binary download",
+    "raw_provenance_limit": "Inner github_run_id remains unknown after sudo filtering; outer run/job/source bound by GitHub metadata, raw values preserved"
+  },
+  "hosted_source_checks": [
+    {
+      "run_id": 42718300278,
+      "name": "Black Cat Release Signing Self-Test",
+      "event": "pull_request",
+      "head_sha": "f2bca2c189328f492c3a0c6be18d63fd3e8dc36a",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 129505420171,
+          "name": "Verify release-signing mechanics without production secrets",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "run_id": 42718300147,
+      "name": "Recovery payload static checks",
+      "event": "pull_request",
+      "head_sha": "f2bca2c189328f492c3a0c6be18d63fd3e8dc36a",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 129505419819,
+          "name": "static-check",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "run_id": 42718300066,
+      "name": "Black Cat Session UI Static Test",
+      "event": "pull_request",
+      "head_sha": "f2bca2c189328f492c3a0c6be18d63fd3e8dc36a",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 129505419434,
+          "name": "ui-static",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "run_id": 42718300224,
+      "name": "Black Cat Integration Source Checks",
+      "event": "pull_request",
+      "head_sha": "f2bca2c189328f492c3a0c6be18d63fd3e8dc36a",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 129505421434,
+          "name": "source",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "run_id": 42718280987,
+      "name": "Black Cat Integration Source Checks",
+      "event": "push",
+      "head_sha": "f2bca2c189328f492c3a0c6be18d63fd3e8dc36a",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 129505358400,
+          "name": "source",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "main_hosted_source_check": {
+    "run_id": 42720596315,
+    "source_commit": "eb7b969f95ba419acc5a2e16ffe587c40c42446d",
+    "conclusion": "success"
+  },
+  "historical_recovery_record": "historical-recovery-observation.json",
+  "source_audit": "source-audit.json",
+  "publication": {
+    "existing_endpoints": [
+      "project-status-live",
+      "codex/remove-chroot-systemd-boot"
+    ],
+    "strategy": "Fast-forward to canonical main after final JSON write; no PHP or endpoint migration",
+    "last_verified_deployed_source": "codex/remove-chroot-systemd-boot per historical docs/21 acceptance",
+    "live_page": "https://easyai.com.au/USB/project.php",
+    "live_rendering": "UNKNOWN: current cloud HTTP 403, no page content obtained"
+  },
+  "limitations": [
+    "No approved ISO or current physical-test handoff.",
+    "Development certificate is never enrolled; firmware enforcement and physical boot remain unverified.",
+    "No dm-verity root binding or new M16/M17 implementation.",
+    "Historical GUI/check/recovery observations remain attached to old ISO ada9d032..., not the current image.",
+    "No production key, TPM ownership/PCR-policy operation, firmware enrollment, target-device write or service deployment was performed by consolidation.",
+    "Binary evidence has finite artifact retention; archive before expiry/deleting builder. Deleted ephemeral keys prevent exact signed-byte recreation.",
+    "Public JSON/ledger entries were extracted from retained CI logs and reserialized. Artifact byte identity is separately recorded via API/upload digests; binaries were not downloaded locally.",
+    "Branch-protection administration read was denied; normal GitHub PR merge enforcement was used without bypass."
+  ],
+  "public_record_sha256": {
+    "integration-build/public-key-spki-sha256.txt": "e88f222a4cadfbc921be678d24fc844fa80731060c17e8066970fbfe38d5cfd6",
+    "integration-build/development-cert.pem": "d96ec74a6b2e590d8d5fcd9ef26bdc06be114c6360766ac9d144c95dd55e03fa",
+    "integration-build/commands.jsonl": "10b682df0e377e1eb667aba9ba1f12dc87a8a62a30ad17d9fc662a5170acb47c",
+    "integration-build/iso-verification.json": "ace2a8530658b0a14a835c022ed4b4ee45fc1d5868d008626e0ae598aa72918e",
+    "integration-build/development-public-key.pem": "0b9984c940e01070e11282456bede4d75e32ffa4ef8a7d76601316dc93c4659c",
+    "integration-build/provenance.json": "43ae9de2573b154139a500ad8d98986663e83985f44ffaa097682ed6fd2b127d",
+    "integration-build/tests.json": "3b6c538dde1f3610c3317605af6d72f0c6a4f0773631d8b16a4d1775913fd704",
+    "integration-build/certificate-der-sha256.txt": "fa24a89a052426a5c6529d234b64fc4d6d39db49768b97c3b2c4de46528b3e52",
+    "main-build/public-key-spki-sha256.txt": "57a7e8e2adcba136b7c42a0fced2d2d2e928a7ee024ee8c1e7f8fd312aa7aa11",
+    "main-build/development-cert.pem": "a3cbf7fb002a4472e1cb49245d1024ddf6a13f3cb4747888b90c72b89631c6e6",
+    "main-build/commands.jsonl": "11974f9575f41191da53b20d4f226de06290669688490db05b58784e10c9e2a7",
+    "main-build/iso-verification.json": "36bfc6b45246945274eb7cf2dcf4fe5b8627de29b31bcafa6d4e0aba84534efb",
+    "main-build/development-public-key.pem": "ab75cd07b8049c1cb13545935476e9530b342fd10cfa5224b0a2727ccd5d58fb",
+    "main-build/provenance.json": "29090af81812aa822e97904655829fc472107ff38e12460979165c3b0dcaa485",
+    "main-build/tests.json": "cdf53b4373f4b337bfdcc636603a53ab24849402fef2d3c2afde01bbe186ee39",
+    "main-build/certificate-der-sha256.txt": "988855d8c5d4f53302d775d3dfd62bb28bf07fa20e7aea74da37f08a28a18f22"
+  }
+}

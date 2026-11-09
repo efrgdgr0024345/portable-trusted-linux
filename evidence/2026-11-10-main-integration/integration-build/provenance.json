@@ -1,0 +1,21 @@
+{
+  "status": "VERIFIED",
+  "scope": "UKI construction, signature and negative controls; final ISO extraction check is separate",
+  "key_policy": "EPHEMERAL DEVELOPMENT ONLY; NEVER ENROLLED",
+  "created_utc": "2026-11-09T23:23:55.429020+00:00",
+  "source_commit": "f2bca2c189328f492c3a0c6be18d63fd3e8dc36a",
+  "live_input_source_commit": "f2bca2c189328f492c3a0c6be18d63fd3e8dc36a",
+  "builder": "ptl-builder-01",
+  "kernel_version": "6.12.116+deb13-amd64",
+  "signed_uki_sha256": "c532696d3750933ee163f789d56042aef603c6267f3642f8f75b9085f06f2fde",
+  "signed_uki_size": 67962376,
+  "certificate_der_sha256": "2c58014dcc3f5895a152d135f2219634f44426dfb137b0bd9fdfbe6ab176e3b0",
+  "public_key_spki_sha256": "8f0523112349400628391aed1f2fdf48d8ac780e920523e7400e21ff9fd33342",
+  "esp_sha256": "81856737f411067632c82d95d8a338ef91b3884c491ec581a3dd7f0f7afe1b41",
+  "commands": "commands.jsonl",
+  "github_run_id": "unknown",
+  "firmware_enforcement": "NOT VERIFIED",
+  "measured_boot": "NOT VERIFIED",
+  "protected_root_binding": "NOT IMPLEMENTED (M17)",
+  "private_key_policy": "Fresh one-day development keys in tmpfs, unlinked before success; no private key retained"
+}

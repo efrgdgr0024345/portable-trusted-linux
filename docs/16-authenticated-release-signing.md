@@ -248,3 +248,8 @@ The non-secret M14 implementation can proceed automatically when:
 - documentation continues to distinguish release signing from Secure Boot signing.
 
 M14 cannot be considered production-complete until the release-signing key custody human gate is resolved and the selected trusted public key is deliberately published/pinned.
+
+
+## 2026-11-10 main-consolidation evidence update
+
+The earlier bounded-cycle API/CI limitation above is historical. During operator-authorized main consolidation, the connected GitHub API supplied actual successful M14 hosted evidence: run 42718300278, job 129505420171, source f2bca2c189328f492c3a0c6be18d63fd3e8dc36a. All 14 positive/negative assertions, including signed multi-document JSON rejection, passed. The same corrected executable validator and regressions are preserved in main merge eb7b969f95ba419acc5a2e16ffe587c40c42446d. No production signing authority or approved release is implied. See docs/24-main-consolidation.md for the combined-source record. Previous failures and capability limits remain recorded rather than rewritten. Author: Codex, GPT-6 family; exact deployed variant unknown.

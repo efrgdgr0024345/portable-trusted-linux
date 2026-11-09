@@ -1,6 +1,6 @@
 # Signed UKI Development Gate — M15
 
-**Status:** VERIFIED — requested development-key acceptance passed at source `3125a1c99342b961ac614878d3ce9b3f874de33e`; main consolidation in progress; firmware enforcement NOT VERIFIED
+**Status:** VERIFIED — requested development-key acceptance passed at source `3125a1c99342b961ac614878d3ce9b3f874de33e`; merged into main with separate fresh-build evidence; firmware enforcement NOT VERIFIED
 **Target:** Debian 13/trixie amd64, systemd-ukify 257-series toolchain  
 **Safety boundary:** development keys only; no firmware key enrollment; no target-disk writes.
 
@@ -32,7 +32,7 @@ Durable public record, raw results, public key/certificate and 22 exact commands
 - Kernel package inputs came from the recorded Debian repositories, not the builder's running kernel. This run embedded 6.12.116; it does not inherit earlier host-kernel observations.
 - Large-ESP El Torito load-size warning, physical boot, firmware enforcement, root authentication, legacy BIOS and bit-for-bit reproducibility remain outside the verified claim. No production key, enrollment, TPM ownership/PCR-policy action or target-device write was introduced.
 
-The original implementation is on `codex/m15-signed-uki-development`. The operator explicitly authorized consolidation into main on 10 November 2026 (AWST). See docs/24-main-consolidation.md; the combined source requires its own build evidence. No approved Black Cat ISO or new physical-test handoff is created. The live page could not be inspected because the cloud proxy returned CONNECT 403; updating the status feed is distinct from verifying its deployed rendering.
+The original implementation is on `codex/m15-signed-uki-development`. The operator explicitly authorized consolidation into main on 10 November 2026 (AWST). PR #9 merged at eb7b969f95ba419acc5a2e16ffe587c40c42446d after combined run 42718280786 passed. The fresh merged-main normal pipeline then passed in run 42720596290, job 129513260667. See docs/24-main-consolidation.md and evidence/2026-11-10-main-integration/report.json. Original acceptance fingerprints remain original-image evidence; the new main key/image identities are separate. No approved Black Cat ISO or new physical-test handoff is created. The live page could not be inspected because the cloud proxy returned CONNECT 403; updating the status feed is distinct from verifying its deployed rendering.
 
 The original plan and dated integration notes below are preserved as history. Their pending states are superseded by this exact accepted run, not silently erased.
 

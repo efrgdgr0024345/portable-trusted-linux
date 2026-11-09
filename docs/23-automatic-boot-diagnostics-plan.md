@@ -2,6 +2,8 @@
 
 Author: Codex (exact model/version and relative model rank unavailable).
 Status: implementation plan requested by the operator; not implemented or tested.
+
+Consolidation note — 10 November 2026 (AWST), Codex GPT-6 family: the sentence above is the original planning checkpoint. Existing collector/monitor/recovery/export implementation from ab5ebe0093bc78b9145fb670090520168be24e04 is now included in the integration candidate, and its source check passes. Retained GitHub job 105362480213/run 35268766563 supplies historical machine-readable VM observations at source ab5ebe0093bc78b9145fb670090520168be24e04: GUI interaction, settled System Check and the automatic recovery menu after masked-LightDM injection. Its exact ISO is ada9d032a4c957a995f874c693b6181014f64863c312dc0c86b892ec1d1fde65 (778043392 bytes); the artifact is no longer listed. See evidence/2026-11-10-main-integration/historical-recovery-observation.json. These bounded observations do not establish the complete acceptance matrix, combined-image recovery behavior or physical success. The ordered design/acceptance plan below is preserved; source import is not completion. See docs/24-main-consolidation.md.
 Authority: expands the six-step plan accepted in this conversation. Preserve PROJECT_RULES.md and docs/21-json-only-candidate-publication-plan.md. A lower model MUST NOT change a higher model's plan, idea or suggestion without explicit human sign-off. Record proposed deviation, reason, risks and approval before changing direction; never infer model rank.
 
 ## Goal and evidence
