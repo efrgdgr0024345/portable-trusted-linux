@@ -77,15 +77,15 @@ if [[ "$missing_mandatory" -ne 0 ]]; then
   fail "Mandatory host-preflight commands are missing."
 fi
 
-# The full systemd-boot host-integration package registers dpkg triggers that
-# may try to update the builder's ESP during live-build's temporary GRUB/shim
-# package cleanup. A mere package removal can leave the package in
-# 'config-files' state with those triggers still active. Keep only
-# systemd-boot-efi on this disposable image builder and reject any residual
-# systemd-boot package state before spending a full build cycle.
+# Record host systemd-boot state as evidence, but do not fail on residual
+# 'config-files' state. The failed live-build runs proved the actionable
+# systemd-boot trigger was inside the live-build chroot because systemd-boot
+# was explicitly seeded in config/packages.list. That package is now excluded
+# from the live root; host package state is observational evidence only.
 systemd_boot_state="$(dpkg-query -W -f='${db:Status-Status}' systemd-boot 2>/dev/null || true)"
-if [[ -n "$systemd_boot_state" && "$systemd_boot_state" != "not-installed" ]]; then
-  fail "Builder retains systemd-boot host integration state '${systemd_boot_state}'. Purge systemd-boot completely on this disposable builder before live-build; systemd-boot-efi may remain installed."
+printf '\nHost systemd-boot state: %s\n' "${systemd_boot_state:-absent from dpkg database}"
+if [[ "$systemd_boot_state" == "installed" ]]; then
+  warn "Full systemd-boot host integration is installed. This is unnecessary for the PTL builder and should be removed during builder hardening."
 fi
 
 printf '\nPackage/version evidence (when available):\n'

@@ -1,10 +1,18 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 WORK_DIR="${PTL_BUILD_WORK_DIR:-${ROOT_DIR}/work/live-build}"
 OUT_DIR="${ROOT_DIR}/out"
+
+# Cached binary hooks can silently retain a UKI from an older source/key.
+if [[ -e "$WORK_DIR/.build/bootstrap" || -e "$WORK_DIR/m15-evidence" ]]; then
+  echo "M15 requires a fresh PTL_BUILD_WORK_DIR; refusing cached build stages." >&2
+  exit 1
+fi
+[[ ! -e "$OUT_DIR/m15" ]] || { echo 'Refusing stale out/m15 evidence' >&2; exit 1; }
 
 mkdir -p "$OUT_DIR"
 
@@ -29,7 +37,8 @@ else
   if sudo -n /usr/bin/lb build 2>&1 | tee "${OUT_DIR}/live-build.log"; then
     :
   else
-    rc=${PIPESTATUS[0]}
+    # Preserve the whole pipefail result, including a failed evidence/log write.
+    rc=$?
     echo "The privileged live-build stage failed (exit ${rc})." >&2
     echo "The runner is expected to have only the documented temporary permission for /usr/bin/lb build." >&2
     exit "$rc"
@@ -42,6 +51,12 @@ if [[ -z "$image" ]]; then
   echo "Build completed without a discoverable ISO/IMG artifact." >&2
   exit 1
 fi
+
+# The binary hook runs inside privileged lb, so its bundle is root-owned.
+# Copy public evidence first; keep the independent read-back verifier unprivileged.
+cp -r --no-preserve=mode,ownership "$WORK_DIR/m15-evidence" "$OUT_DIR/m15"
+python3 "${SCRIPT_DIR}/52-verify-development-uki-iso.py" \
+  --iso "$WORK_DIR/${image#./}" --bundle "$OUT_DIR/m15"
 
 cp -f "$image" "$OUT_DIR/"
 artifact="${OUT_DIR}/$(basename "$image")"

@@ -1,0 +1,151 @@
+{
+  "schema": "blackcat-m15-development-acceptance-v1",
+  "status": "VERIFIED",
+  "scope": "Requested development-key UKI construction/signature/negative/ISO integration acceptance only; not firmware enforcement or approved release",
+  "date_local": "2026-11-10",
+  "timezone": "Australia/Perth",
+  "implementation_source_commit": "3125a1c99342b961ac614878d3ce9b3f874de33e",
+  "source_branch": "codex/m15-signed-uki-development",
+  "merged_to_main": false,
+  "run_id": 42711645617,
+  "job_id": 129482434136,
+  "run_conclusion": "success",
+  "run_url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42711645617",
+  "normal_pipeline_commands": [
+    "sudo bash build/01-install-deps.sh",
+    "export PTL_BUILD_WORK_DIR=\"$(mktemp -d /var/tmp/blackcat-m15.XXXXXX)\"",
+    "bash build/20-build-live.sh",
+    "bash build/30-artifact-manifest.sh"
+  ],
+  "automatic_stages": [
+    "build/50-build-development-uki.py via mandatory live-build binary hook",
+    "build/52-verify-development-uki-iso.py after copying public evidence into runner-owned output"
+  ],
+  "builder_identity": {
+    "reported_hostname": "ptl-builder-01",
+    "classification": "OBSERVED runner report, not hardware attestation",
+    "live_kernel_version": "6.12.116+deb13-amd64"
+  },
+  "uki": {
+    "filename": "blackcat-development.efi",
+    "sha256": "e42219c658b6cfe285c02f1c667ce505768dcf32bfd7c78fdf10570e27cfddeb",
+    "size_bytes": 67962376,
+    "key_policy": "EPHEMERAL DEVELOPMENT ONLY; NEVER ENROLLED"
+  },
+  "public_key": {
+    "file": "development-public-key.pem",
+    "spki_sha256": "e5daf01a5a04a4ce6f0fc6187a34da6b0ad90719ce4aeca2398dc90151430a9e",
+    "certificate": "development-cert.pem",
+    "certificate_der_sha256": "af0794b4e3d1e1830f3610cf4532ed362df639864225ab45d654e4b0c9949193",
+    "local_openssl_checks": "VERIFIED certificate DER digest, public SPKI digest and equality of the public key derived from the certificate; actual UKI verification was performed by CI and its independent image read-back"
+  },
+  "acceptance": {
+    "fresh_normal_pipeline": "VERIFIED",
+    "positive_signature_and_exact_input_bindings": "VERIFIED",
+    "tampered_signature": "FAILED as expected",
+    "wrong_key_signature": "FAILED as expected",
+    "missing_signature": "FAILED as expected",
+    "changed_expected_command_line": "FAILED as expected",
+    "final_iso_filesystem_and_boot_extent_binding": "VERIFIED",
+    "m15_regression_tests_passed": 28,
+    "runner_regression_tests_passed": 12,
+    "public_evidence_bundle": "GENERATED AND UPLOADED",
+    "private_key_cleanup": {
+      "status": "OBSERVED",
+      "meaning": "TemporaryDirectory exited; private key paths unlinked from tmpfs; not proof of RAM erasure"
+    }
+  },
+  "iso": {
+    "sha256": "bd94942c1b1abc67b1e3148822cb64e0c38001a3af4a4e50ac07213d1832cbe8",
+    "size_bytes": 990097408,
+    "el_torito_uefi_lba": 100,
+    "hybrid_efi_start_sector": 400,
+    "sector_size": 512,
+    "operator_handoff": "NOT AUTHORIZED; evidence only, no physical test or release approval"
+  },
+  "artifact": {
+    "id": 13716513159,
+    "name": "blackcat-m15-development-evidence-42711645617",
+    "size_bytes": 136492942,
+    "zip_sha256": "8d1528afccd8da977120bd04ca0871efcf2d3b0d59e2147c32ee275d16092ea5",
+    "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42711645617/artifacts/13716513159",
+    "acceptance_subdirectory": "m15/",
+    "diagnostic_subdirectory": "m15-iso-diagnostic/ is prior-image diagnostic evidence only",
+    "expires_at_utc": "2026-11-16T22:38:36Z",
+    "retention_days": 7
+  },
+  "builder_copy": "/home/github-runner/blackcat-builds/m15/run-42711645617-attempt-1/",
+  "exact_commands": "commands.jsonl (22 actual command invocations; private key paths were ephemeral tmpfs paths, not retained key material)",
+  "evidence_limits": [
+    "Fresh work tree, no reused live inputs for the accepted normal pipeline; retained-image diagnostic is separate.",
+    "The inner privileged provenance reports github_run_id=unknown because sudo removed that environment variable. Raw provenance is preserved unchanged; outer run/job/source identity is confirmed through GitHub API/log/artifact metadata.",
+    "No claim of bit-for-bit rebuild identity: fresh random development keys, timestamps and moving Debian repositories can change bytes.",
+    "Binary artifact retention is finite. Repository preserves public key/certificate/results/commands; archive the binary bundle before expiry or deleting its builder copy.",
+    "The large ESP causes xorriso to encode zero in the legacy El Torito load-size field. Firmware boot compatibility and enforcement remain NOT VERIFIED.",
+    "Signed kernel/initrd/metadata do not authenticate the root squashfs. M17 root-hash binding is NOT IMPLEMENTED.",
+    "Legacy BIOS is outside the signed-UKI guarantee; no physical or UEFI runtime boot test is claimed.",
+    "No production keys or firmware enrollment were used. No TPM ownership/PCR-policy change or target-device write command was introduced by this work. Source/command evidence is not forensic attestation of an uncompromised builder.",
+    "No approved Black Cat ISO exists. Main merge, production authority and physical/platform changes retain HUMAN_GATE.",
+    "Cloud proxy CONNECT 403 prevented live-page inspection; live display remains UNKNOWN."
+  ],
+  "previous_attempts": [
+    {
+      "run": 42699169946,
+      "result": "success",
+      "scope": "Toolchain restore/probe only"
+    },
+    {
+      "run": 42700951403,
+      "result": "failure",
+      "cause": "Hard-link aliases mistaken for distinct live inputs; before keys"
+    },
+    {
+      "run": 42702518668,
+      "result": "failure",
+      "cause": "ukify inspect option order"
+    },
+    {
+      "run": 42704330214,
+      "result": "failure",
+      "cause": "Retained-input diagnostic caught same option order"
+    },
+    {
+      "run": 42706245365,
+      "result": "failure",
+      "cause": "Strict verifier rejected missing Black Cat SBAT row"
+    },
+    {
+      "run": 42706847403,
+      "result": "failure",
+      "cause": "Real signature/tests passed, root-owned report directory blocked post-ISO verifier"
+    },
+    {
+      "run": 42708392120,
+      "result": "failure",
+      "cause": "Same report-directory ownership boundary in older queued source"
+    },
+    {
+      "run": 42709997738,
+      "result": "failure",
+      "cause": "Real-ISO diagnostic could not locate installed sfdisk under reduced service PATH"
+    },
+    {
+      "run": 42707673265,
+      "result": "cancelled while pending",
+      "scope": "No execution; superseded by newer pending source"
+    },
+    {
+      "run": 42709641592,
+      "result": "cancelled while pending",
+      "scope": "No execution; superseded by newer pending source"
+    }
+  ],
+  "public_source_files": {
+    "provenance.json": "7408bb8a9153a8d5b3f327d3327c472ad003082211ca4254eac53c7888a66d60",
+    "tests.json": "580dd2c01ee5e4d8d898f2e0564a0f2b437e4d2622f3b441eb3968ccd5b2d931",
+    "iso-verification.json": "2075428a54423e865434b098978298fc658d49f471c703ba9e36cb888ec53df1",
+    "commands.jsonl": "9058fe6f5b705d3216a0324c6937e64e51a3eba2e3ec83069d059985c054e122",
+    "development-cert.pem": "b220b453f9e102a383222eb3b8b7b2154b8984d65375f5068581ffbbfb6da848",
+    "development-public-key.pem": "f850450251a9bb741e46da581472f1d8d82c1a8f70539797b7f0730d14c31efe"
+  }
+}

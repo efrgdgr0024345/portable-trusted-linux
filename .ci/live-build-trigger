@@ -1,0 +1,3 @@
+attempt=2
+reason=retry after removing host systemd-boot integration package
+first-live-build 2026-09-11

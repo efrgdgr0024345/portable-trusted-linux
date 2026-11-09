@@ -1,0 +1,38 @@
+{
+  "name": "PTL Runner Recovery",
+  "on": {
+    "push": {
+      "branches": [
+        "ops/runner-recovery-20261110"
+      ],
+      "paths": [
+        ".github/workflows/runner-recovery.yml",
+        "tests/test_runner_recovery_policy.py"
+      ]
+    },
+    "workflow_dispatch": {}
+  },
+  "permissions": {
+    "contents": "read"
+  },
+  "concurrency": {
+    "group": "ptl-runner-recovery",
+    "cancel-in-progress": false
+  },
+  "jobs": {
+    "recovery": {
+      "if": "${{ github.repository == 'efrgdgr0024345/portable-trusted-linux' && github.ref == 'refs/heads/ops/runner-recovery-20261110' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}",
+      "runs-on": [
+        "ptl-trusted-20261110"
+      ],
+      "timeout-minutes": 5,
+      "steps": [
+        {
+          "name": "Verify host, execution account and administrative access",
+          "shell": "bash",
+          "run": "set -Eeuo pipefail\nprintf 'HOSTNAME=%s\\nUSER=%s\\nUID=%s\\nARCH=%s\\n' \"$(hostname)\" \"$(id -un)\" \"$(id -u)\" \"$(uname -m)\"\ntest \"$(hostname)\" = ptl-builder-01\ntest \"$(id -un)\" = github-runner\ntest \"$(id -u)\" -ne 0\ntest \"$(uname -m)\" = x86_64\ntest \"$(sudo -n /usr/bin/id -u)\" = 0\ncat /etc/os-release\ndf -h /\nprintf 'RUNNER_RECOVERY=VERIFIED_FOR_THIS_RUN\\n'\n"
+        }
+      ]
+    }
+  }
+}

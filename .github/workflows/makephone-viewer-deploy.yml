@@ -1,0 +1,56 @@
+name: Makephone Viewer Deployment
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/makephone-viewer-deploy.yml'
+      - 'ops/makephone-viewer/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: makephone-viewer-deployment
+  cancel-in-progress: false
+jobs:
+  inspect:
+    # Legacy entry point retired: use trusted main M15 workflow.
+    if: ${{ false }}
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 3
+    steps:
+      - name: Check server process and network after earlier workflow completed
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          test "$(hostname)" = ptl-builder-01
+          DEST="$HOME/makephone-viewer"
+          printf 'HOST=%s USER=%s\n' "$(hostname)" "$(id -un)"
+          echo '--- listeners ---'
+          ss -lnt
+          echo '--- preview pid ---'
+          if [ -f "$DEST/server.pid" ]; then
+            PID="$(cat "$DEST/server.pid")"
+            if [[ "$PID" =~ ^[0-9]+$ ]]; then ps -p "$PID" -o pid,ppid,comm,etime || true; fi
+          fi
+          echo '--- preview log ---'
+          tail -15 "$DEST/server.log" || true
+          echo '--- localhost service ---'
+          curl -fsS --max-time 5 http://127.0.0.1:8080/makephone/health.json || true
+          echo
+          echo '--- own public interface service ---'
+          curl -fsS --max-time 5 http://170.64.224.131:8080/makephone/health.json || true
+          echo
+          echo '--- user system service availability ---'
+          systemctl --user is-system-running || true
+          echo '--- configured administrative permissions, no changes ---'
+          sudo -n -l || true
+  external-check:
+    if: github.repository == 'efrgdgr0024345/portable-trusted-linux' && github.actor == 'efrgdgr0024345' && github.head_ref == 'ops/makephone-viewer-20260920'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Verify the droplet preview from an independent hosted runner
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          curl --fail --show-error --connect-timeout 8 --max-time 15 --retry 1 http://170.64.224.131:8080/makephone/health.json

@@ -142,6 +142,88 @@ This file records durable project decisions. Changes should be made by new commi
 **Status:** Accepted / Transitional  
 **Decision:** During Prototype 1 engineering, GitHub Actions is the primary auditable command path into the disposable remote builder. The runner initially operates as the unprivileged `github-runner` account. Any later elevation needed for package installation or live-image build operations must be explicit, bounded and recorded under the progressive-hardening rule rather than silently granting permanent root-equivalent workflow access.
 
+## ADR-029 — Black Cat is the user-facing brand; PTL identifiers remain stable
+
+**Status:** Accepted  
+**Decision:** The project/product is presented to users as **Black Cat**. Existing repository names, `PTL_` environment variables, workflow names and evidence identifiers remain unchanged unless there is a later engineering reason to migrate them. Branding must not silently alter protocol meaning, trust claims or evidence semantics.
+
+## ADR-030 — Real-hardware diagnostics must support a no-typing boot path
+
+**Status:** Accepted  
+**Decision:** Real-hardware testing should not depend on operators transcribing long shell commands. The live image provides a dedicated **Black Cat - System Check** boot-menu entry that passes a simple kernel flag and automatically launches a modular diagnostic. Its initial output is classified as OBSERVED unless independently verified; it must not collapse observations into a universal safety claim.
+
+## ADR-031 — Test-candidate distribution is separate from approved-release distribution
+
+**Status:** Accepted / Transitional  
+**Decision:** The living project viewer may expose one explicitly frozen **Current Test Candidate** from the private GitHub repository so the operator can retrieve the exact ISO selected for physical testing. A candidate link must identify the workflow run/artifact, ISO filename, exact byte size, ISO SHA-256, source commit and automated smoke-test state, and it must be labelled **TEST CANDIDATE — NOT AN APPROVED RELEASE**. The separate **Approved Black Cat ISO** gate remains disabled until explicit release promotion requirements are met. GitHub Actions artifact links are temporary development distribution and may require the repository owner to be logged in; a later approved release uses the release channel and future signing controls rather than treating a CI artifact as release authenticity.
+
+## ADR-032 — Highest-security automation uses an event-driven deterministic controller
+
+**Status:** Superseded by ADR-035 before deployment  
+**Decision:** This proposal selected a cPanel-hosted event controller driven by authenticated GitHub webhooks, with deterministic state transitions and a reconciliation watchdog. It was intentionally stopped before deployment after review concluded that a new public listener was not justified merely to reduce operator polling. No webhook/controller service was deployed.
+
+## ADR-033 — AI is a bounded reasoning worker, not automation authority
+
+**Status:** Accepted as a future constraint; no API integration currently approved  
+**Decision:** If an API-based reasoning worker is ever introduced after separate security review, the model is not the scheduler, release authority, trust authority or holder of unrestricted infrastructure credentials. It may never write directly to `main`, promote a release, perform physical/destructive operations, change firmware/TPM ownership, or receive raw secret values. No OpenAI API credential is part of the current automation baseline.
+
+## ADR-034 — Controller webhook authentication and replay controls fail closed
+
+**Status:** Superseded by ADR-035 before deployment  
+**Decision:** These controls remain technically valid requirements if a webhook design is reconsidered, but there is no current webhook endpoint. Avoiding the listener entirely is preferred while existing GitHub Actions and outbound-only mechanisms are sufficient.
+
+## ADR-035 — Automation must not add externally reachable attack surface for convenience
+
+**Status:** Accepted  
+**Decision:** Black Cat must not create a new inbound-facing service merely to reduce human friction. Existing GitHub Actions remain the default automation infrastructure. If unattended reconciliation becomes necessary, prefer an outbound-only scheduled watchdog outside `public_html` that queries exact GitHub commit/run/artifact state. Any future public listener, writable endpoint, OpenAI API integration, new credential, or privileged service requires a separate security justification showing that its benefit outweighs the attack surface it introduces. Browser automation of an authenticated consumer ChatGPT session is rejected.
+
+The existing deterministic `controller/state-machine.json` may remain as a non-networked conceptual state model; retaining state vocabulary does not authorize deployment of a controller service.
+
+## ADR-036 — Living viewer is canonical, fail-closed and candidate-preserving
+
+**Status:** Accepted  
+**Decision:** The production `project.php` must be deployed from the canonical repository copy, use only `/home/learning/.blackcat/github_token`, never silently fall back to an offline authoritative cache, and render the Current Test Candidate from `project_content.json` only when all exact identity fields pass validation. While an unmerged development branch contains the authoritative candidate state, the viewer may temporarily read that explicit branch; after merge it returns to `main`. Static checks guard the credential model, fail-closed behavior and candidate panel so routine viewer changes cannot silently remove the ISO download path.
+
+## ADR-037 — Root AI autonomy policy is the operational continue/stop authority
+
+**Status:** Accepted  
+**Decision:** `AI_AUTONOMY_POLICY.md` at the repository root is the canonical operational decision table used by AI-assisted project work to classify actions as `AUTO`, `AUTO_WITH_CHECKS`, `HUMAN_GATE`, or `FORBIDDEN_BY_DEFAULT`. `PROJECT_RULES.md` remains the master policy and `docs/11-automation-manifesto.md` remains the explanatory rationale. Routine branch-local engineering, safe CI inspection/retry, bounded defect fixes, documentation and candidate preparation proceed automatically. Merging to `main`, approved-release promotion, physical/destructive actions, trust-ownership changes, new credentials/permissions, new externally reachable services, financial/legal/public commitments and material security-policy choices remain human gates unless a later explicit repository decision delegates them. A missing tool is recorded as a capability boundary rather than misrepresented as a need for policy approval.
+
+## ADR-038 — AI continuity uses a compact repository checkpoint, selective reload and empirical context health
+
+**Status:** Accepted  
+**Decision:** Chat history is not the durable state authority for long-running AI-assisted engineering. `AI_WORK_STATE.md` at the repository root is the compact first-read checkpoint for fresh sessions and continuity recovery. Ordinary continuing turns do not bulk-reload the repository. Recovery reads the compact checkpoint first, verifies only volatile branch/CI/artifact facts needed for the next action, and then loads technical/policy/history documents selectively. Context pressure is represented only as a GREEN/AMBER/RED heuristic based on observable proxies; no exact hidden context-window percentage may be fabricated. AMBER/RED checkpoint maintenance is automatic work rather than a human gate. Real dropout/continuity events and heuristic changes are preserved in `docs/14-context-health-calibration-log.md`, while the reusable implementation pattern is documented in `docs/13-ai-continuity-and-context-recovery.md` so other projects can reproduce the approach.
+
+## ADR-039 — Black Cat will later expose repository-governed AI project automation as a user-space subsystem
+
+**Status:** Accepted / Future after core prototype  
+**Decision:** After the first usable core Black Cat prototype is complete, the project may implement the autonomy/continuity workflow as a native user-space project subsystem. The planned subsystem uses repository policy and compact work-state files as durable state, a model-neutral AI worker for bounded reasoning, and an operating-system capability broker that independently enforces filesystem/Git/test/network/privilege boundaries. The AI process does not receive unrestricted root authority. Local-first deterministic operation and local models are preferred where practical; remote providers remain optional capabilities. Background continuation uses user-level services/timers or outbound-only checks rather than a new public listener. Human gates remain explicit for destructive/physical operations, new credentials/permissions, trust ownership, protected merges/releases and material policy changes. The implementation plan is documented in `docs/15-black-cat-ai-project-automation.md` and is scheduled after M25 so it cannot distract from completing the current secure-boot/TPM/dm-verity/verifier roadmap.
+
+## ADR-040 — The future AI project subsystem has a portable template and fail-closed machine policy contract
+
+**Status:** Accepted / Design scaffold implemented; runtime enforcement future  
+**Decision:** The repository now carries a provider-neutral project seed under `templates/ai-project/` plus `schema/ai-project-policy.schema.json`. The template separates human-readable master/autonomy rules from a machine-readable `project-policy.json` intended for future capability-broker validation. The sample machine policy defaults to `HUMAN_GATE`, network disabled, no inbound listeners, no root, no raw block devices and no credentials. Project/untrusted content cannot grant new authority, and audit state records concise actions/evidence rather than private model chain-of-thought. These files are design scaffolding only: their presence grants no new runtime privilege in the current prototype. M26 implementation must make the operating-system broker validate policy independently of whichever model is connected and must fail closed on policy/schema mismatch.
+
+## ADR-041 — M14 release authenticity uses canonical Ed25519-signed metadata and separate key authority
+
+**Status:** Accepted / Non-secret implementation underway  
+**Decision:** Black Cat release authenticity is established by signing exact canonical release-manifest bytes with an Ed25519 release-signing identity that is distinct from the later Secure Boot/UKI signing identity. The canonical manifest binds the release ID, UTC creation time, exact artifact filename, byte size and SHA-256, source commit/ref, build-run identity, signing algorithm and SHA-256 fingerprint of the trusted DER-encoded release public key. Verification fails closed on non-canonical manifest bytes, key-fingerprint mismatch, invalid signature, artifact filename/size/hash mismatch, manifest tampering or wrong-key use. Development CI may generate ephemeral Ed25519 keys solely to test the mechanics; those keys are never release trust roots. The production release private-key ownership/custody model remains a HUMAN_GATE and must not be silently delegated to the general-purpose builder or GitHub repository for convenience. The implementation and trust boundary are documented in `docs/16-authenticated-release-signing.md`.
+
+## ADR-042 — Non-essential software is modular and AI builds occur outside the trusted core
+
+**Status:** Accepted / Future after core prototype  
+**Decision:** Black Cat should keep the trusted core deliberately small and immutable. Non-essential applications are to be delivered as pre-built, ready-to-run modules stored outside the core and activated only when selected for the current session. Unselected modules should not be exposed in the normal session namespace where practical. Module selection is coupled to explicit least-privilege capability grants enforced by the operating system rather than by the application or model.
+
+Natural-language tool creation may be offered through a Black Cat AI interface, but heavy/generated software construction should preferably occur in a separate disposable and explicitly untrusted workshop environment such as a VPS/VM. The workshop may design, compile and test software but does not receive trusted-core write authority, raw target-disk authority, user secrets by default, or Black Cat production release/Secure Boot signing keys. Anything returned by the workshop is treated as potentially malicious and must pass independent structural/digest/signature/capability verification before activation. Official, local-user and unverified-candidate modules remain distinct trust classes.
+
+A pre-desktop AI interface may run only after a minimal authenticated Black Cat environment and its capability broker are active; this does not authorize firmware/pre-kernel LLM execution. The detailed design and mandatory negative-test direction are documented in `docs/18-modular-runtime-and-ai-workshop.md`.
+
+---
+
+# Preserved parallel main-branch history
+
+The following entries were developed on main through e12b48fa15c586399c4a809e84114dadfa60283e. Historical identifiers in this section retain their original main-branch scope; dates do not imply evidence for the graphical candidate.
+
 ## ADR-029 — Black Cat Console is the first application-layer prototype of Black Cat Core
 
 **Status:** Accepted / Prototype  
@@ -181,3 +263,27 @@ This file records durable project decisions. Changes should be made by new commi
 
 **Status:** Accepted / Prototype  
 **Decision:** The first automated project tracker enforces one current milestone, one next action and at most one active blocker per project. New ideas are written to backlog and may not silently change active focus. Marking work complete records the event and deliberately leaves the next action needing an explicit choice rather than automatically promoting a backlog item. AI may advise on focus later, but it must not rewrite the active plan without user approval.
+
+
+
+## ADR-2026-09-16-EVIDENCE — Track capabilities against exact evidence
+
+**Status:** Accepted by the user's instruction to proceed with the high-level review.
+
+Replace a single project completion percentage with separately scoped capability stages: designed, implemented, tested and physically observed. Record source SHA, artifact SHA/size, run and test environment. Preserve unknowns. Building, publishing, booting and authenticating an image are separate outcomes. Keep a single active graphical verification milestone while preserving the signing/security roadmap and Console backlog.
+
+## ADR-2026-09-16-DESIGN — Use the supplied graphical design folder
+
+**Status:** User selected on 16 September 2026.
+
+`design/README.md` binds the repository to the folder **Graphical design for black cat project**, now under **linux usb project**. The source inventory preserves stable identities and hashes for all 18 files. The exact original cat and brand notes are copied into the repository. “Stealth. Intelligence. Independence.” controls new copy; “Freedom” embedded in the historical welcome image is not silently promoted to canonical wording. Keep the current ISO fixed while testing; later artwork changes produce a different build.
+
+## ADR-2026-09-17-LIVE-CANDIDATE — Use a stable, fail-closed operator handoff
+
+**Status:** Accepted by the operator on 17 September 2026.
+
+**Decision:** `https://easyai.com.au/USB/project.php` is the single operator-facing authority for the current physical-test candidate. The viewer reads candidate metadata from the stable `project-status-live` branch rather than a temporary development branch or an unmerged `main` record. Publication is not complete until the live page is fetched and its filename, byte size, SHA-256, source commit, build run, artifact ID and URL match the evidence record. Any mismatch fails closed; chat-only replacement links are prohibited. This status mechanism does not authorize a USB write, merge development code, or promote an approved release.
+
+## ADR-2026-09-17-JSON-PUBLICATION — Supersede branch migration for recovery
+
+The user requires routine ISO publication through JSON without PHP replacement. The project-status-live migration portion of ADR-2026-09-17-LIVE-CANDIDATE is superseded by docs/21-json-only-candidate-publication-plan.md. Preserve the fail-closed live verification requirement. Publish to the existing viewer source with its compatible schema; any successor-model deviation requires explicit human sign-off. Implementation remains pending.

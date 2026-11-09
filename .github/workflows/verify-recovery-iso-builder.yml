@@ -1,0 +1,66 @@
+name: Verify Ubuntu recovery ISO on PTL builder
+
+on:
+  push:
+    branches: [recovery-verify-ubuntu-26041]
+    paths:
+      - '.github/workflows/verify-recovery-iso-builder.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-on-builder:
+    # Legacy entry point retired: use trusted main M15 workflow.
+    if: ${{ false }}
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 45
+    steps:
+      - name: Identify builder
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "HOSTNAME=$(hostname)"
+          echo "USER=$(id -un)"
+          echo "ARCH=$(uname -m)"
+          echo "KERNEL=$(uname -sr)"
+      - name: Independently verify Ubuntu image
+        shell: bash
+        run: |
+          set -euo pipefail
+          RELEASE="26.04"
+          ISO="ubuntu-26.04.1-desktop-amd64.iso"
+          BASE="https://releases.ubuntu.com/${RELEASE}"
+          EXPECTED_CDIMAGE_FPR="843938DF228D22F7B3742BC0D94AA3F0EFE21092"
+          WORK="${RUNNER_TEMP}/ubuntu-recovery-verify"
+          rm -rf "$WORK"
+          mkdir -p "$WORK"
+          cd "$WORK"
+
+          curl --fail --location --proto '=https' --tlsv1.2 -o ubuntu-archive-keyring.gpg             "https://archive.ubuntu.com/ubuntu/project/ubuntu-archive-keyring.gpg"
+          curl --fail --location --proto '=https' --tlsv1.2 -O "${BASE}/SHA256SUMS"
+          curl --fail --location --proto '=https' --tlsv1.2 -O "${BASE}/SHA256SUMS.gpg"
+
+          ACTUAL_FPRS="$(gpg --batch --no-default-keyring --keyring ./ubuntu-archive-keyring.gpg --with-colons --fingerprint 2>/dev/null | awk -F: '$1=="fpr"{print $10}')"
+          printf '%s\n' "$ACTUAL_FPRS"
+          grep -qx "$EXPECTED_CDIMAGE_FPR" <<<"$ACTUAL_FPRS"
+
+          gpgv --keyring ./ubuntu-archive-keyring.gpg ./SHA256SUMS.gpg ./SHA256SUMS
+
+          EXPECTED_LINE="$(grep -F " $ISO" SHA256SUMS || true)"
+          if [ -z "$EXPECTED_LINE" ]; then
+            EXPECTED_LINE="$(grep -F "*$ISO" SHA256SUMS || true)"
+          fi
+          test -n "$EXPECTED_LINE"
+          echo "$EXPECTED_LINE"
+          EXPECTED_SHA="$(awk '{print $1}' <<<"$EXPECTED_LINE")"
+
+          curl --fail --location --proto '=https' --tlsv1.2 --retry 3 --retry-delay 5             -o "$ISO" "${BASE}/${ISO}"
+          ACTUAL_SHA="$(sha256sum "$ISO" | awk '{print $1}')"
+          echo "$ACTUAL_SHA  $ISO"
+          test "$ACTUAL_SHA" = "$EXPECTED_SHA"
+          stat -c '%s bytes %n' "$ISO"
+          echo "PASS"
+          echo "sha256=${ACTUAL_SHA}"
+          echo "ubuntu_cdimage_key_fingerprint=${EXPECTED_CDIMAGE_FPR}"

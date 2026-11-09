@@ -1,0 +1,25 @@
+name: Black Cat Session UI Static Test
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'config/packages.list'
+      - 'config/live-build/includes.chroot/usr/local/bin/blackcat-session-ui'
+      - 'config/live-build/includes.chroot/etc/xdg/autostart/blackcat-session-ui.desktop'
+      - 'config/live-build/includes.chroot/etc/systemd/system/lightdm.service.d/blackcat-mode.conf'
+      - 'tests/02-session-ui-check.sh'
+      - '.github/workflows/session-ui-self-test.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ui-static:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Check UI code and fail-closed labels
+        run: bash tests/02-session-ui-check.sh

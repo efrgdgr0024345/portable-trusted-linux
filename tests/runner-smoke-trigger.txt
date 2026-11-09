@@ -1,0 +1,2 @@
+Portable Trusted Linux self-hosted runner smoke-test trigger.
+This file exists only to create an auditable pull-request event for the first real-builder evidence workflow.

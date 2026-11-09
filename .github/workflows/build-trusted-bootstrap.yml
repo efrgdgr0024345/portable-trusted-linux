@@ -1,0 +1,329 @@
+name: Build trusted RAM recovery bootstrap
+
+on:
+  push:
+    branches: [recovery-verify-ubuntu-26041]
+    paths:
+      - '.github/workflows/build-trusted-bootstrap.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+
+    steps:
+      - name: Install build tools
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            debootstrap systemd-ukify systemd-boot-efi shim-signed \
+            sbsigntool openssl dosfstools parted cpio zstd
+
+      - name: Build RAM-root recovery system
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ROOT="$RUNNER_TEMP/rootfs"
+          OUT="$RUNNER_TEMP/out"
+          mkdir -p "$ROOT" "$OUT"
+
+          sudo debootstrap --variant=minbase noble "$ROOT" http://archive.ubuntu.com/ubuntu/
+
+          sudo chroot "$ROOT" /bin/bash -c '
+            set -Eeuo pipefail
+            export DEBIAN_FRONTEND=noninteractive
+            apt-get update
+            apt-get install -y --no-install-recommends \
+              systemd-sysv network-manager wpasupplicant wireless-regdb rfkill \
+              ca-certificates curl gnupg gpgv ubuntu-keyring \
+              util-linux coreutils iproute2 iputils-ping kmod bash \
+              linux-image-generic linux-firmware
+            apt-get clean
+            rm -rf /var/lib/apt/lists/* /usr/share/doc/* /usr/share/man/* /usr/share/locale/*
+          '
+
+          sudo find "$ROOT/lib/firmware" -type f \
+            ! -iname 'iwlwifi*' \
+            ! -ipath '*intel*' \
+            ! -ipath '*rtl*' \
+            ! -ipath '*rtw*' \
+            ! -ipath '*realtek*' \
+            ! -ipath '*ath*' \
+            ! -iname 'regulatory.db*' \
+            -delete || true
+
+          sudo ln -sf /lib/systemd/systemd "$ROOT/init"
+          sudo mkdir -p "$ROOT/usr/local/sbin" "$ROOT/etc/systemd/system"
+
+          sudo tee "$ROOT/usr/local/sbin/blackcat-recovery-bootstrap" >/dev/null <<'SCRIPT'
+          #!/bin/bash
+          set -Eeuo pipefail
+          exec </dev/console >/dev/console 2>&1
+          EXPECTED_ISO="ubuntu-26.04.1-desktop-amd64.iso"
+          EXPECTED_SIZE="6482409472"
+          EXPECTED_SHA="601e30fbf5d97759367c632e2c33630665039b7e2158fd068403da3ccf1bda1f"
+          EXPECTED_FPR="843938DF228D22F7B3742BC0D94AA3F0EFE21092"
+          BASE="https://releases.ubuntu.com/26.04"
+          KEYRING="/usr/share/keyrings/ubuntu-archive-keyring.gpg"
+
+          fail() {
+            echo
+            echo "============================================================"
+            echo " RECOVERY BOOTSTRAP: FAIL"
+            echo " $*"
+            echo " Nothing has been written to the USB."
+            echo "============================================================"
+            while true; do sleep 3600; done
+          }
+
+          echo
+          echo "============================================================"
+          echo " BLACK CAT TRUSTED RECOVERY BOOTSTRAP"
+          echo " Running from signed RAM image; Windows is not running."
+          echo " Target Ubuntu SHA256:"
+          echo " $EXPECTED_SHA"
+          echo "============================================================"
+
+          PART="$(blkid -L BCBOOT 2>/dev/null || true)"
+          [ -n "$PART" ] || fail "Cannot identify bootstrap USB label BCBOOT."
+          PK="$(lsblk -no PKNAME "$PART" 2>/dev/null | head -n1)"
+          [ -n "$PK" ] || fail "Cannot identify parent USB device."
+          TARGET="/dev/$PK"
+          TRAN="$(lsblk -dn -o TRAN "$TARGET" 2>/dev/null | tr -d ' ')"
+          BYTES="$(blockdev --getsize64 "$TARGET")"
+          [ "$TRAN" = "usb" ] || fail "Boot media is not reported as USB ($TARGET, transport=$TRAN)."
+          [ "$BYTES" -ge 8000000000 ] || fail "USB is smaller than 8 GB."
+          [ "$BYTES" -le 70000000000 ] || fail "USB is unexpectedly large; refusing."
+
+          echo
+          echo "Protected disks:"
+          lsblk -dn -o NAME,SIZE,MODEL,TRAN | grep -v "^$PK " || true
+          echo
+          echo "Bootstrap USB target:"
+          lsblk -dn -o NAME,SIZE,MODEL,TRAN "$TARGET"
+
+          FPRS="$(gpg --batch --no-default-keyring --keyring "$KEYRING" --with-colons --fingerprint 2>/dev/null | awk -F: '$1=="fpr"{print $10}')"
+          grep -qx "$EXPECTED_FPR" <<<"$FPRS" || fail "Canonical CD signing fingerprint is absent from the signed RAM image keyring."
+
+          systemctl start NetworkManager.service || true
+          echo
+          echo "Checking for network..."
+          online=0
+          for i in $(seq 1 20); do
+            if curl -fsSI --connect-timeout 3 "$BASE/SHA256SUMS" >/dev/null 2>&1; then
+              online=1
+              break
+            fi
+            sleep 1
+          done
+
+          if [ "$online" -ne 1 ]; then
+            echo
+            echo "No working wired connection found."
+            echo "Available Wi-Fi networks:"
+            nmcli radio wifi on || true
+            nmcli device wifi rescan || true
+            nmcli -f SSID,SIGNAL,SECURITY device wifi list || true
+            echo
+            read -r -p "Wi-Fi SSID: " WIFI_SSID
+            read -r -s -p "Wi-Fi password (leave blank if open): " WIFI_PASS
+            echo
+            if [ -n "$WIFI_PASS" ]; then
+              nmcli device wifi connect "$WIFI_SSID" password "$WIFI_PASS" || fail "Wi-Fi connection failed."
+            else
+              nmcli device wifi connect "$WIFI_SSID" || fail "Wi-Fi connection failed."
+            fi
+          fi
+
+          WORK="/recovery"
+          mkdir -p "$WORK"
+          AVAIL_KB="$(awk '/MemAvailable:/{print $2}' /proc/meminfo)"
+          [ "$AVAIL_KB" -ge 8500000 ] || fail "Less than 8.5 GB RAM is available for the verified ISO."
+
+          echo
+          echo "[1/6] Downloading Canonical signed checksum manifest..."
+          curl --fail --location --proto '=https' --tlsv1.2 -o "$WORK/SHA256SUMS" "$BASE/SHA256SUMS" || fail "Checksum download failed."
+          curl --fail --location --proto '=https' --tlsv1.2 -o "$WORK/SHA256SUMS.gpg" "$BASE/SHA256SUMS.gpg" || fail "Checksum signature download failed."
+
+          echo "[2/6] Authenticating Canonical signature..."
+          gpgv --keyring "$KEYRING" "$WORK/SHA256SUMS.gpg" "$WORK/SHA256SUMS" || fail "Canonical signature verification failed."
+          LINE="$(grep -F "*$EXPECTED_ISO" "$WORK/SHA256SUMS" || true)"
+          [ -n "$LINE" ] || fail "Expected ISO is absent from signed manifest."
+          MANIFEST_SHA="$(awk '{print $1}' <<<"$LINE")"
+          [ "$MANIFEST_SHA" = "$EXPECTED_SHA" ] || fail "Signed manifest disagrees with independently established SHA256."
+
+          echo "[3/6] Downloading verified Ubuntu ISO into RAM..."
+          curl --fail --location --proto '=https' --tlsv1.2 --retry 3 --retry-delay 5 \
+            -o "$WORK/$EXPECTED_ISO" "$BASE/$EXPECTED_ISO" || fail "ISO download failed."
+          ACTUAL_SIZE="$(stat -c %s "$WORK/$EXPECTED_ISO")"
+          [ "$ACTUAL_SIZE" = "$EXPECTED_SIZE" ] || fail "Downloaded ISO size mismatch."
+
+          echo "[4/6] Hashing downloaded ISO..."
+          ACTUAL_SHA="$(sha256sum "$WORK/$EXPECTED_ISO" | awk '{print $1}')"
+          [ "$ACTUAL_SHA" = "$EXPECTED_SHA" ] || fail "Downloaded ISO SHA256 mismatch."
+
+          echo
+          echo "REMOTE AUTHENTICATION: PASS"
+          echo "DOWNLOAD SHA256:       PASS"
+          echo
+          echo "About to overwrite ONLY this USB:"
+          lsblk -dn -o NAME,SIZE,MODEL,TRAN "$TARGET"
+          echo
+          echo "Internal disks are not selected."
+          read -r -p "Type ERASE to create the verified Ubuntu USB: " CONFIRM
+          [ "$CONFIRM" = "ERASE" ] || fail "User cancelled before write."
+
+          echo "[5/6] Writing verified ISO to USB..."
+          for M in $(lsblk -ln -o MOUNTPOINT "$TARGET" | sed '/^$/d'); do umount "$M" || fail "Could not unmount $M"; done
+          dd if="$WORK/$EXPECTED_ISO" of="$TARGET" bs=16M status=progress conv=fsync || fail "USB write failed."
+          sync
+          blockdev --flushbufs "$TARGET" || true
+
+          echo "[6/6] Reading physical USB back and hashing exact ISO byte length..."
+          READBACK_SHA="$(head -c "$EXPECTED_SIZE" "$TARGET" | sha256sum | awk '{print $1}')"
+          [ "$READBACK_SHA" = "$EXPECTED_SHA" ] || fail "Physical USB read-back SHA256 mismatch."
+
+          echo
+          echo "============================================================"
+          echo " CANONICAL SIGNATURE       PASS"
+          echo " DOWNLOADED ISO HASH       PASS"
+          echo " USB WRITE                 PASS"
+          echo " USB READ-BACK HASH        PASS"
+          echo
+          echo " RECOVERY USB READY"
+          echo " SHA256:"
+          echo " $READBACK_SHA"
+          echo
+          echo " Power the laptop OFF. Then boot this same USB again."
+          echo "============================================================"
+          while true; do sleep 3600; done
+          SCRIPT
+          sudo chmod 0755 "$ROOT/usr/local/sbin/blackcat-recovery-bootstrap"
+
+          sudo tee "$ROOT/etc/systemd/system/blackcat-recovery-bootstrap.service" >/dev/null <<'UNIT'
+          [Unit]
+          Description=Black Cat trusted recovery bootstrap
+          After=systemd-udev-settle.service NetworkManager.service
+          Wants=NetworkManager.service
+          Conflicts=getty@tty1.service
+
+          [Service]
+          Type=simple
+          ExecStart=/usr/local/sbin/blackcat-recovery-bootstrap
+          StandardInput=tty
+          StandardOutput=journal+console
+          StandardError=journal+console
+          TTYPath=/dev/console
+          TTYReset=yes
+          TTYVHangup=yes
+
+          [Install]
+          WantedBy=multi-user.target
+          UNIT
+
+          sudo systemctl --root="$ROOT" enable NetworkManager.service
+          sudo systemctl --root="$ROOT" enable blackcat-recovery-bootstrap.service
+
+          KVER="$(ls "$ROOT/lib/modules" | sort -V | tail -n1)"
+          sudo cp "$ROOT/boot/vmlinuz-$KVER" "$OUT/vmlinuz"
+          sudo chown "$(id -u):$(id -g)" "$OUT/vmlinuz"
+          chmod 0644 "$OUT/vmlinuz"
+          VMLINUZ="$OUT/vmlinuz"
+          test -r "$VMLINUZ"
+
+          sudo rm -f "$ROOT/boot/initrd.img-"* "$ROOT/var/log/"* 2>/dev/null || true
+          sudo rm -rf "$ROOT/tmp/"* "$ROOT/var/tmp/"*
+          sudo truncate -s 0 "$ROOT/etc/machine-id"
+
+          echo "Packing RAM root..."
+          sudo bash -c "cd '$ROOT' && find . -xdev -print0 | cpio --null -o --format=newc" | zstd -19 -T0 -o "$OUT/initrd.zst"
+
+          cat >"$OUT/os-release" <<'EOF'
+          ID=blackcat-recovery-bootstrap
+          NAME="Black Cat Trusted Recovery Bootstrap"
+          VERSION="1"
+          EOF
+          echo "quiet loglevel=3 systemd.show_status=yes console=tty0" >"$OUT/cmdline"
+
+          echo "Generating one-time Secure Boot owner key..."
+          openssl req -new -x509 -newkey rsa:3072 -nodes \
+            -keyout "$OUT/bootstrap.key" -out "$OUT/bootstrap.crt" -days 30 \
+            -subj "/CN=Black Cat Recovery Bootstrap 2026-09-19/" \
+            -addext "extendedKeyUsage=codeSigning"
+          openssl x509 -in "$OUT/bootstrap.crt" -outform DER -out "$OUT/BLACKCAT-RECOVERY.der"
+
+          echo "Building and signing UKI..."
+          ukify build \
+            --linux="$VMLINUZ" \
+            --initrd="$OUT/initrd.zst" \
+            --cmdline=@"$OUT/cmdline" \
+            --os-release=@"$OUT/os-release" \
+            --secureboot-private-key="$OUT/bootstrap.key" \
+            --secureboot-certificate="$OUT/bootstrap.crt" \
+            --output="$OUT/grubx64.efi"
+
+          sbverify --cert "$OUT/bootstrap.crt" "$OUT/grubx64.efi"
+
+          SHIM="$(find /usr/lib/shim -maxdepth 1 -type f \( -name 'shimx64.efi.signed.latest' -o -name 'shimx64.efi.signed' \) | head -n1)"
+          MM="$(find /usr/lib/shim -maxdepth 1 -type f -name 'mmx64.efi*' | head -n1)"
+          test -s "$SHIM"
+          test -s "$MM"
+
+          IMG="$OUT/blackcat-trusted-bootstrap.img"
+          truncate -s 1073741824 "$IMG"
+          sudo parted -s "$IMG" mklabel gpt
+          sudo parted -s "$IMG" mkpart ESP fat32 1MiB 100%
+          sudo parted -s "$IMG" set 1 esp on
+          LOOP="$(sudo losetup --show -Pf "$IMG")"
+          trap 'sudo umount "$RUNNER_TEMP/mnt" 2>/dev/null || true; sudo losetup -d "$LOOP" 2>/dev/null || true' EXIT
+          sudo mkfs.vfat -F 32 -n BCBOOT "${LOOP}p1"
+          sudo mkdir -p "$RUNNER_TEMP/mnt"
+          sudo mount "${LOOP}p1" "$RUNNER_TEMP/mnt"
+          sudo mkdir -p "$RUNNER_TEMP/mnt/EFI/BOOT"
+          sudo cp "$SHIM" "$RUNNER_TEMP/mnt/EFI/BOOT/BOOTX64.EFI"
+          sudo cp "$MM" "$RUNNER_TEMP/mnt/EFI/BOOT/mmx64.efi"
+          sudo cp "$OUT/grubx64.efi" "$RUNNER_TEMP/mnt/EFI/BOOT/grubx64.efi"
+          sudo cp "$OUT/BLACKCAT-RECOVERY.der" "$RUNNER_TEMP/mnt/BLACKCAT-RECOVERY.der"
+          sync
+          sudo umount "$RUNNER_TEMP/mnt"
+          sudo losetup -d "$LOOP"
+          trap - EXIT
+
+          rm -f "$OUT/bootstrap.key"
+          CERT_SHA="$(sha256sum "$OUT/BLACKCAT-RECOVERY.der" | awk '{print $1}')"
+          CERT_FPR="$(openssl x509 -in "$OUT/bootstrap.crt" -noout -fingerprint -sha256 | cut -d= -f2)"
+          UKI_SHA="$(sha256sum "$OUT/grubx64.efi" | awk '{print $1}')"
+          IMG_SHA="$(sha256sum "$IMG" | awk '{print $1}')"
+
+          cat >"$OUT/VERIFICATION.txt" <<EOF
+          Black Cat Trusted Recovery Bootstrap
+          Build source: GitHub-hosted ubuntu-24.04 runner
+          Target ISO: ubuntu-26.04.1-desktop-amd64.iso
+          Target ISO size: 6482409472
+          Target ISO SHA256: 601e30fbf5d97759367c632e2c33630665039b7e2158fd068403da3ccf1bda1f
+          Canonical CD signing fingerprint: 843938DF228D22F7B3742BC0D94AA3F0EFE21092
+
+          OWNER CERT SHA256: $CERT_SHA
+          OWNER CERT X509 SHA256 FINGERPRINT: $CERT_FPR
+          SIGNED UKI SHA256: $UKI_SHA
+          BOOTSTRAP IMAGE SHA256: $IMG_SHA
+          EOF
+          cat "$OUT/VERIFICATION.txt"
+
+      - name: Upload bootstrap artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: blackcat-trusted-recovery-bootstrap
+          path: |
+            ${{ runner.temp }}/out/blackcat-trusted-bootstrap.img
+            ${{ runner.temp }}/out/BLACKCAT-RECOVERY.der
+            ${{ runner.temp }}/out/bootstrap.crt
+            ${{ runner.temp }}/out/VERIFICATION.txt
+          compression-level: 9
+          retention-days: 7

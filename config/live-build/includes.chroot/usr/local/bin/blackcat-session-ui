@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+"""Black Cat graphical session selector: UI prototype, NOT a module loader."""
+import os
+import tkinter as tk
+from tkinter import ttk
+
+# Deliberately no shell, root, mounting, network, device or policy operations.
+# These choices are previews only until authenticated module loading exists.
+MODULES = (
+    ("Web", "browser.png", "Browser", "Not packaged"),
+    ("Web", "network.png", "Network access", "Not controlled"),
+    ("Work", "office.png", "Office / PDF", "Not packaged"),
+    ("Work", "ai.png", "AI assistant", "Not connected"),
+    ("Work", "developer.png", "Developer tools", "Not packaged"),
+    ("Work", "security.png", "Security tools", "Not packaged"),
+)
+
+
+def main():
+    # Preserve the dedicated no-typing diagnostic boot path for physical tests.
+    try:
+        if "blackcat.check=1" in open("/proc/cmdline", encoding="utf-8").read().split():
+            return
+    except OSError:
+        pass
+
+    root = tk.Tk()
+    root.title("Black Cat — Session Preview")
+    root.configure(bg="#0c1110")
+    root.geometry("850x740")
+    root.minsize(560, 620)
+    style = ttk.Style(root)
+    style.theme_use("clam")
+    style.configure("Black.TCheckbutton", background="#15221c", foreground="#e4f7e8", font=("DejaVu Sans", 12))
+    style.map("Black.TCheckbutton", background=[("active", "#15221c")])
+
+    frame = tk.Frame(root, bg="#0c1110", padx=32, pady=22)
+    frame.pack(fill="both", expand=True)
+    tk.Label(frame, text="BLACK CAT", bg="#0c1110", fg="#83efaa", font=("DejaVu Sans", 28, "bold")).pack(anchor="w")
+    tk.Label(frame, text="Stealth. Intelligence. Independence.", bg="#0c1110", fg="#83efaa", font=("DejaVu Sans", 11)).pack(anchor="w", pady=(0, 3))
+    tk.Label(frame, text="Choose your session · UI DEVELOPMENT PREVIEW", bg="#0c1110", fg="#e0eae2", font=("DejaVu Sans", 14)).pack(anchor="w", pady=(5, 12))
+    tk.Label(frame, text="These checkboxes do not load or isolate software yet. No security state changes.", bg="#0c1110", fg="#ffda8b", wraplength=720, justify="left", font=("DejaVu Sans", 11)).pack(anchor="w", pady=(0, 13))
+
+    selected = {}
+    icon_images = []
+    icon_dir = "/usr/share/blackcat/icons"
+    for group in ("Web", "Work"):
+        box = tk.LabelFrame(frame, text=group.upper(), bg="#15221c", fg="#83efaa", font=("DejaVu Sans", 11, "bold"), padx=14, pady=8)
+        box.pack(fill="x", pady=5)
+        for category, icon_file, label, status in MODULES:
+            if category != group:
+                continue
+            row = tk.Frame(box, bg="#15221c")
+            row.pack(fill="x", pady=3)
+            state = tk.BooleanVar(value=False)
+            selected[label] = state
+            icon_path = os.path.join(icon_dir, icon_file)
+            options = {"text": "  " + label, "variable": state, "style": "Black.TCheckbutton"}
+            if os.path.isfile(icon_path):
+                icon_image = tk.PhotoImage(file=icon_path)
+                icon_images.append(icon_image)
+                options.update(image=icon_image, compound="left")
+            ttk.Checkbutton(row, **options).pack(side="left")
+            tk.Label(row, text=status, bg="#15221c", fg="#b5c1bb", font=("DejaVu Sans", 10)).pack(side="right")
+
+    summary = tk.StringVar(value="No modules selected. Core preview only.")
+    def refresh(*_):
+        names = [name for name, var in selected.items() if var.get()]
+        summary.set("Requested (NOT activated): " + (", ".join(names) if names else "none"))
+    for variable in selected.values():
+        variable.trace_add("write", refresh)
+
+    tk.Label(frame, textvariable=summary, bg="#0c1110", fg="#83efaa", wraplength=720, justify="left", font=("DejaVu Sans", 11)).pack(anchor="w", pady=(14, 7))
+    tk.Label(frame, text="Security status: NOT VERIFIED for this UI · existing boot diagnostics remain separate.", bg="#0c1110", fg="#ffda8b", wraplength=720, justify="left", font=("DejaVu Sans", 10)).pack(anchor="w")
+    buttons = tk.Frame(frame, bg="#0c1110")
+    buttons.pack(anchor="e", pady=(17, 0))
+    tk.Button(buttons, text="CLEAR SELECTION", command=lambda: [v.set(False) for v in selected.values()], bg="#26392e", fg="white", padx=13, pady=8).pack(side="left", padx=6)
+    tk.Button(buttons, text="OPEN DESKTOP (DEMO)", command=root.destroy, bg="#83efaa", fg="#101810", padx=13, pady=8).pack(side="left")
+    root.mainloop()
+
+
+if __name__ == "__main__":
+    main()

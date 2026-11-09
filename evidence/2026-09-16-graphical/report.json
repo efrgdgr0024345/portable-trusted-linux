@@ -1,0 +1,52 @@
+{
+  "classification": "OBSERVED",
+  "source_commit": "86ddbb8eac1a0dbf912c035d5b916b70453dff88",
+  "filename": "live-image-amd64.hybrid.iso",
+  "size_bytes": 770703360,
+  "sha256": "81f702cd9e59d4d7ba5654e6a69dbd655617968f92381049881930aef9b2fcb7",
+  "build_run": 35095923202,
+  "identity_recheck_run": 35107102698,
+  "boot_run": 35107884622,
+  "test_source_commit": "bf731270592334820fb6d782a79b91cb93572e5a",
+  "environment": {
+    "host": "ptl-builder-01",
+    "qemu": "10.0.13",
+    "firmware": "OVMF UEFI",
+    "acceleration": "TCG",
+    "memory_mib": 2048,
+    "vcpus": 2,
+    "guest_nic": false,
+    "host_disks_attached": false
+  },
+  "gui": {
+    "status": "observed",
+    "frame": "gui.png",
+    "elapsed_capture_seconds": 220,
+    "interaction_test": "not_run",
+    "missing_icon_glyphs": "observed"
+  },
+  "quick_check": {
+    "status": "report_observed",
+    "frame": "check.png",
+    "elapsed_capture_seconds": 140,
+    "settled_photo_screen": "not_verified",
+    "plymouth_quit_wait": "still_running_at_capture",
+    "secure_boot": "UNKNOWN",
+    "tpm": "NOT_EXPOSED",
+    "dm_verity": "NOT_ACTIVE"
+  },
+  "physical_test": "not_run_for_this_image",
+  "release_approval": "none",
+  "artifact_publication": "GitHub upload failed: storage quota",
+  "builder_copy": "/home/github-runner/blackcat-builds/run-35095923202-attempt-1/live-image-amd64.hybrid.iso",
+  "limits": [
+    "Same-builder rehash is identity corroboration against earlier CI logs, not independent authenticated provenance.",
+    "No GUI interaction test or completed System Check login/photo-screen observation.",
+    "No physical boot evidence for this graphical image.",
+    "Current ISO predates newly linked design reference and integration edits."
+  ],
+  "frames_sha256": {
+    "gui.png": "35e087f6a90d636ed5af4e00be6f7589f9d60b887c6dba53f51a26c6c4ec3d7f",
+    "check.png": "33e4c3d5a419cec2f0460e378882b34a92729fad0ef067dfa8aa2e9d5aeb9a57"
+  }
+}

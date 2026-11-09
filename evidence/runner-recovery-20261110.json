@@ -1,0 +1,43 @@
+{
+  "date_local": "2026-11-10",
+  "timezone": "Australia/Perth",
+  "scope": "Recovery of authorized remote execution via GitHub Actions; no hardware attestation or release approval",
+  "runs": [
+    {
+      "run_id": 42691361475,
+      "job_id": 129411622420,
+      "source_commit": "ccc96dc2f171c4cd217937f13ad10bf23ee88220",
+      "conclusion": "success",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42691361475"
+    },
+    {
+      "run_id": 42691382043,
+      "job_id": 129433909368,
+      "source_commit": "7479923b2eec4d9e7cc834fda018d50255dd5635",
+      "conclusion": "success",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42691382043"
+    }
+  ],
+  "workflow_branch": "ops/runner-recovery-20261110",
+  "runner_version": "2.338.2",
+  "runner_name": "ptl-builder-01-recovery",
+  "observed_host": "ptl-builder-01",
+  "observed_account": "github-runner",
+  "observed_uid": 1001,
+  "observed_architecture": "x86_64",
+  "observed_os": "Debian GNU/Linux 13.7 (trixie)",
+  "checks": {
+    "nonroot_listener_account": "VERIFIED relative to workflow test and GitHub log",
+    "noninteractive_sudo_root": "VERIFIED relative to successful test $(sudo -n /usr/bin/id -u) = 0",
+    "marker": "RUNNER_RECOVERY=VERIFIED_FOR_THIS_RUN"
+  },
+  "limitations": [
+    "Host and account fields are runner self-reports, not hardware attestation.",
+    "Outside-collaborator approval setting and absence of default labels were required operator confirmations; not independently inspected via administration API.",
+    "Custom label routing and local negative tests do not establish hostile-workflow isolation.",
+    "Unrestricted passwordless sudo is root-equivalent and explicitly authorized only for this disposable builder.",
+    "Full PTL build dependencies, clean-rebuild reproducibility, historical artifact availability and M15 remain unverified.",
+    "Broad GitHub CLI OAuth was cancelled per operator report; no general GitHub OAuth credential is required for this execution path.",
+    "Public viewer and canonical project index remain unsynchronized until the blocked final JSON step is resolved."
+  ]
+}

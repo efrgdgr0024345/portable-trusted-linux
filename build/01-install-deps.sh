@@ -34,6 +34,14 @@ apt-get install -y --no-install-recommends \
   cryptsetup-bin \
   tpm2-tools \
   sbsigntool \
+  binutils \
+  python3 \
+  mtools \
+  fdisk \
+  grub-efi-amd64-bin \
+  grub-pc-bin \
+  isolinux \
+  syslinux-common \
   xorriso \
   dosfstools \
   gdisk \

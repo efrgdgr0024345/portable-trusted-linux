@@ -1,0 +1,36 @@
+name: PTL systemd-boot host diagnostic
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/ptl-systemd-boot-diagnostic.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    # Legacy entry point retired: use trusted main M15 workflow.
+    if: ${{ false }}
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 5
+    steps:
+      - name: Inspect host package state
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          echo '--- package states ---'
+          for pkg in systemd-boot systemd-boot-efi systemd-ukify systemd; do
+            dpkg-query -W -f='${Package}\t${db:Status-Status}\t${Version}\n' "$pkg" 2>/dev/null || echo "$pkg NOT-IN-DPKG"
+          done
+          echo '--- apt policy ---'
+          apt-cache policy systemd-boot systemd-boot-efi systemd-ukify
+          echo '--- installed reverse dependencies of systemd-boot ---'
+          apt-cache rdepends --installed systemd-boot || true
+          echo '--- dependencies: systemd-boot-efi ---'
+          apt-cache depends systemd-boot-efi || true
+          echo '--- dependencies: systemd-ukify ---'
+          apt-cache depends systemd-ukify || true
+          echo '--- apt-mark states ---'
+          apt-mark showmanual | grep -E '^(systemd-boot|systemd-boot-efi|systemd-ukify)$' || true
