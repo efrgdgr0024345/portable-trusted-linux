@@ -74,7 +74,7 @@ def check(iso, bundle):
         (bundle / "partition-table.json").write_text(json.dumps(table, indent=2) + "\n")
         pt = table["partitiontable"]
         sector_size = pt.get("sectorsize", 512)
-        partitions = [p for p in pt["partitions"] if str(p.get("type", "")).lower() in
+        partitions = [p for p in pt.get("partitions", []) if str(p.get("type", "")).lower() in
                       ("ef", "0xef", "c12a7328-f81f-11d2-ba4b-00a0c93ec93b")]
         if len(partitions) != 1:
             raise ValueError("Require one hybrid-media EFI partition")

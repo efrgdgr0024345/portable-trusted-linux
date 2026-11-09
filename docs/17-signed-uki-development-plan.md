@@ -130,3 +130,6 @@ The 257-series inspector is invoked as `ukify inspect IMAGE --all`, with the pos
 
 ### SBAT input contract
 The product SBAT row is supplied together with the standard `sbat,1,...` header. ukify 257 silently skips headerless input despite exit zero; run 42706245365 was rejected by the independent required-row check. A real-tool build regression now verifies that the row survives merging with the stub/kernel SBAT data. The strict verifier is retained.
+
+### ISO binding regressions
+`tests/test_m15_iso_binding.py` exercises the real xorriso/FAT/partition tools on an explicitly NOT BOOTABLE signed fixture. It accepts the correct final-image layout and rejects a modified actual ESP extent or missing hybrid EFI partition. These checks supplement, rather than replace, real-kernel normal-pipeline read-back. Result reports remain scoped by exact ISO hash and pipeline outcome.

@@ -1271,3 +1271,14 @@ A successful assembly/signing exit code does not prove requested metadata was in
 
 ### Evidence classification
 OBSERVED actual diagnostic failure; VERIFIED source cause and real-tool metadata regression. No production keys or platform enrollment occurred. Temporary development keys were unlinked on the handled failure; secure RAM erasure is not claimed.
+
+## 2026-11-10 — Validate actual ISO read-back controls before trusting a packaged sidecar
+
+### Attempt and result
+While clean run 42706847403 builds, construct a separate synthetic NOT BOOTABLE hybrid ISO using actual Debian-authenticated xorriso, FAT and partition tools. The read-back verifier accepts its filesystem UKI, El Torito extent and hybrid EFI partition only when all bytes/signatures agree. Mutating the actual ESP extent is rejected; an ISO without a hybrid EFI partition is rejected. The latter case exposed a missing partitions key in sfdisk's empty table: it already failed closed at the CLI, but the implementation now explicitly maps that condition to the required-partition refusal.
+
+### Decision and significance
+Keep three actual-tool ISO packaging tests alongside the nine crypto/binding checks, six input-selection checks, four build-wrapper checks and three ukify compatibility/metadata checks: 25 M15 tests pass locally. These fixtures are deliberately not bootable and do not replace a fresh real-kernel pipeline. Inspect exit status, pipeline-status.json and exact ISO/UKI identity together; a prior report or diagnostic artifact is not a successful later pipeline.
+
+### Evidence classification
+VERIFIED local synthetic-layout controls, including intentionally altered ESP and missing partition. The retained-real-input diagnostic has passed in run 42706847403, but its clean normal-pipeline stage is still running at this checkpoint. No firmware enrollment or target-device action occurred.
