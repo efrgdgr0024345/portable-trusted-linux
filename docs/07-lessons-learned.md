@@ -1155,3 +1155,21 @@ Use GitHub's mature outside-collaborator approval control, verify custom-only ru
 
 ### Evidence classification
 **OBSERVED** operator-supplied registration and API queue state. **VERIFIED** local syntax and five confirmation-gate checks relative to the script. Approval settings, labels, service, remote sudo and full builder restoration remain **UNKNOWN / PENDING**. No core trust-chain milestone or release advanced. Final JSON remains blocked pending the previously requested approval to retain existing public infrastructure references.
+
+
+## 2026-11-10 — Runner recovery closes only after actual remote execution succeeds
+
+### What was attempted
+Verify the newly registered service can execute project work and obtain the explicitly authorized administrative access without another operator shell command.
+
+### What actually happened
+The operator reported SERVICE_STARTED. Independent GitHub API inspection found recovery runs 42691361475 and 42691382043 successful. Their logs (jobs 129411622420 and 129433909368) showed github-runner UID 1001, x86-64, Debian 13.7 and runner 2.338.2 on the reported builder. Both passed the non-root account and non-interactive sudo-root checks before printing RUNNER_RECOVERY=VERIFIED_FOR_THIS_RUN.
+
+### Why it matters
+Registration and systemd startup are setup events; a completed workflow proves the intended control plane can actually execute. Broad GitHub account OAuth was unnecessary: repository-scoped runner registration provided the execution connection, while the job's GITHUB_TOKEN had only read Contents/Metadata permissions. Remote root privilege and GitHub API account authority are separate boundaries.
+
+### Decision / change
+Treat runner execution with sudo as recovered relative to these exact workflow checks. Use the established dedicated-label trusted-branch path for subsequent authorized engineering. Record source/run/job identity in evidence/runner-recovery-20261110.json and update the compact checkpoint. Do not transfer this result to full dependency readiness, hardware attestation, hostile-workflow isolation, M15 or release approval. Preserve the root-equivalent sudo weakness and outside-collaborator approval assumptions.
+
+### Evidence classification
+**VERIFIED** deterministic workflow identity/account/sudo checks relative to retrieved GitHub logs. **OBSERVED** runner-reported host and OS. Approval settings and absent default labels remain operator-asserted rather than independently inspected. Full toolchain, artifacts, M15, public-page consistency and reproducibility remain **UNKNOWN / PENDING**. The final JSON write remains blocked by automatic approval review awaiting separate approval to retain existing public infrastructure/runbook references.
