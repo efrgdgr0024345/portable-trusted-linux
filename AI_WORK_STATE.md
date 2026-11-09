@@ -16,11 +16,15 @@ Restore the disposable ptl-builder-01 GitHub runner so unattended engineering ca
 - Recovery smoke runs 42691361475 and 42691382043 were queued/pending. Recheck before startup.
 
 ## Next action
-Operator runs checksum-pinned ops/register-runner-gh.sh (source ff6c9707dcd51ee14b1ca3473a5f27a39631c512) and approves a one-time GitHub CLI device login in the browser. The helper retrieves a short-lived registration token through the API and supplies it using ACTIONS_RUNNER_INPUT_TOKEN, then removes temporary local CLI credentials. See docs/runner-registration-cli.md. Local shell syntax and negative non-root rejection passed; remote authentication and registration remain pending. Do not request or print tokens. Verify labels, then configure the authorized root-owned sudoers rule, validate it with visudo, install/start service as github-runner and inspect the recovery smoke. Existing available tools do not provide a shell on this droplet; console execution is a capability boundary.
+Operator cancelled the overly broad GitHub CLI OAuth device flow. Do not rerun earlier pinned helper links. Current ops/register-runner-gh.sh is retired and refuses execution without invoking gh (two local regression tests passed).
+Use only a short-lived repository runner registration token obtained from the repository runner settings page. Enter it at config.sh's interactive prompt using the command in docs/runner-registration-cli.md. No token should be sent to chat. Keep --no-default-labels and custom label ptl-trusted-20261110. Do not start the service until registration labels and queued jobs are checked. Configure the already-authorized sudo/service only after those checks. Console execution remains a capability boundary.
 
-## Latest failure and correction
+## Historical CLI compatibility fix — approach now retired
 The first helper failed before authentication: Debian gh rejected --skip-ssh-key. Removed that unnecessary option. Current script SHA-256: feda754b526a500a4cee7068f475934c87873fafc7c28d3412aed26c24f4909b. Bash syntax and two actual-parser tests passed on local Debian gh 2.46.0-3 (positive accepted flags, negative invalid flag). Target's exact CLI version is unknown. Operator must retry the corrected pinned helper; no device login/registration success is yet reported. Earlier source/checksum remain historical only.
 Final JSON update was rejected by automatic approval review for retaining existing public infrastructure/runbook references; separate approval is pending. Lessons append is authorized and records this failure. Do not call this documentation cycle complete until JSON-last follow-through succeeds.
+
+## Latest authorization lesson
+The CLI device screen requested broad repository/workflow/gist/organization authority. Temporary local credentials and a short-lived output token did not constrain that upstream OAuth grant. The operator rejected it and reported cancellation. No authorization, registration or remote sudo success is reported. Repository registration-token scope and runner execution privileges remain separate boundaries. JSON remains stale and blocked pending the previously requested separate approval; do not describe this cycle or public synchronization as complete.
 
 ## Trust boundary
 Unrestricted passwordless sudo is root-equivalent. Repository writers can target custom labels; scheduling labels do not authenticate workflows. Do not put production keys or unrelated workloads here. Full dependency restoration, actual clean rebuild, image reproducibility and hostile-PR scheduler behavior remain UNKNOWN.
