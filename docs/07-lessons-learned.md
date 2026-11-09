@@ -1330,3 +1330,22 @@ Resolve sfdisk from caller PATH or explicit standard /usr/sbin:/sbin paths, and 
 
 ### Evidence classification
 OBSERVED actual reduced-PATH failure; VERIFIED actual-tool reduced-PATH and missing-tool regressions. The source command/metadata/ownership fixes remain in place. A fresh corrected normal pipeline is still required; no production key, firmware enrollment or target write occurred.
+
+## 2026-11-10 — M15 development-only normal-pipeline acceptance passed
+
+### What was attempted
+Close the explicitly scoped signed-UKI development gate using a fresh normal live-build work tree, ephemeral keys, independent signature/metadata verification and actual final-image read-back.
+
+### What actually happened
+Run 42711645617, job 129482434136, source 3125a1c99342b961ac614878d3ce9b3f874de33e passed all stages, including 28 M15 and 12 runner regressions, fresh normal image construction and evidence upload. The real UKI's expected-key signature passed; kernel tampering, wrong key, missing signature and changed expected command line were rejected. ISO filesystem, El Torito and hybrid EFI partition read-back recovered the same signed UKI. Artifact 13716513159 was uploaded with ZIP SHA-256 8d1528afccd8da977120bd04ca0871efcf2d3b0d59e2147c32ee275d16092ea5.
+
+UKI: 67962376 bytes, SHA-256 e42219c658b6cfe285c02f1c667ce505768dcf32bfd7c78fdf10570e27cfddeb. Certificate DER SHA-256 af0794b4e3d1e1830f3610cf4532ed362df639864225ab45d654e4b0c9949193; public-key SPKI SHA-256 e5daf01a5a04a4ce6f0fc6187a34da6b0ad90719ce4aeca2398dc90151430a9e. Public material was checked locally with openssl for DER/SPKI digests and equality of the certificate-derived public key; actual UKI verification is supported by CI and independent final-image read-back, not falsely claimed as a local binary download.
+
+### Why it matters
+Real-input diagnostics and synthetic tests caught defects but did not substitute for the fresh normal pipeline. Signed-byte preservation, aliases, SBAT inclusion, root/user ownership and service PATH failures were real findings that remain recorded. The final live kernel is 6.12.116+deb13-amd64; it must not be confused with the builder's earlier running kernel. The privileged hook records github_run_id=unknown after sudo environment filtering; the outer record obtains actual run/job/source identity from GitHub and preserves raw provenance unchanged.
+
+### Decision / change
+Record the requested development-only M15 acceptance as VERIFIED with exact scope in evidence/2026-11-10-m15/report.json, retain raw public results/commands/key/certificate, update affected docs and checkpoint, then JSON LAST. The binary artifact expires 17 November 2026 at 06:38 AWST; fresh keys cannot recreate these signed bytes from source, so archive the bundle before expiry/deleting the builder. Retire the unavailable old graphical artifact's readiness claim without erasing its historical evidence. Do not promote the M15 ISO to an operator physical candidate or approved release.
+
+### Evidence classification
+VERIFIED relative to the stated development certificate/input policy and actual successful workflow/read-back; OBSERVED builder identity and ordinary tmpfs private-key unlinking. No production private key or platform enrollment/ownership operation was used; generated image files, not target devices, were modified. Secure RAM erasure, actual firmware enforcement/boot compatibility, physical boot, root squashfs authenticity, legacy BIOS security and bit-for-bit reproducibility are NOT VERIFIED. The live page remains UNKNOWN after proxy CONNECT 403. Main merge, production authority, platform changes and release approval retain HUMAN_GATE. No other milestone was started.

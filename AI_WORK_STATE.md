@@ -1,26 +1,26 @@
 # Black Cat AI Work State
 
 ## Current project state
-- Active objective: M15 signed UKI integration, ephemeral DEVELOPMENT ONLY keys. Explicitly authorized by operator on 2026-11-10.
-- Development branch: codex/m15-signed-uki-development; based on completed runner recovery cd3966b805c7376d327154d332b6e217af41a452. No main merge.
-- Runner execution/sudo checks passed in runs 42691361475 and 42691382043. Toolchain restore/probe run 42699169946 passed.
-- Toolchain: Debian 13.7, systemd-ukify 257.13, sbsigntool 0.9.4, live-build 20250505.
-- Implementation IN PROGRESS: normal runs 42706847403 and 42708392120 built real signed UKIs and passed mandatory signature/negative tests but failed at the root-owned report directory. Public evidence is now copied to runner-owned out/m15 before unprivileged read-back.
-- Retained real ISO run 42709997738 then passed signature/El Torito checks but could not locate installed sfdisk in the service PATH. Standard system-path fallback and actual reduced-PATH/missing-tool regressions are now included. All 28 local M15 tests pass.
-- Next acceptance run: inspect the latest M15 workflow on this branch after this correction; require retained-ISO diagnostic success AND a fresh normal pipeline, ISO read-back and artifact upload. No failed/retained diagnostic is clean acceptance.
-- No production keys, firmware enrollment, TPM ownership changes, physical device writes or UI features are authorized by this task.
+- M15 requested DEVELOPMENT ONLY acceptance is VERIFIED at implementation source 3125a1c99342b961ac614878d3ce9b3f874de33e.
+- Fresh normal run 42711645617, job 129482434136: success, including 28 M15 regressions, 12 runner regressions, actual signing/rejection checks, final ISO read-back and artifact upload.
+- Branch: codex/m15-signed-uki-development; based on runner recovery cd3966b805c7376d327154d332b6e217af41a452. Not merged to main. No other milestone started.
+- Durable public evidence: evidence/2026-11-10-m15/report.json plus raw public results, key/certificate and 22 exact command records.
+- No production key, firmware enrollment, TPM ownership/PCR-policy action or target-device write was introduced. The disposable builder's authorized unrestricted sudo remains root-equivalent, not a production trust boundary.
 
 ## Current exact test candidate
-The earlier graphical candidate is historical for this task: SHA-256 f498776780c543013e437161a878e22ca4fc40a66f47fc271d6fd6a964c29d75, 770703360 bytes, source ed5d80ac09c3f1650d67594242643d27efcf15e9, build 35179377345, artifact 10480220416. Availability after builder rebuild is UNKNOWN. Do not transfer its VM/physical observations to M15 artifacts. No approved Black Cat ISO exists.
+M15 artifacts are verification evidence, NOT an operator physical-test handoff or approved release. UKI: 67962376 bytes, SHA-256 e42219c658b6cfe285c02f1c667ce505768dcf32bfd7c78fdf10570e27cfddeb. Certificate DER SHA-256 af0794b4e3d1e1830f3610cf4532ed362df639864225ab45d654e4b0c9949193. ISO: 990097408 bytes, SHA-256 bd94942c1b1abc67b1e3148822cb64e0c38001a3af4a4e50ac07213d1832cbe8. Live kernel 6.12.116+deb13-amd64.
+Artifact 13716513159: blackcat-m15-development-evidence-42711645617; inspect m15/, not prior-image m15-iso-diagnostic/. Expires 2026-11-16T22:38:36Z (17 Nov 06:38 AWST). Builder recovery copy: /home/github-runner/blackcat-builds/m15/run-42711645617-attempt-1/. Archive binary evidence before expiry/deleting that host; fresh keys cannot recreate these signed bytes from source.
+Old graphical identity f498776780c543013e437161a878e22ca4fc40a66f47fc271d6fd6a964c29d75 remains historical; its run 35179377345 returns no GitHub artifacts, and builder-copy availability is UNKNOWN. Remove stale physical-test readiness without erasing old observations. No approved Black Cat ISO exists.
 
 ## Next automatic actions
-Run the normal build pipeline on the trusted dedicated-label runner; inspect positive/tamper/wrong-key/unsigned tests, embedded-input bindings and final ISO read-back. Fix bounded failures, preserve failure evidence and continue. Preserve public evidence locally and upload the UKI bundle. Update technical docs, canonical lessons and this checkpoint, then project_content.json LAST. JSON updates are routine authorized work without per-write approval.
+Finalize affected docs, canonical lessons and public evidence, then project_content.json LAST. Routine JSON updates and retention of existing public project references are authorized without per-write approval. Target index version 3.7 must identify run 42711645617 and the exact implementation source. On recovery verify actual index state on both this branch and project-status-live before reporting synchronization; complete that standard update if pending. Do not claim the deployed page was checked: cloud proxy CONNECT 403 blocked its inspection.
+After this closure, await the operator's next concrete project task or merge review. No M16/M17 implementation is authorized by this M15-only cycle.
 
 ## Next genuine human gate
-Production signing/custody, real firmware enrollment, platform ownership changes, physical media writes/tests, main merges and release promotion remain gates. Ephemeral M15 development keys are explicitly authorized. A blocked tool is a capability/approval-review boundary, not a reason to broaden GitHub account OAuth. Broad CLI OAuth was cancelled and its helper is retired.
+Main merge, production authority/key custody, platform firmware enrollment/ownership, physical media actions and release promotion remain HUMAN_GATE. Ephemeral M15 keys were explicitly authorized and unlinked from tmpfs before success; secure RAM erasure is NOT VERIFIED. No broad GitHub CLI OAuth grant is needed; that cancelled helper remains retired.
 
 ## Context health
-AMBER heuristic after extended tool-heavy UKI integration, several large log/source reads and a workspace restart. State was selectively recovered from checkpoint/GitHub; no exact continuity-loss measurement is available; no exact context percentage is known. Context pressure itself is never a human-approval gate. Keep this checkpoint compact and load only needed source/evidence.
+AMBER operational estimate after extended tool-heavy integration, large logs and a brief workspace restart. State was recovered selectively; no precise context percentage or loss measurement is known. Context pressure itself is never a human-approval gate. Keep this checkpoint compact.
 
 ## Recovery sequence
-Read this file, inspect latest M15 workflow runs on the active branch, then docs/17-signed-uki-development-plan.md and the relevant build/verifier scripts. Never equate local signature verification with firmware enforcement or authenticated root; dm-verity binding remains M17. Read only relevant lessons. The live viewer reads project-status-live, not this development branch; do not claim public synchronization without checking it.
+Read this checkpoint and evidence/2026-11-10-m15/report.json; verify only volatile GitHub/index facts. Review docs/17 and the relevant build/verifier source if needed. Private keys are not retained. Raw provenance's github_run_id remains unknown because sudo filtered it; outer run/job/source identity is bound by GitHub metadata, not silently patched into raw evidence. Firmware enforcement, physical boot, root-squashfs authentication, legacy BIOS security and bit-for-bit reproducibility are NOT VERIFIED. Never transfer old image observations or promote the ISO from a successful development signature check.

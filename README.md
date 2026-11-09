@@ -6,7 +6,18 @@ The project explores a portable, independently verifiable Linux environment for 
 
 Internal repository names, `PTL_` environment variables, workflow names and evidence identifiers remain unchanged for stability. The Black Cat change is branding, not a trust-model or protocol rename.
 
-## Current status — artwork candidate VM gate complete, 17 September 2026
+## Current status — M15 development gate verified, 10 November 2026
+
+**The requested development-only signed-UKI gate passed in the normal Prototype 1 pipeline.** Source `3125a1c99342b961ac614878d3ce9b3f874de33e`, run [42711645617](https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42711645617). Correct-key verification and actual ISO read-back passed; tampered, wrong-key and unsigned UKIs were rejected. All 28 M15 regression tests passed.
+
+See [the M15 technical record](docs/17-signed-uki-development-plan.md), [public evidence](evidence/2026-11-10-m15/README.md) and [normal build commands](build/README.md). The implementation remains on `codex/m15-signed-uki-development`; merge to main is a human gate. No production key or firmware enrollment was used. Firmware enforcement, physical boot of this image and dm-verity root binding are NOT VERIFIED. No approved ISO exists.
+
+The old graphical artifact is no longer returned by GitHub's artifact listing; its builder-copy availability is UNKNOWN. Its former physical-test readiness must not be reused. The new UKI bundle is evidence for inspection, not a physical-test or release handoff.
+
+## Historical status — artwork candidate VM gate complete, 17 September 2026
+
+The dated outcome and observations below are preserved for their original image; they are not current readiness or M15 boot evidence.
+
 
 **Active outcome: prepare the exact artwork-enabled graphical candidate for a controlled spare-USB physical test. Its bounded VM gates passed; no approved release exists.**
 
@@ -27,7 +38,7 @@ Internal repository names, `PTL_` environment variables, workflow names and evid
 - The public viewer source now presents capability evidence instead of a single completion percentage. It is prepared for reconciled main; it has not been deployed in this session.
 - The current artifact upload succeeded as `blackcat-graphical-development-35179377345` (ID `10480220416`). Artifact publication, build success, VM observations and physical success remain separate facts.
 
-## No-typing diagnostic path
+## Historical no-typing diagnostic path
 
 The candidate image presents:
 

@@ -1,8 +1,40 @@
-# Signed UKI Development Plan — M15 Preparation
+# Signed UKI Development Gate — M15
 
-**Status:** M15 development-only implementation under integration test; acceptance not yet closed  
+**Status:** VERIFIED — requested development-key acceptance passed at source `3125a1c99342b961ac614878d3ce9b3f874de33e`; not merged to main; firmware enforcement NOT VERIFIED
 **Target:** Debian 13/trixie amd64, systemd-ukify 257-series toolchain  
 **Safety boundary:** development keys only; no firmware key enrollment; no target-disk writes.
+
+## Accepted development result — 10 November 2026
+
+Fresh normal-pipeline run [42711645617](https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42711645617), job `129482434136`, passed at source `3125a1c99342b961ac614878d3ce9b3f874de33e`. The normal pipeline generated a development-signed UKI from the exact live kernel/initrd, verified its expected sections and metadata, and read the signed fallback back from the ISO filesystem, actual El Torito extent and hybrid EFI partition. All 28 M15 regression checks and 12 runner checks passed. This closes the operator's requested **development-only acceptance**, not real firmware enforcement or release approval.
+
+| Check | Actual result |
+| --- | --- |
+| Correct development certificate + exact inputs | VERIFIED |
+| Kernel byte changed after signing | Signature FAILED as expected |
+| Wrong certificate/key | Signature FAILED as expected |
+| Missing outer signature | Signature FAILED as expected |
+| Changed expected command line | Binding FAILED as expected |
+| Actual ISO fallback/boot extents | VERIFIED; same signed UKI bytes |
+| Fresh normal pipeline + public artifact upload | Passed |
+
+The live kernel is `6.12.116+deb13-amd64`. The UKI is 67,962,376 bytes, SHA-256 `e42219c658b6cfe285c02f1c667ce505768dcf32bfd7c78fdf10570e27cfddeb`. Certificate DER SHA-256 is `af0794b4e3d1e1830f3610cf4532ed362df639864225ab45d654e4b0c9949193`; public-key SPKI SHA-256 is `e5daf01a5a04a4ce6f0fc6187a34da6b0ad90719ce4aeca2398dc90151430a9e`. Those identities belong only to this run's fresh DEVELOPMENT ONLY key.
+
+Durable public record, raw results, public key/certificate and 22 exact commands: [evidence/2026-11-10-m15](../evidence/2026-11-10-m15/README.md). The signed binary bundle is [artifact 13716513159](https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42711645617/artifacts/13716513159); use **m15/**, not the prior-image diagnostic folder. It expires 17 November 2026 at 06:38 AWST. Preserve the binary bundle before expiry or deleting its builder copy; fresh ephemeral keys prevent byte-identical reconstruction from source.
+
+### Scope and surprises
+
+- Exact live inputs can have hard-link/copy aliases; byte identity, not filename count, selects them.
+- objcopy can rewrite a signed PE unless given a separate output; the verifier now checks byte preservation.
+- ukify 257 needs `inspect IMAGE --all`, and skips headerless SBAT input despite assembly exit zero; actual-tool regressions cover both.
+- Root-owned build evidence must be copied before the independent unprivileged verifier writes reports. Installed sfdisk can be hidden by service PATH.
+- The privileged hook's raw `github_run_id` is `unknown` because sudo drops that variable. Raw provenance is preserved, and the outer evidence record binds the actual run/job/source through GitHub metadata.
+- Kernel package inputs came from the recorded Debian repositories, not the builder's running kernel. This run embedded 6.12.116; it does not inherit earlier host-kernel observations.
+- Large-ESP El Torito load-size warning, physical boot, firmware enforcement, root authentication, legacy BIOS and bit-for-bit reproducibility remain outside the verified claim. No production key, enrollment, TPM ownership/PCR-policy action or target-device write was introduced.
+
+Implementation is on `codex/m15-signed-uki-development`. Main merge remains HUMAN_GATE. No approved Black Cat ISO or new physical-test handoff is created. The live page could not be inspected because the cloud proxy returned CONNECT 403; updating the status feed is distinct from verifying its deployed rendering.
+
+The original plan and dated integration notes below are preserved as history. Their pending states are superseded by this exact accepted run, not silently erased.
 
 ## Purpose
 
