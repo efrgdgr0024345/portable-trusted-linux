@@ -26,3 +26,12 @@ The local gate tests validate refusal/acceptance of explicit confirmations, not 
 After startup inspect PTL Runner Recovery logs independently. The marker RUNNER_RECOVERY=VERIFIED_FOR_THIS_RUN is scoped only to that run's identity and sudo check; it does not establish full build readiness, M15 completion or release approval.
 
 No general GitHub OAuth login or account token is needed on the builder. If any pre-existing service or sudoers policy is found, inspect it rather than overwriting or rerunning blindly. On a later failure a validated sudo policy may already be installed; do not assume rollback occurred.
+
+
+## 2026-11-10 — Remote execution and sudo checks passed
+
+GitHub Actions runs 42691361475 and 42691382043 both completed successfully. Jobs 129411622420 and 129433909368 reported runner 2.338.2, runner name ptl-builder-01-recovery, host ptl-builder-01, github-runner UID 1001, x86-64 and Debian 13.7. Both executed the non-root-account check and `test "$(sudo -n /usr/bin/id -u)" = 0`, then printed RUNNER_RECOVERY=VERIFIED_FOR_THIS_RUN.
+
+See evidence/runner-recovery-20261110.json for exact source commits and run links. This verifies the authorized non-interactive administrative execution path relative to the workflow checks and GitHub logs. It does not independently authenticate the reported physical host, prove hostile-PR isolation, restore the full build toolchain or close M15. The absence of default labels and GitHub approval policy were operator assertions required by the startup command, not independently read administration settings. The local Codex shell remains separate and unprivileged; remote administration is through the runner.
+
+The UI/service-start transcript and CI logs are distinct evidence. Registration and service start alone had been insufficient; CI now demonstrates actual execution. No broad account OAuth grant is needed for this path.
