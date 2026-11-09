@@ -9,15 +9,16 @@ Restore the disposable ptl-builder-01 GitHub runner so unattended engineering ca
 - Workflow/test source: 7479923b2eec4d9e7cc834fda018d50255dd5635.
 - Five local routing checks passed; PR events, wrong refs and other repositories rejected.
 - Operator supplied successful runner 2.338.2 archive checksum and version output.
-- Runner registration, service startup, sudo grant and remote smoke are pending.
+- Operator supplied successful registration and Settings Saved output. Service startup, sudo grant and remote smoke remain pending.
 - Required name: ptl-builder-01-recovery.
 - Required custom label: ptl-trusted-20261110, with --no-default-labels.
 - Existing generic main PR workflows must not route to this root-capable runner.
 - Recovery smoke runs 42691361475 and 42691382043 were queued/pending. Recheck before startup.
 
 ## Next action
-Operator cancelled the overly broad GitHub CLI OAuth device flow. Do not rerun earlier pinned helper links. Current ops/register-runner-gh.sh is retired and refuses execution without invoking gh (two local regression tests passed).
-Use only a short-lived repository runner registration token obtained from the repository runner settings page. Enter it at config.sh's interactive prompt using the command in docs/runner-registration-cli.md. No token should be sent to chat. Keep --no-default-labels and custom label ptl-trusted-20261110. Do not start the service until registration labels and queued jobs are checked. Configure the already-authorized sudo/service only after those checks. Console execution remains a capability boundary.
+Registration succeeded according to the operator's console transcript. Before starting the root-capable service, operator must set GitHub Actions approval for ALL outside collaborators and verify custom-only label ptl-trusted-20261110 with no default labels.
+Then run checksum-pinned ops/start-recovery-runner.sh (source a201500b5b5da4fa561c2423a472dce8808a3e6b; SHA-256 4de1bda46395ceef3d752c9b7545bc435f889b6f53ab6d35c45b138597e3893c) with PTL_OUTSIDE_APPROVAL_CONFIRMED=yes and PTL_LABELS_CONFIRMED=yes after those checks. Script syntax and five local confirmation-gate tests passed. These tests do not verify actual GitHub settings. Root-equivalent sudo is already explicitly authorized on this disposable host; no broad GitHub OAuth grant is authorized.
+Inspect the independent recovery workflow logs after service startup. Console execution remains a capability boundary. Do not rerun old OAuth helpers; current helper is retired.
 
 ## Historical CLI compatibility fix — approach now retired
 The first helper failed before authentication: Debian gh rejected --skip-ssh-key. Removed that unnecessary option. Current script SHA-256: feda754b526a500a4cee7068f475934c87873fafc7c28d3412aed26c24f4909b. Bash syntax and two actual-parser tests passed on local Debian gh 2.46.0-3 (positive accepted flags, negative invalid flag). Target's exact CLI version is unknown. Operator must retry the corrected pinned helper; no device login/registration success is yet reported. Earlier source/checksum remain historical only.
