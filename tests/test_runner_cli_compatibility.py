@@ -1,27 +1,31 @@
 #!/usr/bin/env python3
-"""Exercise the actual installed gh parser without authenticating or networking."""
+"""Ensure the retired OAuth helper refuses execution and never invokes gh."""
 from pathlib import Path
-import shlex
-import shutil
+import os
 import subprocess
+import tempfile
 import unittest
 
 SCRIPT = Path(__file__).resolve().parents[1] / "ops/register-runner-gh.sh"
 
-@unittest.skipUnless(shutil.which("gh"), "requires the Debian gh package")
-class GitHubCliCompatibility(unittest.TestCase):
-    def login_command(self):
-        lines = SCRIPT.read_text().splitlines()
-        line = next(line for line in lines if " gh auth login " in line)
-        argv = shlex.split(line)
-        return argv[argv.index("gh"):]
-    def test_login_flags_accepted_by_installed_cli(self):
-        result = subprocess.run(self.login_command() + ["--help"], text=True, capture_output=True)
-        self.assertEqual(result.returncode, 0, result.stderr)
-    def test_invalid_flag_is_rejected(self):
-        result = subprocess.run(self.login_command() + ["--ptl-unsupported-test-flag", "--help"], text=True, capture_output=True)
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("unknown flag", result.stderr)
+class RetiredHelperTests(unittest.TestCase):
+    def test_refuses_execution(self):
+        r = subprocess.run(["bash", str(SCRIPT)], text=True, capture_output=True)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("OAuth registration is retired", r.stderr)
+        self.assertEqual(r.stdout, "")
+
+    def test_does_not_invoke_github_cli(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            stub = root / "gh"
+            stub.write_text('#!/bin/sh\nprintf called > "$PTL_GH_TEST_MARKER"\nexit 99\n')
+            stub.chmod(0o700)
+            marker = root / "called"
+            env = dict(os.environ, PATH=directory + os.pathsep + os.environ.get("PATH", ""), PTL_GH_TEST_MARKER=str(marker))
+            r = subprocess.run(["bash", str(SCRIPT)], env=env, text=True, capture_output=True)
+            self.assertEqual(r.returncode, 1)
+            self.assertFalse(marker.exists(), "retired helper attempted GitHub CLI authentication")
 
 if __name__ == "__main__":
     unittest.main()
