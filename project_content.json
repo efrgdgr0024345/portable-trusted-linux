@@ -1,9 +1,9 @@
 {
   "title": "Black Cat",
-  "version": "3.4",
+  "version": "3.5",
   "phase": "Repairing authoritative live candidate publication",
-  "updated": "2026-09-17",
-  "summary": "The artwork-enabled ISO remains the exact active test candidate and its VM gates passed. The live operator page was found pinned to an obsolete development branch. A priority fail-closed handoff rule, stable project-status-live source and static regression guard are now implemented in the review branch. Production deployment and live-page identity verification remain required before asking the operator to download or physically test.",
+  "updated": "2026-11-10",
+  "summary": "Runner recovery is the immediate prerequisite to the operator-selected M15 development-key-only UKI work. The operator supplied successful prerequisite installation and runner 2.338.2 checksum/version output. An isolated recovery workflow and five passing local routing regression checks are prepared on ops/runner-recovery-20261110. Registration, service startup, root-equivalent sudo and remote smoke are pending. Clean-rebuild provenance and historical artifact availability remain UNKNOWN. No milestone or approved-release claim is advanced; this development-branch update has not been published to the live viewer.",
   "candidate": {
     "status": "ready-for-physical-testing",
     "channel": "graphical-physical-test",
@@ -402,6 +402,10 @@
     }
   ],
   "sections": [
+    {
+      "title": "Runner recovery — preparation only",
+      "content": "Runner recovery is the immediate prerequisite to the operator-selected M15 development-key-only UKI work. The operator supplied successful prerequisite installation and runner 2.338.2 checksum/version output. An isolated recovery workflow and five passing local routing regression checks are prepared on ops/runner-recovery-20261110. Registration, service startup, root-equivalent sudo and remote smoke are pending. Clean-rebuild provenance and historical artifact availability remain UNKNOWN. No milestone or approved-release claim is advanced; this development-branch update has not been published to the live viewer."
+    },
     {
       "title": "Current graphical validation focus",
       "content": "The exact artwork-enabled graphical ISO passed its bounded QEMU/OVMF interaction and settled System Check gates. Six cat icons, request selection/CLEAR, OPEN DESKTOP and the stable canonical wallpaper were observed. Physical testing of this exact hash remains the next human-gated step; production signing and release approval remain incomplete."
@@ -854,6 +858,11 @@
   ],
   "changelog": [
     {
+      "version": "3.5",
+      "date": "2026-11-10",
+      "summary": "Prepare isolated disposable-runner recovery, record operator-supplied installation evidence and five local negative/positive routing checks. Remote execution and rebuild reproducibility remain pending. Development branch only; JSON written last."
+    },
+    {
       "version": "3.4",
       "date": "2026-09-17",
       "summary": "Elevated live candidate publication to Priority Rule 0, added a stable project-status-live viewer source and regression guard, and recorded the no-chat-link fail-closed handoff. JSON written last."
@@ -1169,14 +1178,14 @@
   "handoff": {
     "ready_for_lighter_model": true,
     "checkpoint": "AI_WORK_STATE.md",
-    "review_branch": "codex/graphical-evidence-review",
+    "review_branch": "ops/runner-recovery-20261110",
     "merged": false,
-    "next_action": "Publish project_content.json to project-status-live, deploy the corrected canonical web/project.php to the host, then verify the live HTTPS page matches the exact candidate across byte size, SHA-256, source, run, artifact ID and URL. Only then request exact spare-USB approval.",
+    "next_action": "Register runner using console-only short-lived token, omit default labels, verify label and queued jobs, configure authorized sudo and service, then inspect recovery smoke. No PTL build or release is yet approved.",
     "last_passed_source_check": {
       "run": 35180150390,
       "commit": "c1b623d0989c4c6d30814f4b92b80a44b79f501a"
     },
-    "completion_scope": "Exact artwork candidate built and bounded VM gates observed; physical, production signing, release, merge and deployment gates remain.",
+    "completion_scope": "Recovery preparation recorded; online status, sudo smoke and full PTL dependency restoration pending. Historical candidate availability UNKNOWN; public-page reconciliation remains pending.",
     "checkpoint_contract": "Strict continuity headings restored and statically guarded.",
     "live_candidate_handoff": {
       "url": "https://easyai.com.au/USB/project.php",
@@ -1195,6 +1204,11 @@
     }
   },
   "capabilities": [
+    {
+      "title": "Disposable builder runner recovery",
+      "stage": "prepared-registration-and-remote-verification-pending",
+      "scope": "Operator-supplied install transcript; five local routing tests passed. Dedicated label ptl-trusted-20261110 without default labels. Root-equivalent sudo explicitly authorized but not yet confirmed. Remote and hostile-PR scheduler tests pending."
+    },
     {
       "title": "Graphical ISO build",
       "stage": "built-and-uploaded",
@@ -1251,5 +1265,64 @@
       "download_url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/34686464650/artifacts/10300658965",
       "note": "Historical M13B candidate with physical evidence on the tested configuration. Not the current graphical ISO and not an approved release."
     }
-  ]
+  ],
+  "historical_status_snapshots": [
+    {
+      "version": "3.4",
+      "updated": "2026-09-17",
+      "summary": "The artwork-enabled ISO remains the exact active test candidate and its VM gates passed. The live operator page was found pinned to an obsolete development branch. A priority fail-closed handoff rule, stable project-status-live source and static regression guard are now implemented in the review branch. Production deployment and live-page identity verification remain required before asking the operator to download or physically test.",
+      "handoff": {
+        "ready_for_lighter_model": true,
+        "checkpoint": "AI_WORK_STATE.md",
+        "review_branch": "codex/graphical-evidence-review",
+        "merged": false,
+        "next_action": "Publish project_content.json to project-status-live, deploy the corrected canonical web/project.php to the host, then verify the live HTTPS page matches the exact candidate across byte size, SHA-256, source, run, artifact ID and URL. Only then request exact spare-USB approval.",
+        "last_passed_source_check": {
+          "run": 35180150390,
+          "commit": "c1b623d0989c4c6d30814f4b92b80a44b79f501a"
+        },
+        "completion_scope": "Exact artwork candidate built and bounded VM gates observed; physical, production signing, release, merge and deployment gates remain.",
+        "checkpoint_contract": "Strict continuity headings restored and statically guarded.",
+        "live_candidate_handoff": {
+          "url": "https://easyai.com.au/USB/project.php",
+          "status": "repository-fix-complete-deployment-and-live-verification-pending",
+          "source_branch": "project-status-live",
+          "fail_closed": true,
+          "required_match_fields": [
+            "filename",
+            "size_bytes",
+            "sha256",
+            "source_commit",
+            "build_run",
+            "artifact_id",
+            "download_url"
+          ]
+        }
+      },
+      "reason": "Preserve pre-recovery status; source, artifact and credential reconstruction are not assumed after builder rebuild."
+    }
+  ],
+  "runner_recovery": {
+    "branch": "ops/runner-recovery-20261110",
+    "base_commit": "973ce3e68c80aa1bea0c7776dcdcab5f6f34fefe",
+    "runner_version": "2.338.2",
+    "archive_sha256": "baebf204307bac6193480852732f0aba2ae97b6c5597c244f4d5558390147c40",
+    "installation_evidence": "OBSERVED operator-supplied transcript",
+    "registration": "UNKNOWN / PENDING",
+    "sudo": "authorized root-equivalent temporary control; implementation UNKNOWN",
+    "labels": [
+      "ptl-trusted-20261110"
+    ],
+    "default_labels": false,
+    "local_policy_tests": {
+      "passed": 5,
+      "scope": "Configuration checks only; not scheduler isolation or remote execution"
+    },
+    "smoke_runs": [
+      42691361475,
+      42691382043
+    ],
+    "public_page_verification": "UNKNOWN / not performed",
+    "historical_artifact_availability": "UNKNOWN"
+  }
 }
