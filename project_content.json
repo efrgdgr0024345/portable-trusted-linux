@@ -1,9 +1,9 @@
 {
   "title": "Black Cat",
-  "version": "3.5",
+  "version": "3.6",
   "phase": "Repairing authoritative live candidate publication",
   "updated": "2026-11-10",
-  "summary": "Runner recovery is the immediate prerequisite to the operator-selected M15 development-key-only UKI work. The operator supplied successful prerequisite installation and runner 2.338.2 checksum/version output. An isolated recovery workflow and five passing local routing regression checks are prepared on ops/runner-recovery-20261110. Registration, service startup, root-equivalent sudo and remote smoke are pending. Clean-rebuild provenance and historical artifact availability remain UNKNOWN. No milestone or approved-release claim is advanced; this development-branch update has not been published to the live viewer.",
+  "summary": "Disposable builder runner recovery is VERIFIED relative to two successful GitHub Actions account/sudo smoke checks. The runner executes as github-runner (UID 1001) on reported Debian 13.7 and obtains root through authorized passwordless sudo. Broad GitHub CLI OAuth was cancelled and that helper is retired. Root-equivalent sudo remains a temporary documented weakness; workflow approval settings are operator-asserted, not independently inspected. Full PTL dependencies, M15, historical artifact availability and live-page consistency remain unverified. This recovery-branch status does not approve an ISO or claim publication to the live viewer.",
   "candidate": {
     "status": "ready-for-physical-testing",
     "channel": "graphical-physical-test",
@@ -399,16 +399,34 @@
       "title": "Artwork Candidate VM Evidence Report",
       "description": "Machine-readable evidence for the exact artwork-enabled candidate and bounded VM observations.",
       "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/evidence/2026-09-17-artwork-candidate/report.json"
+    },
+    {
+      "type": "Recovery record",
+      "title": "Runner Registration — Scoped Token Only",
+      "description": "Current scoped-token procedure; failed broad OAuth approach explicitly historical and retired.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/ops/runner-recovery-20261110/docs/runner-registration-cli.md"
+    },
+    {
+      "type": "Recovery record",
+      "title": "Runner Service Startup and Verification",
+      "description": "Temporary root-equivalent sudo, routing assumptions and successful remote execution evidence.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/ops/runner-recovery-20261110/docs/runner-service-startup.md"
+    },
+    {
+      "type": "Recovery record",
+      "title": "Runner Recovery Evidence",
+      "description": "Exact successful run/job/source identities and limitations.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/ops/runner-recovery-20261110/evidence/runner-recovery-20261110.json"
     }
   ],
   "sections": [
     {
-      "title": "Runner recovery — preparation only",
-      "content": "Runner recovery is the immediate prerequisite to the operator-selected M15 development-key-only UKI work. The operator supplied successful prerequisite installation and runner 2.338.2 checksum/version output. An isolated recovery workflow and five passing local routing regression checks are prepared on ops/runner-recovery-20261110. Registration, service startup, root-equivalent sudo and remote smoke are pending. Clean-rebuild provenance and historical artifact availability remain UNKNOWN. No milestone or approved-release claim is advanced; this development-branch update has not been published to the live viewer."
+      "title": "Runner recovery — execution verified within stated scope",
+      "content": "Disposable builder runner recovery is VERIFIED relative to two successful GitHub Actions account/sudo smoke checks. The runner executes as github-runner (UID 1001) on reported Debian 13.7 and obtains root through authorized passwordless sudo. Broad GitHub CLI OAuth was cancelled and that helper is retired. Root-equivalent sudo remains a temporary documented weakness; workflow approval settings are operator-asserted, not independently inspected. Full PTL dependencies, M15, historical artifact availability and live-page consistency remain unverified. This recovery-branch status does not approve an ISO or claim publication to the live viewer."
     },
     {
-      "title": "Current graphical validation focus",
-      "content": "The exact artwork-enabled graphical ISO passed its bounded QEMU/OVMF interaction and settled System Check gates. Six cat icons, request selection/CLEAR, OPEN DESKTOP and the stable canonical wallpaper were observed. Physical testing of this exact hash remains the next human-gated step; production signing and release approval remain incomplete."
+      "title": "Historical graphical validation focus — before runner recovery",
+      "content": "Preserved pre-recovery status; continuing artifact availability is UNKNOWN. The exact artwork-enabled graphical ISO passed its bounded QEMU/OVMF interaction and settled System Check gates. Six cat icons, request selection/CLEAR, OPEN DESKTOP and the stable canonical wallpaper were observed. Physical testing of this exact hash remains the next human-gated step; production signing and release approval remain incomplete."
     },
     {
       "title": "Automation Manifesto — proceed by default",
@@ -858,6 +876,11 @@
   ],
   "changelog": [
     {
+      "version": "3.6",
+      "date": "2026-11-10",
+      "summary": "Close runner recovery status with successful account/sudo workflow evidence; preserve CLI flag failure and cancelled excessive OAuth scopes, retired helper, lessons and checkpoint. Routine JSON updates explicitly authorized. No runtime trust/release gates advanced; JSON written last."
+    },
+    {
       "version": "3.5",
       "date": "2026-11-10",
       "summary": "Prepare isolated disposable-runner recovery, record operator-supplied installation evidence and five local negative/positive routing checks. Remote execution and rebuild reproducibility remain pending. Development branch only; JSON written last."
@@ -1180,12 +1203,12 @@
     "checkpoint": "AI_WORK_STATE.md",
     "review_branch": "ops/runner-recovery-20261110",
     "merged": false,
-    "next_action": "Register runner using console-only short-lived token, omit default labels, verify label and queued jobs, configure authorized sudo and service, then inspect recovery smoke. No PTL build or release is yet approved.",
+    "next_action": "Runner execution is ready for the next operator project task. Initial M15 development-key-only priority remains; dependency inventory can follow within that task.",
     "last_passed_source_check": {
       "run": 35180150390,
       "commit": "c1b623d0989c4c6d30814f4b92b80a44b79f501a"
     },
-    "completion_scope": "Recovery preparation recorded; online status, sudo smoke and full PTL dependency restoration pending. Historical candidate availability UNKNOWN; public-page reconciliation remains pending.",
+    "completion_scope": "Recovery execution verified through exact workflow/log evidence. Full dependencies, M15, historical candidate availability and public viewer synchronization remain unverified. Broad OAuth helper retired.",
     "checkpoint_contract": "Strict continuity headings restored and statically guarded.",
     "live_candidate_handoff": {
       "url": "https://easyai.com.au/USB/project.php",
@@ -1201,13 +1224,33 @@
         "artifact_id",
         "download_url"
       ]
-    }
+    },
+    "runner_execution_evidence": {
+      "path": "evidence/runner-recovery-20261110.json",
+      "runs": [
+        {
+          "run_id": 42691361475,
+          "job_id": 129411622420,
+          "source_commit": "ccc96dc2f171c4cd217937f13ad10bf23ee88220",
+          "conclusion": "success",
+          "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42691361475"
+        },
+        {
+          "run_id": 42691382043,
+          "job_id": 129433909368,
+          "source_commit": "7479923b2eec4d9e7cc834fda018d50255dd5635",
+          "conclusion": "success",
+          "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42691382043"
+        }
+      ]
+    },
+    "routine_json_updates": "Ongoing authorized maintenance; write last. Existing human gates remain separate."
   },
   "capabilities": [
     {
       "title": "Disposable builder runner recovery",
-      "stage": "prepared-registration-and-remote-verification-pending",
-      "scope": "Operator-supplied install transcript; five local routing tests passed. Dedicated label ptl-trusted-20261110 without default labels. Root-equivalent sudo explicitly authorized but not yet confirmed. Remote and hostile-PR scheduler tests pending."
+      "stage": "remote-account-and-sudo-checks-passed",
+      "scope": "Runs 42691361475 / 42691382043; github-runner UID 1001 and non-interactive root sudo. Not hardware attestation, full toolchain validation, hostile-PR isolation or M15 completion."
     },
     {
       "title": "Graphical ISO build",
@@ -1300,6 +1343,63 @@
         }
       },
       "reason": "Preserve pre-recovery status; source, artifact and credential reconstruction are not assumed after builder rebuild."
+    },
+    {
+      "version": "3.5",
+      "updated": "2026-11-10",
+      "summary": "Runner recovery is the immediate prerequisite to the operator-selected M15 development-key-only UKI work. The operator supplied successful prerequisite installation and runner 2.338.2 checksum/version output. An isolated recovery workflow and five passing local routing regression checks are prepared on ops/runner-recovery-20261110. Registration, service startup, root-equivalent sudo and remote smoke are pending. Clean-rebuild provenance and historical artifact availability remain UNKNOWN. No milestone or approved-release claim is advanced; this development-branch update has not been published to the live viewer.",
+      "runner_recovery": {
+        "branch": "ops/runner-recovery-20261110",
+        "base_commit": "973ce3e68c80aa1bea0c7776dcdcab5f6f34fefe",
+        "runner_version": "2.338.2",
+        "archive_sha256": "baebf204307bac6193480852732f0aba2ae97b6c5597c244f4d5558390147c40",
+        "installation_evidence": "OBSERVED operator-supplied transcript",
+        "registration": "UNKNOWN / PENDING",
+        "sudo": "authorized root-equivalent temporary control; implementation UNKNOWN",
+        "labels": [
+          "ptl-trusted-20261110"
+        ],
+        "default_labels": false,
+        "local_policy_tests": {
+          "passed": 5,
+          "scope": "Configuration checks only; not scheduler isolation or remote execution"
+        },
+        "smoke_runs": [
+          42691361475,
+          42691382043
+        ],
+        "public_page_verification": "UNKNOWN / not performed",
+        "historical_artifact_availability": "UNKNOWN"
+      },
+      "handoff": {
+        "ready_for_lighter_model": true,
+        "checkpoint": "AI_WORK_STATE.md",
+        "review_branch": "ops/runner-recovery-20261110",
+        "merged": false,
+        "next_action": "Register runner using console-only short-lived token, omit default labels, verify label and queued jobs, configure authorized sudo and service, then inspect recovery smoke. No PTL build or release is yet approved.",
+        "last_passed_source_check": {
+          "run": 35180150390,
+          "commit": "c1b623d0989c4c6d30814f4b92b80a44b79f501a"
+        },
+        "completion_scope": "Recovery preparation recorded; online status, sudo smoke and full PTL dependency restoration pending. Historical candidate availability UNKNOWN; public-page reconciliation remains pending.",
+        "checkpoint_contract": "Strict continuity headings restored and statically guarded.",
+        "live_candidate_handoff": {
+          "url": "https://easyai.com.au/USB/project.php",
+          "status": "repository-fix-complete-deployment-and-live-verification-pending",
+          "source_branch": "project-status-live",
+          "fail_closed": true,
+          "required_match_fields": [
+            "filename",
+            "size_bytes",
+            "sha256",
+            "source_commit",
+            "build_run",
+            "artifact_id",
+            "download_url"
+          ]
+        }
+      },
+      "reason": "Recovery preparation superseded by successful remote execution; broad OAuth attempt cancelled and helper retired. Existing uncertainty and old image evidence remain scoped."
     }
   ],
   "runner_recovery": {
@@ -1308,8 +1408,8 @@
     "runner_version": "2.338.2",
     "archive_sha256": "baebf204307bac6193480852732f0aba2ae97b6c5597c244f4d5558390147c40",
     "installation_evidence": "OBSERVED operator-supplied transcript",
-    "registration": "UNKNOWN / PENDING",
-    "sudo": "authorized root-equivalent temporary control; implementation UNKNOWN",
+    "registration": "OBSERVED operator transcript; execution subsequently verified through workflow checks",
+    "sudo": "VERIFIED non-interactive sudo UID=0 checks in both recovery runs; authorized temporary root-equivalent control",
     "labels": [
       "ptl-trusted-20261110"
     ],
@@ -1322,7 +1422,69 @@
       42691361475,
       42691382043
     ],
-    "public_page_verification": "UNKNOWN / not performed",
-    "historical_artifact_availability": "UNKNOWN"
+    "public_page_verification": "UNKNOWN / not performed; this JSON is on recovery branch only",
+    "historical_artifact_availability": "UNKNOWN",
+    "service": "OBSERVED startup transcript; job execution verified",
+    "execution_status": "VERIFIED relative to the stated deterministic workflow tests and GitHub logs",
+    "execution_evidence": {
+      "path": "evidence/runner-recovery-20261110.json",
+      "runs": [
+        {
+          "run_id": 42691361475,
+          "job_id": 129411622420,
+          "source_commit": "ccc96dc2f171c4cd217937f13ad10bf23ee88220",
+          "conclusion": "success",
+          "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42691361475"
+        },
+        {
+          "run_id": 42691382043,
+          "job_id": 129433909368,
+          "source_commit": "7479923b2eec4d9e7cc834fda018d50255dd5635",
+          "conclusion": "success",
+          "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42691382043"
+        }
+      ]
+    },
+    "observed_runtime": {
+      "account": "github-runner",
+      "uid": 1001,
+      "architecture": "x86_64",
+      "os": "Debian GNU/Linux 13.7 (trixie)",
+      "runner_name": "ptl-builder-01-recovery",
+      "runner_version": "2.338.2",
+      "host_identity_scope": "Runner-reported, not independent hardware attestation"
+    },
+    "routing_verification": {
+      "custom_label": "Required and selected by successful workflow",
+      "absence_of_default_labels": "Operator confirmation; not independently inspected",
+      "outside_collaborator_approval": "Operator confirmation required by startup; not independently inspected",
+      "hostile_workflow_isolation": "NOT VERIFIED; labels are routing, not authorization"
+    },
+    "authentication": {
+      "registration": "Repository-specific short-lived runner token entered at interactive prompt",
+      "broad_github_cli_oauth": "Cancelled per operator report; no authorization success reported",
+      "oauth_helper": "Retired at 98c041c82c8bbddbf6e2b1ab756d0895ad365aed; refuses execution without invoking gh",
+      "grant_revocation_and_local_cleanup": "UNKNOWN / not independently verified"
+    },
+    "local_regression_checks": [
+      {
+        "file": "tests/test_runner_recovery_policy.py",
+        "passed": 5,
+        "scope": "Workflow routing expression and metadata"
+      },
+      {
+        "file": "tests/test_runner_cli_compatibility.py",
+        "passed": 2,
+        "scope": "Retired helper refusal and no gh invocation"
+      },
+      {
+        "file": "tests/test_runner_startup_gate.py",
+        "passed": 5,
+        "scope": "Explicit confirmation gate; not truth of settings"
+      }
+    ],
+    "full_toolchain": "UNKNOWN / not yet inventoried",
+    "m15": "Not advanced by runner recovery",
+    "json_maintenance_authorization": "Operator explicitly clarified routine status JSON updates are ongoing authorized project work; keep JSON last without per-update confirmation."
   }
 }
