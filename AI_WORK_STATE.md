@@ -20,7 +20,7 @@ After closure, use main and await the next concrete task; no M16/M17 implementat
 This session's main consolidation was explicitly authorized and completed. Future main merges, production authority/key custody, platform enrollment/ownership, physical media actions and release promotion retain HUMAN_GATE. No broad OAuth grant is needed; cancelled helper stays retired. Private development keys were unlinked from tmpfs, not securely erased from RAM.
 
 ## Context health
-AMBER operational estimate after lengthy branch archaeology, two full builds and large CI logs. No exact context percentage is known. Compact checkpoint and bounded evidence records provide recovery; context pressure is not a human gate.
+AMBER operational estimate after lengthy branch archaeology, two full builds and large CI logs. No exact context percentage is known. Compact checkpoint and bounded evidence records provide recovery; Context pressure itself is never a human-approval gate.
 
 ## Recovery sequence
 Read this checkpoint and integration report. Verify volatile main/feed refs, exact JSON and artifact availability selectively. Public certificate/key checks were local; signed binaries were verified in CI, not downloaded locally. Raw inner github_run_id remains unknown after sudo filtering; outer API/run/job/source binds identity. Preserve inherited model-attribution and JSON-only publication plans. Firmware enforcement, physical boot, current-image GUI/recovery VM behavior, root authentication and exact rebuild identity remain unverified.
