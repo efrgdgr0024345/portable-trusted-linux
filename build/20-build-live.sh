@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 WORK_DIR="${PTL_BUILD_WORK_DIR:-${ROOT_DIR}/work/live-build}"
 OUT_DIR="${ROOT_DIR}/out"
+
+# Cached binary hooks can silently retain a UKI from an older source/key.
+if [[ -e "$WORK_DIR/.build/bootstrap" || -e "$WORK_DIR/m15-evidence" ]]; then
+  echo "M15 requires a fresh PTL_BUILD_WORK_DIR; refusing cached build stages." >&2
+  exit 1
+fi
 
 mkdir -p "$OUT_DIR"
 
@@ -43,6 +50,11 @@ if [[ -z "$image" ]]; then
   exit 1
 fi
 
+python3 "${SCRIPT_DIR}/52-verify-development-uki-iso.py" \
+  --iso "$WORK_DIR/${image#./}" --bundle "$WORK_DIR/m15-evidence"
+
+[[ ! -e "$OUT_DIR/m15" ]] || { echo 'Refusing stale out/m15 evidence' >&2; exit 1; }
+cp -r "$WORK_DIR/m15-evidence" "$OUT_DIR/m15"
 cp -f "$image" "$OUT_DIR/"
 artifact="${OUT_DIR}/$(basename "$image")"
 sha256sum "$artifact" | tee "${artifact}.sha256"

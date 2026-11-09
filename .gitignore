@@ -1,0 +1,7 @@
+# Generated build output and transient development material are not source.
+/out/
+/work/
+/artifacts/
+__pycache__/
+*.pyc
+*.key

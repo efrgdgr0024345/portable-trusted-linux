@@ -1191,3 +1191,20 @@ Treat routine project_content.json updates, including retention of existing publ
 
 ### Evidence classification
 **OBSERVED** explicit operator authorization. Runner/sudo recovery remains supported by runs 42691361475 and 42691382043; the index must preserve its stated limitations. Public viewer synchronization and full M15/toolchain validation remain **UNKNOWN / PENDING**.
+
+## 2026-11-10 — M15 starts from actual toolchain and loader layout, not an unused signed sidecar
+
+### What was attempted
+Begin the explicitly authorized M15 integration using ephemeral development keys, after restoring remote runner execution.
+
+### What happened
+Toolchain restore/probe run 42699169946 passed on the trusted builder: systemd-ukify 257.13, sbsigntool 0.9.4 and live-build 20250505. Source inspection confirmed that live-build runs binary hooks from the binary directory before ISO generation and stages its ESP at boot/efi.img. The existing pipeline has no UKI integration; signing a separate file would not change its actual UEFI entry. Local static checks also exposed that the recovery checkpoint had lost the headings required by the repository's existing continuity test.
+
+### Why it matters
+Build integration must bind exact live inputs and the image's actual loader path. Signature validity on an unused file does not establish a boot-chain improvement. Policy/checkpoint drift must be repaired rather than hidden by weakening tests.
+
+### Decision / change
+Implement a mandatory binary hook with exact input/version matching, explicit empty ukify configuration, fresh tmpfs-only development keys and positive/negative verification. Replace the development image's UEFI fallback with that signed UKI and independently read it back from the final ISO/boot extents. Preserve legacy BIOS as explicitly outside the signed-UKI guarantee. Restore the existing compact-checkpoint heading contract. Build/test integration is in progress; no M15 completion claim is made.
+
+### Evidence classification
+OBSERVED actual toolchain/probe and live-build source; VERIFIED local static detection of checkpoint drift, now corrected. Full normal-pipeline build, signature tests and final ISO read-back remain PENDING until CI evidence exists. No production key or platform ownership action was performed.

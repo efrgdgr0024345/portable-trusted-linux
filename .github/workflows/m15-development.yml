@@ -26,7 +26,8 @@
       ],
       "timeout-minutes": 120,
       "env": {
-        "PTL_BUILD_WORK_DIR": "/var/tmp/ptl-m15-${{ github.run_id }}-${{ github.run_attempt }}"
+        "PTL_BUILD_WORK_DIR": "/var/tmp/ptl-m15-${{ github.run_id }}-${{ github.run_attempt }}",
+        "PTL_SOURCE_COMMIT": "${{ github.sha }}"
       },
       "steps": [
         {
@@ -40,12 +41,37 @@
         {
           "name": "Restore declared build dependencies",
           "shell": "bash",
-          "run": "set -Eeuo pipefail\nsudo -n bash build/01-install-deps.sh\nsudo -n apt-get install -y --no-install-recommends binutils python3 mtools grub-efi-amd64-bin grub-pc-bin isolinux syslinux-common\n"
+          "run": "set -Eeuo pipefail\nsudo -n bash build/01-install-deps.sh\n"
         },
         {
-          "name": "Inspect actual UKI and ISO tooling",
+          "name": "Run source and fail-closed regression checks",
           "shell": "bash",
-          "run": "set -Eeuo pipefail\nexport PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\nbash build/00-host-check.sh\nukify --help\nsbverify --help\nobjdump -h /usr/lib/systemd/boot/efi/linuxx64.efi.stub\nsed -n '1,240p' /usr/lib/live/build/binary_grub-efi\nsed -n '1,200p' /usr/lib/live/build/binary_hooks\n"
+          "run": "set -Eeuo pipefail\nexport PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\ntest \"$(git rev-parse HEAD)\" = \"$PTL_SOURCE_COMMIT\"\nbash tests/00-static-check.sh\npython3 -m unittest discover -s tests -p 'test_runner_*.py'\npython3 -m py_compile build/50-build-development-uki.py build/52-verify-development-uki-iso.py verifier/verify-development-uki.py\n"
+        },
+        {
+          "name": "Normal Prototype 1 pipeline including mandatory signed UKI gate",
+          "shell": "bash",
+          "run": "set -Eeuo pipefail\nbash build/20-build-live.sh\nbash build/30-artifact-manifest.sh\n"
+        },
+        {
+          "name": "Preserve public evidence and summarize exact identities",
+          "if": "always()",
+          "shell": "bash",
+          "run": "set -Eeuo pipefail\nretain=\"$HOME/blackcat-builds/m15/run-${GITHUB_RUN_ID}-attempt-${GITHUB_RUN_ATTEMPT}\"\nmkdir -p \"$retain\"\nif [ -d out ]; then cp -r out/. \"$retain/\"; fi\nif [ -d \"$PTL_BUILD_WORK_DIR/m15-evidence\" ] && [ ! -d \"$retain/m15\" ]; then\n  cp -r \"$PTL_BUILD_WORK_DIR/m15-evidence\" \"$retain/m15\"\nfi\nif [ -d \"$retain/m15\" ]; then\n  find \"$retain/m15\" -type f -name '*.key' -print -quit | grep -q . && exit 1\nfi\nprintf 'LOCAL_EVIDENCE_DIR=%s\\n' \"$retain\"\nfor f in out/m15/provenance.json out/m15/tests.json out/m15/iso-verification.json; do\n  if [ -f \"$f\" ]; then echo \"$f\"; cat \"$f\"; fi\ndone\nif [ -f out/live-build.log ]; then tail -n 90 out/live-build.log; fi\n"
+        },
+        {
+          "name": "Upload development UKI evidence only (not an approved ISO)",
+          "id": "evidence_upload",
+          "if": "always()",
+          "continue-on-error": true,
+          "uses": "actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f",
+          "with": {
+            "name": "blackcat-m15-development-evidence-${{ github.run_id }}",
+            "path": "out/m15/**\nout/live-build.log\nout/build-manifest.json",
+            "if-no-files-found": "warn",
+            "compression-level": 0,
+            "retention-days": 7
+          }
         }
       ]
     }

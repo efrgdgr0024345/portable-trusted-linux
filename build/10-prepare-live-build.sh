@@ -36,6 +36,7 @@ lb config \
   --security true \
   --updates true \
   --debian-installer none \
+  --uefi-secure-boot disable \
   --bootappend-live "boot=live components quiet"
 
 mkdir -p config/package-lists
@@ -127,6 +128,14 @@ if [[ -f config/includes.chroot/etc/systemd/system/blackcat-check.service ]]; th
   ln -sfn ../blackcat-check.service \
     config/includes.chroot/etc/systemd/system/multi-user.target.wants/blackcat-check.service
 fi
+
+# This changes live-build's loader selection, not firmware Secure Boot settings.
+# The mandatory binary hook replaces its ESP with the development-signed UKI.
+mkdir -p config/hooks/live
+printf '#!/usr/bin/env bash\nset -Eeuo pipefail\nexport PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\nexec python3 %q --work-dir %q --output %q\n' \
+  "${PTL_ROOT}/build/50-build-development-uki.py" "$WORK_DIR" "$WORK_DIR/m15-evidence" \
+  > config/hooks/live/0500-blackcat-development-uki.hook.binary
+chmod 0755 config/hooks/live/0500-blackcat-development-uki.hook.binary
 
 cat > "${ARTIFACT_DIR}/prepare.json" <<EOF
 {
