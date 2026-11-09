@@ -1,3 +1,26 @@
+# Current recovery procedure — repository-scoped token only
+
+**The GitHub CLI OAuth procedure below is superseded and must not be followed.** The operator cancelled the device authorization after seeing broad repository, workflow, gist and organization scopes. Temporary local storage and a short-lived output token did not make the upstream OAuth grant repository-scoped.
+
+The current ops/register-runner-gh.sh refuses execution without invoking GitHub CLI. Two local tests verified refusal and that a fake gh executable was never invoked. Older pinned commits remain available for history; do not rerun those earlier script links.
+
+## Register without a general GitHub login
+Open https://github.com/efrgdgr0024345/portable-trusted-linux/settings/actions/runners/new?arch=x64&os=linux and obtain a repository runner registration token. Enter only that token at the runner's interactive console prompt; never send it to chat. The registration token expires after one hour and permits runner registration for this repository; it is not a general repository-content or account OAuth credential.
+
+In the already-authorized builder root console, run:
+
+```bash
+runuser -l github-runner -c 'cd /home/github-runner/actions-runner && ./config.sh --url https://github.com/efrgdgr0024345/portable-trusted-linux --name ptl-builder-01-recovery --no-default-labels --labels ptl-trusted-20261110 --work _work'
+```
+
+Enter the token at its prompt, accept the default runner group if asked, and stop after registration. Do not start run.sh or the service yet. Registration does not itself prove the runner is online or sudo is operational. The registered listener will later receive separate execution credentials; the registration token's limited scope does not make a root-capable runner safe against untrusted jobs.
+
+The operator reported cancellation; authorization revocation and local cleanup were not independently verified. If authorization was actually approved, review the GitHub CLI grant in GitHub's authorized OAuth application settings; deleting local files alone does not revoke it.
+
+---
+
+# Historical procedure — superseded, not an instruction
+
 # Console-only automated runner registration
 
 Use ops/register-runner-gh.sh to retrieve a short-lived runner registration token through GitHub CLI instead of copying it from a web page.
