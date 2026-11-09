@@ -1079,3 +1079,23 @@ Register with --no-default-labels and only ptl-trusted-20261110; keep the servic
 
 ### Evidence classification
 **OBSERVED** operator-supplied installation and checksum output. **VERIFIED** five local configuration regression checks relative to the prepared workflow. **WARNING** public-repository generic PR routing and root-equivalent sudo exposure. Registration, remote execution, sudo verification, scheduler isolation and full rebuild reproducibility are **UNKNOWN / PENDING**. This preparation does not close M15 or approve a Black Cat ISO.
+
+
+## 2026-11-10 — Automate short-lived runner tokens after one browser approval
+
+### What was attempted
+Remove manual runner-token copying while avoiding credential disclosure and a permanent GitHub CLI login on the worker.
+
+### What actually happened
+The operator challenged an unnecessary manual step. The connected tools do not expose runner-token creation. ops/register-runner-gh.sh now uses temporary GitHub CLI device authentication, the official registration-token API and ACTIONS_RUNNER_INPUT_TOKEN. Bash syntax and a negative non-root invocation check passed locally; remote authentication and registration have not yet been reported.
+
+The environment-input mechanism was checked against the official actions/runner v2.338.2 CommandSettings.cs source. Automatic approval review rejected updates retaining the existing public access runbook and lessons-register infrastructure/key-location metadata. A separate guide was created without those access details. The operator then explicitly approved this canonical lessons append while retaining the register's existing fields. No private keys, tokens or new credential locations are added by this lesson.
+
+### Why it matters
+Manual copying is not intrinsically safer. Credential scope, exposure and retention are the relevant controls. A temporary local configuration directory does not revoke an OAuth grant, and abrupt termination can leave temporary files behind. A blocked documentation write must be reported rather than bypassed or silently described as complete.
+
+### Decision / change
+Use the checksum-pinned helper and one browser approval; capture the short-lived token without printing it, putting it in command history or passing it as a command argument. Remove temporary local CLI configuration on normal exit and handled errors. Keep service startup behind dedicated-label and queue checks. See docs/runner-registration-cli.md. The older access-runbook append remains unapplied; the separate guide supplies the new procedure. Append this lesson under explicit operator approval, refresh the checkpoint, and update project_content.json last.
+
+### Evidence classification
+**VERIFIED** local shell syntax and non-root rejection relative to the helper. **OBSERVED** official runner environment-input support and operator-provided installation output. Remote authorization, token creation, registration, cleanup, service startup and sudo execution remain **UNKNOWN / PENDING**. No runtime trust milestone or release approval advanced.
