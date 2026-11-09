@@ -1,44 +1,30 @@
 # Black Cat AI Work State
 
-Compact handoff for a lighter coding model. Read this first, then the current evidence report and only the source relevant to the next action. This is an evidence-backed continuation checkpoint, not a release claim.
+## Immediate objective
+Restore the disposable ptl-builder-01 GitHub runner so unattended engineering can resume. Operator authorized rebuild and temporary passwordless sudo. The clean OS rebuild itself is not independently verified.
 
-## Current project state
+## Branch and recovery state
+- Recovery branch: ops/runner-recovery-20261110
+- Base: project-status-live at 973ce3e68c80aa1bea0c7776dcdcab5f6f34fefe; main is unchanged.
+- Workflow/test source: 7479923b2eec4d9e7cc834fda018d50255dd5635.
+- Five local routing checks passed; PR events, wrong refs and other repositories rejected.
+- Operator supplied successful runner 2.338.2 archive checksum and version output.
+- Runner registration, service startup, sudo grant and remote smoke are pending.
+- Required name: ptl-builder-01-recovery.
+- Required custom label: ptl-trusted-20261110, with --no-default-labels.
+- Existing generic main PR workflows must not route to this root-capable runner.
+- Recovery smoke runs 42691361475 and 42691382043 were queued/pending. Recheck before startup.
 
-- Review branch: `codex/graphical-evidence-review`; main is **not merged**.
-- Automated VM gates are complete for the artwork-enabled graphical candidate.
-- Human gates remain: spare-USB selection/write, physical boot, hardware observations, production signing, release approval, merge and deployment.
-- Canonical design authority: `design/README.md`; original folder is `/linux usb project/Graphical design for black cat project` (18 files).
-- The build uses seven selected canonical assets: one wallpaper plus six category icons. Other design files remain references.
+## Next action
+Operator enters a fresh GitHub runner registration token directly in the builder console using the runbook command. Do not request or print tokens. Verify labels, then configure the authorized root-owned sudoers rule, validate it with visudo, install/start service as github-runner and inspect the recovery smoke. Existing available tools do not provide a shell on this droplet; console execution is a capability boundary.
 
-## Current exact test candidate
+## Trust boundary
+Unrestricted passwordless sudo is root-equivalent. Repository writers can target custom labels; scheduling labels do not authenticate workflows. Do not put production keys or unrelated workloads here. Full dependency restoration, actual clean rebuild, image reproducibility and hostile-PR scheduler behavior remain UNKNOWN.
 
-- Filename: `live-image-amd64.hybrid.iso`
-- Size: `770703360` bytes
-- SHA-256: `f498776780c543013e437161a878e22ca4fc40a66f47fc271d6fd6a964c29d75`
-- Source: `ed5d80ac09c3f1650d67594242643d27efcf15e9`
-- Build run: `35179377345`
-- Artifact: `blackcat-graphical-development-35179377345` (ID `10480220416`)
-- Builder copy: `/home/github-runner/blackcat-builds/run-35179377345-attempt-1/live-image-amd64.hybrid.iso`
-- VM evidence: run `35180150392`, harness commit `c1b623d0989c4c6d30814f4b92b80a44b79f501a`
+## Core priority and preserved history
+Operator directive selects M15 signed UKI with development keys only after recovery. M13B/M14 status is recorded on project-status-live but main is older; avoid claiming branch convergence.
+Historical graphical candidate: SHA-256 f498776780c543013e437161a878e22ca4fc40a66f47fc271d6fd6a964c29d75, 770703360 bytes, source ed5d80ac09c3f1650d67594242643d27efcf15e9, build 35179377345, artifact 10480220416. Its continuing availability after rebuild is UNKNOWN. Old VM/physical observations do not apply to a new build. No approved release exists; live-page identity verification remains pending.
 
-## Established VM observations
-
-QEMU 10.0.13 used OVMF UEFI, TCG, 2 vCPU, 2048 MiB, no guest NIC and no host disks. Six artwork icons and the tagline were visible. Browser selection produced `Requested (NOT activated): Browser`; CLEAR returned `none`. OPEN DESKTOP exposed a stable canonical wallpaper in two successive captures. System Check reached its photo prompt after 140 seconds.
-
-The VM reported UEFI; Secure Boot `UNKNOWN`; TPM and TCG event log `NOT_EXPOSED`; dm-verity `NOT_ACTIVE`; network `NO_ACTIVE_LINK_OBSERVED`. These are development observations, not verified security or physical-hardware claims.
-
-## Next automatic actions
-
-Publish the current candidate through the stable `project-status-live` source, deploy the corrected canonical viewer if the host still serves the obsolete copy, and verify `https://easyai.com.au/USB/project.php` displays the exact size, SHA-256, source, run, artifact and link. Until that live verification passes, do not ask the operator to download or test the ISO. Preserve the exact hash and never transfer observations from historical images.
-
-## Next genuine human gate
-
-After the authoritative live-page verification passes, obtain explicit approval for the exact spare USB device, then follow `docs/13-physical-boot-test.md`. Do not write a device, merge to main, create production signing authority, approve a release or deploy without the corresponding human gate.
-
-## Context health
-
-This checkpoint is sufficient for a lighter model. Selectively reload `docs/20-graphical-candidate-evidence.md`, `design/README.md` and the physical-test procedure; do not reload the whole history. Escalate new trust-policy choices or ambiguous security evidence. Context pressure itself is never a human-approval gate.
-
-## Recovery sequence
-
-Verify the review-branch head and exact ISO identity. Read this file, the current evidence report, design authority and specific procedure. Historical images and their observations must never be transferred to this candidate.
+## Human gates and context
+Physical writes/testing, production keys, platform trust changes, main merges and release approval retain established gates. Document lessons and affected technical files, checkpoint before project_content.json, JSON last.
+Context health: AMBER heuristic after substantial source/policy reads; no exact context percentage is known. On recovery read this checkpoint, then only the relevant runbook and live CI facts.
