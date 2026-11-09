@@ -4,12 +4,16 @@ Compact, first-read recovery checkpoint. GitHub is the authoritative history; se
 
 ## Current project state
 
-- State revision: 10; checkpoint 2026-09-16.
+- State revision: 11; checkpoint 2026-11-09 (Australia/Perth).
 - Branch: `codex/remove-chroot-systemd-boot`; PR #6 remains unmerged.
 - Milestone: M14 release signing is current; M15 signed UKI planned; M26 modular AI runtime future.
 - Project index previously 80% (not recalculated). Approved release: NONE.
 - M13B: complete on ONE tested hardware/configuration, not globally attested.
-- M14: closed canonical Ed25519 manifest and local development self-tests implemented; current-head CI evidence not yet verified; production release signing-key custody HUMAN_GATE.
+- M14: 14 local positive/negative assertions pass with ephemeral development keys only. Fixed validator execute mode and rejection of multiple top-level JSON documents; regression failed before the parser fix.
+- Baseline inspected: `4ec20e07c3d7e5bc73fba13e733700ca0c0d7709`; PR #6 head matched that branch before this cycle. Preserve this cycle's final Git revision when checking CI.
+- Current-head M14 CI evidence: NOT OBSERVED. Outbound proxy rejects `api.github.com` with HTTP 403; Git works. Environment draft reads failed, so no unknown allowlist was replaced. Add that hostname in environment settings, then verify the exact final branch revision and completed self-test job.
+- Production release signing-key custody remains HUMAN_GATE. No approved ISO, production key, firmware enrollment or target-disk write is authorized.
+- Broader static checks separately fail on unchanged login-hook execution and Automation Manifesto wording; neither is an M14 signing-workflow check, and neither was weakened or changed.
 - GUI session prototype source newly committed: packages, Tkinter selector, XFCE autostart, special-boot LightDM condition, static test/workflow, `docs/19-graphical-session-prototype.md`.
 - GUI source is NOT a validated new ISO, active module loader, working permission broker or verified graphical boot. No new candidate has been promoted.
 - Supplemental UI lesson: `docs/07-lessons-learned-ui-2026-09-16.md`. Mandatory lossless append to `docs/07-lessons-learned.md` and project JSON synchronization remain outstanding until completed; never claim otherwise.
@@ -42,12 +46,10 @@ Compact, first-read recovery checkpoint. GitHub is the authoritative history; se
 
 ## Next automatic actions
 
-1. Verify GUI source and static test, inspect hosted workflow result if any; fix bounded defects.
-2. Build new ISO in disposable CI; record source SHA, ISO size/SHA and preserve artifacts; distinguish builder failure from ISO failure.
-3. Verify graphical login, XFCE autostart/check boxes and close-to-desktop in a graphical VM with framebuffer/screenshot evidence.
-4. Independently verify `blackcat.check=1` retains the photograph-friendly text report with no graphical takeover.
-5. Append supplemental UI lesson LOSSLESSLY to canonical lessons; update affected docs and `project_content.json` LAST. Do not delete historical JSON links/evidence to simplify the edit.
-6. Continue non-secret M14/M15 work; no release promotion, merge or USB write.
+1. Close only the remaining M14 evidence gap: inspect PR #6/current branch and the release-signing self-test workflow once Actions API connectivity is available. Git push alone does not prove a workflow ran.
+2. Require successful completed CI for the exact current revision, using only ephemeral development keys; diagnose any bounded failure without weakening fail-closed checks.
+3. Record the observed run URL, source identity and outcome; update lessons and this checkpoint, then `project_content.json` LAST. Never substitute local success or an older green run for current-revision CI evidence.
+4. Stop at production release-key custody HUMAN_GATE. Do not begin M15, M16–M25, new ISO work or M26; bounded M15 design requires explicit operator instruction.
 
 ## Next genuine human gate
 
@@ -55,8 +57,8 @@ Production release signing-key ownership/custody, including independent public-k
 
 ## Context health
 
-AMBER heuristic, no exact meter. Checkpoint rev 10. Context pressure itself is never a human-approval gate.
+AMBER heuristic, no exact meter. Checkpoint rev 11. Context pressure itself is never a human-approval gate.
 
 ## Recovery sequence
 
-Read this file first. Verify PR head, UI/test CI and M14 CI state. Load `docs/19-graphical-session-prototype.md` for GUI work; `docs/16`/`17` for signing; `docs/18` only for future module design. Do not bulk-load history. Preserve safety and genuine human gates.
+Read this file first. Verify only the active branch/PR head and exact M14 workflow evidence. Load `docs/16-authenticated-release-signing.md` and relevant signing source selectively. The operator's authoritative cycle is M14 evidence only; preserve M13B OBSERVED status, design-only M15 and deferred M26. Do not bulk-load history or resume older GUI/build actions.

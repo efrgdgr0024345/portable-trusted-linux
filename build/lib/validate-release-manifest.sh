@@ -10,7 +10,10 @@ command -v jq >/dev/null || { echo 'jq is required' >&2; exit 1; }
 canonical="$(mktemp)"
 trap 'rm -f "$canonical"' EXIT
 
-jq -S -c . "$MANIFEST" > "$canonical" 2>/dev/null || {
+jq -e -S -c -s '
+  if length == 1 and (.[0] | type == "object") then .[0]
+  else error("expected exactly one manifest object") end
+' "$MANIFEST" > "$canonical" 2>/dev/null || {
   echo 'MANIFEST JSON: FAILED' >&2
   exit 1
 }

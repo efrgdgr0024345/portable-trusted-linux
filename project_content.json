@@ -1,10 +1,10 @@
 {
   "title": "Black Cat",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "phase": "Prototype 1 Engineering",
   "progress": 80,
-  "updated": "2026-09-17",
-  "summary": "M13B remains complete on the tested real-hardware configuration. M14 authenticated release signing remains current, with strict closed-schema canonical validation and local development self-tests using ephemeral keys; current-revision GitHub CI evidence is still not observed and production release-key ownership/custody remains a HUMAN_GATE. Safe M15 signed-UKI preparation also remains design-only with DEVELOPMENT ONLY keys. A future Black Cat runtime architecture is now recorded for M26: the trusted core stays deliberately small and immutable, non-essential software is delivered as pre-built ready-to-run session modules selected by icon/checkbox-style choices, module activation is coupled to least-privilege capabilities, and natural-language AI tool creation should preferably build in a separate disposable untrusted VPS/VM workshop. Anything returned by that workshop is treated as potentially malicious and must cross an independent verification/capability gate; the workshop receives no trusted-core write authority or production signing keys. This future design does not change the current M14–M25 implementation priority and there is still no approved Black Cat release.",
+  "updated": "2026-11-09",
+  "summary": "M13B remains complete on the tested real-hardware configuration (OBSERVED only). M14 authenticated release-signing mechanics now reject multiple top-level JSON documents and preserve the shared validator executable mode. All 14 local positive/negative assertions pass using ephemeral development keys only. Current-revision GitHub Actions evidence remains NOT OBSERVED: this environment blocks api.github.com with HTTP 403. Closing that evidence gap is the sole current engineering objective. Production release-key ownership/custody remains HUMAN_GATE, and there is still no approved Black Cat ISO. M15 remains design/preparation only with DEVELOPMENT ONLY ephemeral keys; M16–M25 and the recorded future M26 modular/workshop direction are outside this cycle.",
   "candidate": {
     "status": "test",
     "channel": "graphical-physical-test",
@@ -32,7 +32,7 @@
     "smoke_test": "pending",
     "download_url": "",
     "release_page_url": "",
-    "note": "No Black Cat ISO is currently an approved release. M14 signing mechanics are implemented and locally development-tested, but current-revision GitHub CI evidence and a deliberately selected production release-signing key/custody model are still absent."
+    "note": "No Black Cat ISO is approved. M14 local development self-tests pass all 14 assertions using ephemeral keys, but current-revision GitHub CI evidence remains NOT OBSERVED because Actions API connectivity is blocked. Production release-signing private-key ownership/custody remains a deliberate HUMAN_GATE. No production signing authority has been created."
   },
   "documents": [
     {
@@ -289,11 +289,11 @@
     },
     {
       "title": "M14 authenticated release signing",
-      "content": "CURRENT. Generator, signer and verifier share a strict fail-closed validator for exact canonical JSON and an exact closed field/schema set. Detached Ed25519 signatures bind release ID/time, exact artifact filename/size/SHA-256, source/build identity and trusted release-public-key fingerprint. Expanded negative tests reject tampering, non-canonical JSON, unexpected fields, wrong filename, malformed signature, wrong key, unsupported key type and invalid release IDs."
+      "content": "CURRENT. The shared fail-closed validator requires exactly one top-level JSON object, exact canonical bytes and a closed field/schema set, and is tracked executable for clean checkouts. Detached Ed25519 signatures bind release ID/time, exact artifact filename/size/SHA-256, source/build identity and the trusted public-key fingerprint. The new regression rejects multiple JSON objects at the validator, signer and verifier, including a valid development signature over the invalid stream. Existing tampering, filename, key, signature and schema checks remain enforced."
     },
     {
       "title": "M14 development-test evidence",
-      "content": "Equivalent updated M14 scripts/tests passed in an isolated local shell using ephemeral development keys only. This is LOCAL DEVELOPMENT EVIDENCE, not current-revision GitHub CI evidence. The Approved Release gate remains closed."
+      "content": "LOCAL DEVELOPMENT EVIDENCE OBSERVED on 2026-11-09: all 14 positive/negative assertions pass using ephemeral development keys, and temporary test directories are removed on exit. The JSON-stream regression failed before the fix. CURRENT-REVISION GITHUB CI: NOT OBSERVED / CAPABILITY BLOCKED; the outbound proxy rejects api.github.com with HTTP 403. Add that hostname in environment settings while preserving existing domains, then inspect the exact final branch revision and successful completed signing self-test job. Git access or an eligible PR push is not itself CI evidence. Two unrelated pre-existing broader static failures remain documented. The Approved Release gate stays closed."
     },
     {
       "title": "M14 production key human gate",
@@ -570,6 +570,11 @@
     }
   ],
   "changelog": [
+    {
+      "date": "2026-11-09",
+      "version": "3.0.2",
+      "summary": "Bounded M14 correction: restore validator executable mode, require one canonical JSON object, and add regressions for validator/signer/verifier rejection of signed JSON streams. All 14 local assertions pass with ephemeral development keys. Current-revision hosted CI remains NOT OBSERVED because api.github.com is blocked; production key custody remains HUMAN_GATE. No approved ISO or M15 implementation."
+    },
     {
       "date": "2026-09-17",
       "version": "3.0.1",

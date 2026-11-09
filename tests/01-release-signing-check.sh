@@ -55,6 +55,27 @@ if bash "$ROOT_DIR/build/42-verify-release.sh" "$TMP/noncanonical-manifest.json"
 fi
 echo '[PASS] non-canonical manifest is rejected'
 
+cat "$manifest" "$manifest" > "$TMP/multiple-manifests.json"
+if bash "$ROOT_DIR/build/lib/validate-release-manifest.sh" "$TMP/multiple-manifests.json" >/dev/null 2>&1; then
+  echo '[FAIL] validator accepted multiple top-level JSON documents' >&2
+  exit 1
+fi
+echo '[PASS] validator rejects multiple top-level JSON documents'
+
+if bash "$ROOT_DIR/build/41-sign-release-manifest.sh" "$TMP/multiple-manifests.json" "$private_key" "$TMP/multiple-manifests.sig" >/dev/null 2>&1; then
+  echo '[FAIL] signer accepted multiple top-level JSON documents' >&2
+  exit 1
+fi
+echo '[PASS] signer rejects multiple top-level JSON documents'
+
+# A valid development signature must not make an invalid JSON stream acceptable.
+openssl pkeyutl -sign -rawin -inkey "$private_key" -in "$TMP/multiple-manifests.json" -out "$TMP/multiple-manifests.sig"
+if bash "$ROOT_DIR/build/42-verify-release.sh" "$TMP/multiple-manifests.json" "$TMP/multiple-manifests.sig" "$public_key" "$artifact" >/dev/null 2>&1; then
+  echo '[FAIL] verifier accepted signed multiple top-level JSON documents' >&2
+  exit 1
+fi
+echo '[PASS] verifier rejects signed multiple top-level JSON documents'
+
 jq -S -c '.unexpected = "field"' "$manifest" > "$TMP/extra-field-manifest.json"
 if bash "$ROOT_DIR/build/lib/validate-release-manifest.sh" "$TMP/extra-field-manifest.json" >/dev/null 2>&1; then
   echo '[FAIL] unexpected manifest field accepted' >&2

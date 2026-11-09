@@ -835,3 +835,52 @@ Add `docs/18-modular-runtime-and-ai-workshop.md`, extend the M26 design in `docs
 
 ### Evidence classification
 **ARCHITECTURE/DESIGN DECISION RECORDED / NO RUNTIME MODULE SYSTEM OR AI WORKSHOP DEPLOYED.**
+
+## 2026-11-09 — Clean-checkout execution and a single JSON object are M14 prerequisites
+
+### What was attempted
+Close the current-revision M14 signing self-test evidence gap on the established
+`codex/remove-chroot-systemd-boot` / PR #6 line, starting at
+`4ec20e07c3d7e5bc73fba13e733700ca0c0d7709`, with ephemeral development keys only.
+
+### What actually happened
+The unmodified self-test stopped because the shared validator was tracked as
+`100644`, although all three callers require it to be executable. Restoring
+`100755` made the original 11 assertions pass. A focused canonical-parser check
+then demonstrated that two concatenated canonical manifest objects were accepted:
+`jq` processes JSON streams, so canonical output and a successful final schema
+result did not establish that the input contained exactly one object.
+
+The regression was added first and failed on that behavior. Canonicalization now
+requires exactly one top-level object before the unchanged byte comparison and
+closed-schema checks. All 14 assertions pass locally, including rejection by the
+validator, signer and verifier of multiple objects, even with a valid development
+signature over the complete invalid stream. The test keys exist only in temporary
+directories removed by the self-test; no production signing authority was created.
+
+Git fetch works. The GitHub Actions API is blocked by an outbound-proxy HTTP 403
+for `api.github.com`; the environment draft could not be read twice, so no unknown
+network allowlist was replaced. A branch push is eligible for the existing PR
+workflow but is not itself observed run evidence. Current-revision hosted CI
+remains NOT OBSERVED until the exact run and completed test job can be inspected.
+The optional broader static suite also reports two pre-existing failures in
+unchanged login-hook/Automation Manifesto checks; those are not claimed as passing
+and are outside this bounded signing correction.
+
+### Why it matters
+An isolated shell reproduction can accidentally omit Git executable-mode defects.
+Also, valid signatures do not resolve ambiguous JSON document boundaries. Both
+packaging and parser assumptions must hold in an actual checkout, and local test
+success must remain distinct from hosted CI evidence.
+
+### Decision / next action
+Preserve the validator's executable mode and the single-object regression. Allow
+`api.github.com` in environment settings without removing existing destinations,
+then inspect the exact final branch revision's M14 workflow. Record observed CI
+only after success is verified. No production secret is required by this workflow.
+Production release-key custody remains HUMAN_GATE; no approved ISO, firmware/key
+enrollment, TPM ownership change, target-disk write or M15 implementation follows.
+
+### Evidence status
+LOCAL DEVELOPMENT SELF-TEST: PASS (14 assertions). CURRENT-REVISION GITHUB CI:
+NOT OBSERVED / CAPABILITY BLOCKED. No production private key was created or loaded.

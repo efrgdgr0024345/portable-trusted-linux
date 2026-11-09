@@ -47,6 +47,7 @@ The schema is **closed**, not extensible by accident. Unexpected top-level or ne
 
 Central fail-closed validator used by the generator, signer and verifier. It requires:
 
+- exactly one top-level JSON object, never a stream of JSON documents;
 - exact canonical JSON bytes;
 - the exact supported top-level and nested field sets;
 - schema `blackcat-release-manifest-v0.1`;
@@ -60,6 +61,10 @@ Central fail-closed validator used by the generator, signer and verifier. It req
 - Ed25519, raw-detached signature form and the exact manifest-encoding declaration.
 
 Any mismatch exits non-zero.
+
+The validator is tracked executable (`100755`); all three callers require that
+prerequisite even though they invoke it through Bash. Preserve that mode in clean
+checkouts rather than bypassing the prerequisite.
 
 ### `build/40-create-release-manifest.sh`
 
@@ -111,6 +116,9 @@ It then proves negative cases fail, including:
 - artifact tampering after signing;
 - signed-manifest tampering;
 - non-canonical JSON encoding;
+- multiple top-level JSON documents, rejected by the validator and signer, and
+  by the verifier even when the complete invalid stream has a valid ephemeral
+  development signature;
 - unexpected manifest fields;
 - wrong artifact filename even when bytes match;
 - malformed signature bytes;
@@ -124,6 +132,29 @@ The temporary keypair exists only for the test process and is not a release trus
 A dedicated GitHub-hosted workflow runs this self-test without repository secrets. Passing this workflow validates the signing/verification mechanics, not production key custody.
 
 A local isolated shell execution of the same scripts is also useful as development evidence when GitHub Actions has not yet produced a run for the current branch revision. Local success must be labelled as local development evidence, not CI evidence.
+
+### 2026-11-09 bounded evidence cycle
+
+On `codex/remove-chroot-systemd-boot`, the clean-checkout baseline exposed a
+non-executable validator and acceptance of multiple canonical JSON documents.
+The execute bit was restored and canonicalization now requires exactly one
+object before the existing byte comparison and closed-schema checks. The new
+regression failed before the parser correction. All 14 positive/negative
+assertions now pass locally using only temporary development keys, which the
+self-test removes on exit.
+
+Current-revision GitHub Actions evidence remains **NOT OBSERVED**: this
+environment's outbound proxy rejects `api.github.com` with HTTP 403. Git access
+works, but it is not evidence of an Actions run or conclusion. The existing PR
+workflow is eligible to run when these signing paths change; inspect the run's
+exact source revision and completed test job before recording CI as observed.
+The environment draft service could not be read, so no unknown network allowlist
+was replaced. Required connectivity addition: `api.github.com`, preserving all
+existing destinations. No production signing secret is needed for this workflow.
+
+The broader static suite separately reports pre-existing login-hook and
+Automation Manifesto wording failures. Those unchanged files are outside this
+M14-only correction; their failures are not represented as passing checks.
 
 ## 6. Human gate: production key custody
 
