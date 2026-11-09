@@ -1173,3 +1173,21 @@ Treat runner execution with sudo as recovered relative to these exact workflow c
 
 ### Evidence classification
 **VERIFIED** deterministic workflow identity/account/sudo checks relative to retrieved GitHub logs. **OBSERVED** runner-reported host and OS. Approval settings and absent default labels remain operator-asserted rather than independently inspected. Full toolchain, artifacts, M15, public-page consistency and reproducibility remain **UNKNOWN / PENDING**. The final JSON write remains blocked by automatic approval review awaiting separate approval to retain existing public infrastructure/runbook references.
+
+
+## 2026-11-10 — Routine JSON synchronization is already authorized project work
+
+### What was attempted
+Close the runner-recovery documentation cycle with the required final project_content.json status update.
+
+### What happened
+Automatic approval review rejected JSON writes for retaining existing public infrastructure/runbook references, while the operator had separately approved canonical lessons appends. Repeated approval requests left the index stale despite successful runner execution. The operator explicitly clarified: JSON updates are a standard part of project work and do not require per-update approval.
+
+### Why it matters
+Mandatory status synchronization is part of completing an authorized engineering task. Treating it as a new operator policy decision creates friction and makes the public-facing index less accurate. A tool rejection must still be reported and resolved within the platform's review mechanism; it must not be bypassed or hidden.
+
+### Decision / change
+Treat routine project_content.json updates, including retention of existing public project references, as ongoing authorized maintenance within the active task. Record evidence, lessons and checkpoint first, then JSON as the final repository write. Retry the previously rejected write with the clarified authorization. Keep new secret disclosure, broad account OAuth, release promotion, main merges and other genuine human gates separate; this clarification does not authorize those actions.
+
+### Evidence classification
+**OBSERVED** explicit operator authorization. Runner/sudo recovery remains supported by runs 42691361475 and 42691382043; the index must preserve its stated limitations. Public viewer synchronization and full M15/toolchain validation remain **UNKNOWN / PENDING**.
