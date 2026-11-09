@@ -16,6 +16,8 @@ Every meaningful run or change must update `docs/07-lessons-learned.md` before `
 10-prepare-live-build.sh
       ↓
 20-build-live.sh
+      ├── live-build binary hook: 50-build-development-uki.py
+      └── post-ISO read-back: 52-verify-development-uki-iso.py
       ↓
 30-artifact-manifest.sh
       ↓
@@ -36,7 +38,7 @@ The live-build stages prepare and build a Debian Live artifact and generate prov
 - UEFI-first
 - Debian `live-build`
 - authenticated release signing: M14 current
-- systemd `ukify` planned for the later signed-UKI stage
+- mandatory systemd `ukify` + ephemeral development-signing stage (M15; acceptance evidence in docs/17)
 - TPM 2.0 optional for lower assurance, required for attested levels
 - dm-verity read-only trusted root planned
 - RAM-backed writable session planned
@@ -89,7 +91,7 @@ The VM is a build and artifact-generation host, not an attestation target. It do
 
 The Actions runner remains unprivileged by default. `lb config` and preparation run unprivileged; the actual `lb build` operation is the explicit privileged boundary.
 
-Prototype 1 currently uses a narrowly documented temporary permission for `/usr/bin/lb build`. This is transitional under the project's progressive-hardening rule and is not the final security design.
+The restored disposable builder currently grants `github-runner` unrestricted passwordless sudo, explicitly authorized by the operator. This is root-equivalent, broader than the earlier narrow `/usr/bin/lb build` arrangement, and temporary under progressive hardening. See `docs/runner-service-startup.md`; do not keep production keys or unrelated workloads there.
 
 ## Artifact identity versus release authenticity
 
@@ -113,3 +115,20 @@ Selecting the real release-signing key ownership/custody model is a human trust-
 ## Safety boundary
 
 A project-supplied destructive USB writer remains deferred until explicit device-selection protections and negative tests exist. For physical prototype tests the external imaging tool is used deliberately in raw/DD mode so the hybrid ISO is written as an image rather than reconstructed file-by-file.
+
+## Development signed-UKI pipeline (M15)
+
+From a clean checkout and an empty output destination:
+
+```bash
+sudo bash build/01-install-deps.sh
+export PTL_BUILD_WORK_DIR="$(mktemp -d /var/tmp/blackcat-m15.XXXXXX)"
+bash build/20-build-live.sh
+bash build/30-artifact-manifest.sh
+```
+
+The normal stage automatically signs exact live kernel/initrd inputs and binds command line, OS metadata, kernel version and SBAT. The signed UKI replaces the development ESP fallback; a post-ISO verifier checks actual filesystem, El Torito and hybrid EFI extents. Each run creates a new DEVELOPMENT ONLY certificate, so repeatable execution is not a bit-for-bit reproducibility claim. Keys remain transient in tmpfs and are unlinked before success; public evidence is under `out/m15/`. Required tamper, wrong-key and unsigned tests must fail at actual signature verification.
+
+The image's UEFI entry goes directly through this UKI with its signed command line. The older GRUB diagnostic/menu observations above belong to earlier candidates; the direct development UEFI profile does not provide those menu choices. Legacy BIOS remains outside M15's signed-UKI guarantee. No UI code was redesigned and no physical retest is implied.
+
+Stock firmware has not enrolled this ephemeral certificate and is not expected to trust it. No Secure Boot enrollment, firmware state change or TPM policy action occurs. The root squashfs is not authenticated by this UKI yet; M17 must bind that root identity. A signed UKI does not by itself verify the complete OS or establish firmware enforcement. See `docs/17-signed-uki-development-plan.md` for validation status and scoped evidence.

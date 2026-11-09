@@ -1282,3 +1282,14 @@ Keep three actual-tool ISO packaging tests alongside the nine crypto/binding che
 
 ### Evidence classification
 VERIFIED local synthetic-layout controls, including intentionally altered ESP and missing partition. The retained-real-input diagnostic has passed in run 42706847403, but its clean normal-pipeline stage is still running at this checkpoint. No firmware enrollment or target-device action occurred.
+
+## 2026-11-10 — Signed development boot-path changes must not inherit old UI or privilege claims
+
+### What was found
+The build README still described the old narrow sudo permission and older GRUB diagnostic menus as current without separating image identity. The restored builder is explicitly root-equivalent through sudo. The M15 development UEFI fallback boots directly through the UKI's signed command line, so the earlier UEFI menu observations do not apply to that profile.
+
+### Decision / significance
+Correct the affected build guide, retain the earlier candidate history and document that legacy BIOS/menu evidence and full OS trust are outside the new gate. Keep root-squashfs authentication and real firmware enforcement explicitly pending. This is required status precision for the UKI work, not UI redesign or a new milestone. The normal-pipeline acceptance runs remain the authority for actual results; no success claim is made from this documentation correction.
+
+### Evidence classification
+VERIFIED source/document mismatch; root privilege supported by earlier recovery CI. M15 final-image and firmware claims remain scoped separately. No production key or platform-state mutation was introduced.
