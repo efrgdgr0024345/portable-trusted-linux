@@ -11,7 +11,7 @@ command -v gh >/dev/null || { echo "Install Debian's gh package first." >&2; exi
 ptl_auth_dir="$(mktemp -d /tmp/ptl-gh-auth.XXXXXX)"
 trap 'unset ACTIONS_RUNNER_INPUT_TOKEN; rm -rf -- "$ptl_auth_dir"' EXIT
 echo "Authorize the GitHub CLI device login in your browser."
-GH_CONFIG_DIR="$ptl_auth_dir" gh auth login --hostname github.com --git-protocol https --web --skip-ssh-key
+GH_CONFIG_DIR="$ptl_auth_dir" gh auth login --hostname github.com --git-protocol https --web
 
 # Capture only: do not print the registration token or put it in command arguments.
 ACTIONS_RUNNER_INPUT_TOKEN="$(GH_CONFIG_DIR="$ptl_auth_dir" gh api --hostname github.com --method POST repos/efrgdgr0024345/portable-trusted-linux/actions/runners/registration-token --jq .token)"
