@@ -1304,3 +1304,14 @@ Copy only the public evidence to runner-owned out/m15 before post-ISO verificati
 
 ### Evidence classification
 OBSERVED successful real UKI controls followed by a real ownership-boundary failure. VERIFIED local wrapper regression and existing crypto/layout tests. Full corrected normal-pipeline acceptance remains PENDING. xorriso also warned that the large ESP exceeds the legacy 65535-sector El Torito load-size field and encoded zero; no claim of firmware compatibility/enforcement follows from byte read-back alone. No production key, firmware enrollment or target-device write occurred.
+
+## 2026-11-10 — Artifact retention is not permanent evidence custody
+
+### What was found
+The historical graphical candidate is still labelled ready-for-physical-testing in the index, but GitHub's artifact-list API for build 35179377345 now returns no artifacts. Local builder-copy availability remains UNKNOWN after the rebuild. The public page itself could not be fetched from this cloud environment: its proxy returned CONNECT 403. Neither current live display nor synchronization is therefore verified.
+
+### Decision / significance
+Preserve the old candidate identity/history but remove its stale readiness claim in the final JSON. Do not substitute the M15 image as a physical candidate or approved ISO. Retain the M15 public certificate, public key, fingerprints, exact command ledger and scoped results in durable repository evidence as well as the downloadable short-retention bundle. Publish those public texts to CI logs for inspection; never output private key bytes. A new build with a fresh ephemeral key has a new identity and cannot reproduce an older signed UKI byte-for-byte merely from source. The binary bundle's artifact retention and builder-copy lifetime must be explicit.
+
+### Evidence classification
+OBSERVED empty historical artifact listing and cloud proxy refusal; historical local-copy availability and live-page content UNKNOWN. M15 public-key/ledger retention is being prepared; no M15 completion claim follows until the fresh pipeline passes. No release or physical-test handoff was authorized.
