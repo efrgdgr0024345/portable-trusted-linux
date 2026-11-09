@@ -1,0 +1,53 @@
+{
+  "name": "Black Cat M15 Development UKI",
+  "on": {
+    "push": {
+      "branches": [
+        "codex/m15-signed-uki-development"
+      ],
+      "paths": [
+        ".github/workflows/m15-development.yml"
+      ]
+    },
+    "workflow_dispatch": {}
+  },
+  "permissions": {
+    "contents": "read"
+  },
+  "concurrency": {
+    "group": "blackcat-m15-development",
+    "cancel-in-progress": false
+  },
+  "jobs": {
+    "m15": {
+      "if": "${{ github.repository == 'efrgdgr0024345/portable-trusted-linux' && github.ref == 'refs/heads/codex/m15-signed-uki-development' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}",
+      "runs-on": [
+        "ptl-trusted-20261110"
+      ],
+      "timeout-minutes": 120,
+      "env": {
+        "PTL_BUILD_WORK_DIR": "/var/tmp/ptl-m15-${{ github.run_id }}-${{ github.run_attempt }}"
+      },
+      "steps": [
+        {
+          "name": "Checkout exact authorized development source",
+          "uses": "actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+          "with": {
+            "persist-credentials": false,
+            "ref": "${{ github.sha }}"
+          }
+        },
+        {
+          "name": "Restore declared build dependencies",
+          "shell": "bash",
+          "run": "set -Eeuo pipefail\nsudo -n bash build/01-install-deps.sh\nsudo -n apt-get install -y --no-install-recommends binutils python3 mtools grub-efi-amd64-bin grub-pc-bin isolinux syslinux-common\n"
+        },
+        {
+          "name": "Inspect actual UKI and ISO tooling",
+          "shell": "bash",
+          "run": "set -Eeuo pipefail\nexport PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\nbash build/00-host-check.sh\nukify --help\nsbverify --help\nobjdump -h /usr/lib/systemd/boot/efi/linuxx64.efi.stub\nsed -n '1,240p' /usr/lib/live/build/binary_grub-efi\nsed -n '1,200p' /usr/lib/live/build/binary_hooks\n"
+        }
+      ]
+    }
+  }
+}
