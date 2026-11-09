@@ -1119,3 +1119,21 @@ Exercise actual dependency option parsing where possible, with both accepted and
 
 ### Evidence classification
 **OBSERVED** operator-supplied unknown-flag failure. **VERIFIED** local shell syntax and two parser tests relative to Debian gh 2.46.0-3. Remote authentication, registration and sudo smoke remain **UNKNOWN / PENDING**. The final project_content.json update remains blocked by automatic approval review pending separate operator approval to retain its existing public infrastructure/runbook references.
+
+
+## 2026-11-10 — A short-lived output token does not narrow the upstream OAuth grant
+
+### What was attempted
+Avoid manual copying of a repository runner registration token by using GitHub CLI device authorization and automatic API retrieval.
+
+### What actually happened
+The operator's authorization screen requested broad account access: public/private repositories, workflow modification, gists and organization/team reads. The assistant had described temporary local storage and short-lived registration-token handling without first explaining the much broader upstream OAuth permission. The operator challenged the scope and reported cancelling the authorization. No successful authorization, runner registration, service startup or remote sudo result was reported.
+
+### Why it matters
+Credential lifetime, local retention and output-token scope are separate from the authority granted to the credential used to create that token. Root access on a disposable project builder does not imply authorization for broad GitHub account access. A technically working convenience path can violate the intended authorization boundary.
+
+### Decision / change
+Retire the CLI OAuth helper: the current file exits without invoking gh. Two local tests passed: explicit refusal and no invocation of a fake gh executable. Preserve earlier commits and mark their procedure superseded. Use only the repository-specific, one-hour runner registration token entered at config.sh's interactive prompt. Keep dedicated labels and the stopped-service boundary. Do not claim that cancellation or local file deletion independently verifies OAuth revocation.
+
+### Evidence classification
+**OBSERVED** operator-supplied scope screen and reported cancellation. **VERIFIED** local refusal/no-gh-execution tests relative to the retired helper. Broad grant approval, actual revocation and local cleanup are **UNKNOWN**; no approval or success was reported. Runner registration, online status and sudo remain **UNKNOWN / PENDING**. Final JSON follow-through remains blocked by the previously reported automatic approval review pending separate approval to retain existing public references.
