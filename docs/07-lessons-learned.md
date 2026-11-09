@@ -1227,3 +1227,25 @@ Retain the initial draft and this correction in history. Keep the wrong-path fil
 
 ### Evidence classification
 VERIFIED source mismatch against the matching Debian package and four local negative wrapper tests. The first normal build is still running at this checkpoint; its final result is not yet known. No firmware enrollment, target-device write or production key was used.
+
+## 2026-11-10 — First real M15 attempt refused live-build hard-link aliases before creating keys
+
+### Attempt and result
+Run 42700951403, source e93b76c3daf37f3c544e5446a5d842cdfdf66be7, job 129445189067, failed at the mandatory binary hook: "Require exactly one live kernel and initrd". This happened before key generation. Its diagnostic log artifact is 13712007591. Matching live-build source shows that binary_syslinux creates hard links for unversioned vmlinuz/initrd names. Treating distinct pathnames as distinct payloads was incorrect; blindly taking the first file would also be incorrect.
+
+### Decision and significance
+Collapse aliases only when byte size and SHA-256 agree, then require one distinct kernel and one distinct initrd payload. Require an unambiguous matching chroot kernel version and exact initrd for that version. Six input-selection tests now accept hard links/copies but reject genuinely different payloads, mismatched initrd and ambiguous versions. This is a bounded integration failure, not evidence that the signature control failed. The next build remains pending; no M15 success is claimed.
+
+### Evidence classification
+OBSERVED real CI failure; VERIFIED source cause and six local input-selection checks. No development private key was created in the failed attempt.
+
+## 2026-11-10 — A verifier must not mutate the signed PE while extracting its sections
+
+### Attempt and result
+Exercise the independent verifier outside the builder with actual sbsigntool and systemd stub packages verified against Debian's signed InRelease/Packages hashes. Synthetic signed PE fixtures exposed a defect: GNU objcopy --dump-section, without a separate output argument, can rewrite the input and discard its certificate table. An initial positive check could therefore alter the signed file before later checks. Subsequent signature failures were not necessarily proving the intended wrong-key/tamper condition.
+
+### Why it matters and decision
+Verification must preserve the exact bytes it authenticates. Supply a separate disposable objcopy output, check the UKI digest before and after verification, and test that the original still passes sbverify after inspection. Nine local signed-fixture tests now pass: positive, tamper, wrong key, unsigned, wrong certificate pin, changed expected command line, changed expected kernel hash, a re-signed missing section, and byte preservation. These are synthetic NOT BOOTABLE fixtures; real live-kernel integration remains a separate mandatory gate. Private fixture keys used anonymous memory file descriptors and were not written to repository files. Preserve this failure rather than presenting the corrected tests as evidence that the first draft was sound.
+
+### Evidence classification
+VERIFIED local reproduced verifier defect and nine corrected crypto/binding tests, using Debian-authenticated package tools. This was caught before accepting any M15 ISO. Normal-pipeline/ISO results are still pending.

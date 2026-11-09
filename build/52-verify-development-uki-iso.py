@@ -45,8 +45,8 @@ def check(iso, bundle):
         extract("/boot/grub/efi.img", temp / "esp.img")
         extract("/live", temp / "live")
         for pattern, section in (("vmlinuz*", ".linux"), ("initrd*", ".initrd")):
-            files = {x.resolve() for x in (temp / "live").glob(pattern) if x.is_file()}
-            if len(files) != 1 or v.digest(next(iter(files))) != manifest["inputs"][section]["sha256"]:
+            hashes = {v.digest(x) for x in (temp / "live").glob(pattern) if x.is_file()}
+            if hashes != {manifest["inputs"][section]["sha256"]}:
                 raise ValueError("ISO live input mismatch or ambiguity: " + section)
         if v.digest(temp / "filesystem.efi") != provenance["signed_uki_sha256"]:
             raise ValueError("ISO filesystem UKI differs from signed artifact")

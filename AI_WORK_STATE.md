@@ -5,7 +5,7 @@
 - Development branch: codex/m15-signed-uki-development; based on completed runner recovery cd3966b805c7376d327154d332b6e217af41a452. No main merge.
 - Runner execution/sudo checks passed in runs 42691361475 and 42691382043. Toolchain restore/probe run 42699169946 passed.
 - Toolchain: Debian 13.7, systemd-ukify 257.13, sbsigntool 0.9.4, live-build 20250505.
-- Implementation IN PROGRESS: mandatory binary hook constructs/signs exact live kernel+initrd and replaces development ESP fallback; post-ISO checks read actual filesystem/boot extents. No completed M15 build evidence yet.
+- Implementation IN PROGRESS: mandatory binary hook constructs/signs exact live kernel+initrd and replaces development ESP fallback; post-ISO checks read actual filesystem/boot extents. No completed M15 build evidence yet. First run 42700951403 failed before keys due to hard-link alias handling. Corrected source also prevents objcopy from rewriting signed inputs; 19 local M15 tests passed. A retained-input diagnostic will exercise signing quickly, but a fresh normal pipeline remains mandatory.
 - No production keys, firmware enrollment, TPM ownership changes, physical device writes or UI features are authorized by this task.
 
 ## Current exact test candidate

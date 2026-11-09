@@ -27,7 +27,30 @@ SBAT = "blackcat,1,Black Cat,blackcat-development,1,https://github.com/efrgdgr00
 
 
 def unique_files(paths):
-    return sorted({p.resolve() for p in paths if p.is_file()})
+    # live-build's Syslinux helper creates hard-link aliases, and ISO extraction
+    # may recreate those as ordinary copies. Identity is bytes, not pathname.
+    by_content = {}
+    for path in sorted(paths):
+        if path.is_file():
+            by_content.setdefault((path.stat().st_size, digest(path)), path.resolve())
+    return list(by_content.values())
+
+
+def select_live_inputs(work):
+    binary = work / "binary"
+    kernels = unique_files((binary / "live").glob("vmlinuz*"))
+    initrds = unique_files((binary / "live").glob("initrd*"))
+    if len(kernels) != 1 or len(initrds) != 1:
+        raise RuntimeError("Require exactly one distinct live kernel and initrd payload")
+    kernel, initrd = kernels[0], initrds[0]
+    matches = [p for p in (work / "chroot/boot").glob("vmlinuz-*") if p.is_file() and digest(p) == digest(kernel)]
+    if len(matches) != 1:
+        raise RuntimeError("Cannot bind one exact chroot kernel version to the live kernel")
+    version = matches[0].name.removeprefix("vmlinuz-")
+    expected_initrd = work / "chroot/boot" / ("initrd.img-" + version)
+    if not expected_initrd.is_file() or digest(expected_initrd) != digest(initrd):
+        raise RuntimeError("Live initrd is not the exact initrd for the bound kernel version")
+    return kernel, initrd, version
 
 
 def build(work, output):
@@ -55,20 +78,13 @@ def build(work, output):
         raise RuntimeError("Ephemeral keys require tmpfs at /dev/shm")
     git = ["git", "-c", f"safe.directory={SOURCE}", "-C", SOURCE]
     commit = run(git + ["rev-parse", "HEAD"], "source-commit").decode().strip()
+    input_source_commit = os.environ.get("PTL_INPUT_SOURCE_COMMIT", commit)
     if run(git + ["status", "--porcelain", "--untracked-files=no"], "tracked-source-state").strip():
         raise RuntimeError("Refuse dirty tracked source")
     if os.environ.get("PTL_SOURCE_COMMIT", commit) != commit:
         raise RuntimeError("Build source does not match requested commit")
     binary = work / "binary"
-    kernels = unique_files((binary / "live").glob("vmlinuz*"))
-    initrds = unique_files((binary / "live").glob("initrd*"))
-    if len(kernels) != 1 or len(initrds) != 1:
-        raise RuntimeError("Require exactly one live kernel and initrd, not an arbitrary first match")
-    kernel, initrd = kernels[0], initrds[0]
-    matches = [p for p in (work / "chroot/boot").glob("vmlinuz-*") if p.is_file() and digest(p) == digest(kernel)]
-    if len(matches) != 1:
-        raise RuntimeError("Cannot bind one exact chroot kernel version to the live kernel")
-    version = matches[0].name.removeprefix("vmlinuz-")
+    kernel, initrd, version = select_live_inputs(work)
     osrel_path = work / "chroot/etc/os-release"
     if not osrel_path.resolve().is_relative_to((work / "chroot").resolve()):
         raise RuntimeError("os-release escapes build chroot")
@@ -77,7 +93,7 @@ def build(work, output):
         (output / name).write_text(value)
     manifest = {
         "schema": "blackcat-m15-inputs-v1", "key_policy": "EPHEMERAL DEVELOPMENT ONLY",
-        "source_commit": commit,
+        "source_commit": commit, "live_input_source_commit": input_source_commit,
         "inputs": {".linux": {"path": str(kernel), "sha256": digest(kernel), "size": kernel.stat().st_size},
                    ".initrd": {"path": str(initrd), "sha256": digest(initrd), "size": initrd.stat().st_size}},
         "texts": {".cmdline": CMDLINE, ".osrel": osrel, ".uname": version},
@@ -199,6 +215,7 @@ def build(work, output):
     provenance = {"status": "VERIFIED", "scope": "UKI construction, signature and negative controls; final ISO extraction check is separate",
                   "key_policy": "EPHEMERAL DEVELOPMENT ONLY; NEVER ENROLLED",
                   "created_utc": datetime.now(timezone.utc).isoformat(), "source_commit": commit,
+                  "live_input_source_commit": input_source_commit,
                   "builder": os.uname().nodename, "kernel_version": version,
                   "signed_uki_sha256": digest(signed), "signed_uki_size": signed.stat().st_size,
                   "certificate_der_sha256": cert_hash, "public_key_spki_sha256": public_hash,

@@ -48,6 +48,7 @@ def section_table(uki):
 
 
 def verify(uki, certificate, manifest, expected_certificate_sha256):
+    before = digest(uki)
     if certificate_digest(certificate) != expected_certificate_sha256.lower().replace(":", ""):
         raise ValueError("Certificate DER SHA-256 does not match explicit trust input")
     # --list is NOT signature verification. Check the actual signature and digest.
@@ -62,7 +63,11 @@ def verify(uki, certificate, manifest, expected_certificate_sha256):
     with tempfile.TemporaryDirectory(prefix="ptl-uki-verify-") as temp:
         for name in sorted(required):
             extracted = Path(temp) / name[1:]
-            command(["objcopy", "--dump-section", f"{name}={extracted}", uki])
+            # Without an explicit output, objcopy rewrites the input PE and may
+            # discard its certificate table even for --dump-section. Never
+            # mutate the object whose signature we just verified.
+            command(["objcopy", "--dump-section", f"{name}={extracted}", uki,
+                     Path(temp) / "discarded-rewrite.efi"])
             if extracted.stat().st_size == 0:
                 raise ValueError("Empty mandatory section: " + name)
             sections[name] = {"sha256": digest(extracted), "size": extracted.stat().st_size}
@@ -80,8 +85,10 @@ def verify(uki, certificate, manifest, expected_certificate_sha256):
                 expected = manifest["texts"][name].encode()
                 if raw != expected:
                     raise ValueError("Embedded metadata mismatch: " + name)
+    if digest(uki) != before:
+        raise ValueError("UKI changed during verification")
     return {"status": "VERIFIED", "scope": "Signature and bound inputs relative to supplied development certificate and manifest; not firmware enforcement",
-            "uki_sha256": digest(uki), "certificate_der_sha256": certificate_digest(certificate),
+            "uki_sha256": before, "certificate_der_sha256": certificate_digest(certificate),
             "sections": sections, "signature_output": output.strip()}
 
 

@@ -1,6 +1,6 @@
 # Signed UKI Development Plan — M15 Preparation
 
-**Status:** pre-implementation design while M14 production signing custody remains unresolved  
+**Status:** M15 development-only implementation under integration test; acceptance not yet closed  
 **Target:** Debian 13/trixie amd64, systemd-ukify 257-series toolchain  
 **Safety boundary:** development keys only; no firmware key enrollment; no target-disk writes.
 
@@ -114,3 +114,13 @@ Safe pre-work can continue before the real USB/signing hardware exists when:
 - scripts can later consume exact live-build kernel/initrd outputs without changing target disks or firmware.
 
 Actual production Secure Boot key ownership, enrollment and real-hardware enforcement remain later human/physical gates.
+
+## Active development integration (2026-11-10; results pending)
+
+Normal entry point remains `bash build/20-build-live.sh` after `sudo bash build/01-install-deps.sh`. Use a fresh absolute `PTL_BUILD_WORK_DIR` and a clean `out/` evidence destination. The mandatory live-build binary hook calls `build/50-build-development-uki.py`; post-image `build/52-verify-development-uki-iso.py` reads the actual ISO back.
+
+The hook uses the exact live kernel/initrd, checks their chroot version pairing, runs ukify with `/dev/null` configuration and an explicit systemd stub, signs with a fresh one-day DEVELOPMENT ONLY RSA certificate, and deletes private keys from tmpfs before success. `--uefi-secure-boot disable` controls live-build loader selection only; no firmware setting is changed. The hook replaces `boot/grub/efi.img` and the filesystem UEFI fallback with the signed UKI; it does not enroll a key or authorize stock firmware to accept it. Legacy BIOS remains outside this signed-UKI guarantee.
+
+The independent CLI verifier requires an explicitly pinned certificate DER SHA-256, actual `sbverify --cert`, mandatory UKI sections and exact embedded payload/metadata bindings. The bundle's certificate and manifest alone are not an authenticated external trust root. No dm-verity root hash is bound yet; M17 remains separate.
+
+Regression checks include signed synthetic PE fixtures (not bootable kernels), real CLI signature rejection, byte-preserving verification, inconsistent input rejection, and build/log/cache failure propagation. These checks do not replace the pending real live-kernel build, final ISO boot-extent read-back or firmware enforcement evidence.
