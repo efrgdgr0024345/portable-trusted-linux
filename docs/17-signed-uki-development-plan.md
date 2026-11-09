@@ -124,3 +124,6 @@ The hook uses the exact live kernel/initrd, checks their chroot version pairing,
 The independent CLI verifier requires an explicitly pinned certificate DER SHA-256, actual `sbverify --cert`, mandatory UKI sections and exact embedded payload/metadata bindings. The bundle's certificate and manifest alone are not an authenticated external trust root. No dm-verity root hash is bound yet; M17 remains separate.
 
 Regression checks include signed synthetic PE fixtures (not bootable kernels), real CLI signature rejection, byte-preserving verification, inconsistent input rejection, and build/log/cache failure propagation. These checks do not replace the pending real live-kernel build, final ISO boot-extent read-back or firmware enforcement evidence.
+
+### Inspector compatibility follow-through
+The 257-series inspector is invoked as `ukify inspect IMAGE --all`, with the positional image preceding the option. Remote attempts 42702518668 and 42704330214 exposed this parser ordering constraint. Two tests exercise the real package tool rather than only shell/Python syntax. Retained-input diagnostics are not clean acceptance evidence, and their output is stored separately. Full integration remains pending until the fresh normal pipeline passes.

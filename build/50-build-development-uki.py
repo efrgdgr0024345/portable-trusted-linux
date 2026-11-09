@@ -26,6 +26,11 @@ CMDLINE = "boot=live components quiet"
 SBAT = "blackcat,1,Black Cat,blackcat-development,1,https://github.com/efrgdgr0024345/portable-trusted-linux"
 
 
+def inspect_command(image):
+    # ukify 257's argparse layout requires positional FILE before --all.
+    return ["ukify", "inspect", image, "--all"]
+
+
 def unique_files(paths):
     # live-build's Syslinux helper creates hard-link aliases, and ISO extraction
     # may recreate those as ordinary copies. Identity is bytes, not pathname.
@@ -138,7 +143,7 @@ def build(work, output):
              "--sbat=@" + str(output / "sbat.csv"), "--output", unsigned], "ukify-build")
         run(["sbsign", "--key", private / "development.key", "--cert", cert,
              "--output", signed, unsigned], "sbsign")
-        run(["ukify", "inspect", "--all", signed], "ukify-inspect")
+        run(inspect_command(signed), "ukify-inspect")
         verifier = [sys.executable, SOURCE / "verifier/verify-development-uki.py",
                     "--manifest", manifest_path]
         def check(label, image, trust, expected, expected_failure=False):

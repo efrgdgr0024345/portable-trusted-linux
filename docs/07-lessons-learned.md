@@ -1249,3 +1249,14 @@ Verification must preserve the exact bytes it authenticates. Supply a separate d
 
 ### Evidence classification
 VERIFIED local reproduced verifier defect and nine corrected crypto/binding tests, using Debian-authenticated package tools. This was caught before accepting any M15 ISO. Normal-pipeline/ISO results are still pending.
+
+## 2026-11-10 — ukify 257 inspection requires the positional image before trailing options
+
+### Attempt and result
+Run 42702518668 and the retained-input diagnostic in run 42704330214 refused the inspection command `ukify inspect --all IMAGE` with unrecognized arguments. The retained-input attempt built a development-signed image but stopped before accepting its signature/test gate. The normal pipeline was correctly skipped after diagnostic failure; no clean acceptance claim followed.
+
+### Decision / change
+Use `ukify inspect IMAGE --all`. The exact command constructor is now tested against the real Debian systemd-ukify 257.13 package, authenticated against the retained signed package index: the actual stub inspection succeeds and a missing image is rejected without a parser error. These two tests supplement the existing 19 M15 checks. Preserve diagnostic output separately and never treat retained inputs as a clean build. Earlier private key temporary contexts exited on the failed inspection; no private key is retained as evidence.
+
+### Evidence classification
+OBSERVED remote CLI failures; VERIFIED corrected command against actual package tooling and two local inspector tests. Fresh normal-pipeline signing/negative/ISO results remain PENDING. No production signing, firmware enrollment or target-device action occurred.
