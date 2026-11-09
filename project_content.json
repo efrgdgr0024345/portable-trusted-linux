@@ -1,9 +1,9 @@
 {
   "title": "Black Cat",
-  "version": "3.7",
+  "version": "3.8",
   "phase": "Prototype 1 Engineering",
   "updated": "2026-11-10",
-  "summary": "M15's requested DEVELOPMENT ONLY signed-UKI acceptance is VERIFIED at source 3125a1c99342b961ac614878d3ce9b3f874de33e, fresh normal run 42711645617. Correct-key/input verification and actual ISO EFI read-back passed; tampered, wrong-key and unsigned UKIs were rejected. All 28 M15 regressions passed. No production key, firmware enrollment, TPM ownership/PCR-policy action or target-device write was introduced. Firmware enforcement, physical boot, authenticated root and bit-for-bit reproducibility remain unverified; no approved ISO exists. Source remains on the unmerged development branch. The old graphical artifact is no longer listed and is not a current physical handoff. Live-page rendering is UNKNOWN after cloud proxy CONNECT 403.",
+  "summary": "Main consolidates all existing project histories. M15 development-key signing, required rejection tests and final ISO binding pass on the combined source. No approved Black Cat ISO exists; firmware enforcement, physical boot and authenticated root remain unverified.",
   "candidate": {
     "status": "superseded",
     "channel": "graphical-physical-test",
@@ -38,229 +38,229 @@
       "type": "Project rules",
       "title": "Mandatory Project Rules",
       "description": "Rules governing this development evidence.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/0046b5e72cf56b1d6d4416483b25cf705e13f00e/PROJECT_RULES.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/PROJECT_RULES.md"
     },
     {
       "type": "AI operating policy",
       "title": "AI Autonomy Policy",
       "description": "Operational boundaries; routine JSON maintenance is authorized.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/0046b5e72cf56b1d6d4416483b25cf705e13f00e/AI_AUTONOMY_POLICY.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/AI_AUTONOMY_POLICY.md"
     },
     {
       "type": "AI continuity state",
       "title": "Compact AI Work State",
       "description": "Exact accepted M15 identity, remaining gates and recovery.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/0046b5e72cf56b1d6d4416483b25cf705e13f00e/AI_WORK_STATE.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/AI_WORK_STATE.md"
     },
     {
       "type": "Operating manifesto",
       "title": "Black Cat Automation Manifesto",
       "description": "Proceed-by-default operating rationale up to genuine human gates.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/docs/11-automation-manifesto.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/11-automation-manifesto.md"
     },
     {
       "type": "M14 security design",
       "title": "Authenticated Release Signing — M14",
       "description": "Canonical Ed25519 release-manifest/signature/verification design, strict closed-schema validation, key lifecycle baseline, development self-test and explicit production key-custody human gate.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/docs/16-authenticated-release-signing.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/16-authenticated-release-signing.md"
     },
     {
       "type": "M15 preparation",
       "title": "M15 Development-Signed UKI Gate",
       "description": "Exact accepted run and scoped positive/negative results.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/0046b5e72cf56b1d6d4416483b25cf705e13f00e/docs/17-signed-uki-development-plan.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/17-signed-uki-development-plan.md"
     },
     {
       "type": "Future modular runtime architecture",
       "title": "Modular Runtime and Untrusted AI Workshop",
       "description": "Three-zone future design: tiny trusted core, pre-built ready-to-run session modules selected per boot/session, and a separate disposable untrusted AI workshop whose outputs must pass independent verification and capability gates.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/docs/18-modular-runtime-and-ai-workshop.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/18-modular-runtime-and-ai-workshop.md"
     },
     {
       "type": "AI continuity guide",
       "title": "AI Continuity and Context Recovery Pattern",
       "description": "Reusable compact-checkpoint/selective-recovery/context-health methodology.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/docs/13-ai-continuity-and-context-recovery.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/13-ai-continuity-and-context-recovery.md"
     },
     {
       "type": "Calibration record",
       "title": "Context Health Calibration Log",
       "description": "Empirical GREEN/AMBER/RED continuity calibration record.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/docs/14-context-health-calibration-log.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/14-context-health-calibration-log.md"
     },
     {
       "type": "Future Linux AI architecture",
       "title": "Black Cat AI Project Automation — Future Linux Integration",
       "description": "Post-core M26 native repository-governed project automation design, now explicitly extended with modular session software and an external untrusted AI build-workshop boundary.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/docs/15-black-cat-ai-project-automation.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/15-black-cat-ai-project-automation.md"
     },
     {
       "type": "Reusable AI project template",
       "title": "Black Cat current status",
       "description": "Current M15 development result; earlier image observations explicitly historical.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/0046b5e72cf56b1d6d4416483b25cf705e13f00e/README.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/README.md"
     },
     {
       "type": "AI capability policy",
       "title": "AI Project Policy Template",
       "description": "Fail-closed sample machine capability policy.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/templates/ai-project/project-policy.json"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/templates/ai-project/project-policy.json"
     },
     {
       "type": "AI policy schema",
       "title": "AI Project Capability Policy Schema",
       "description": "JSON Schema for the future capability-broker policy.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/schema/ai-project-policy.schema.json"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/schema/ai-project-policy.schema.json"
     },
     {
       "type": "Automation architecture",
       "title": "High-Security Automation Architecture",
       "description": "Zero-new-inbound-surface automation direction.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/docs/12-high-security-controller-architecture.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/12-high-security-controller-architecture.md"
     },
     {
       "type": "Project index",
       "title": "Black Cat Repository README",
       "description": "Capability-level status, current graphical candidate evidence and roadmap.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/README.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/README.md"
     },
     {
       "type": "Brand asset",
       "title": "Black Cat Boot Splash Source",
       "description": "Digest-pinned cosmetic boot splash.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/assets/blackcat-boot-160x120.png.b64"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/assets/blackcat-boot-160x120.png.b64"
     },
     {
       "type": "Overview",
       "title": "Black Cat Project Overview",
       "description": "Project objective, assurance levels and claim boundaries.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/docs/01-project-overview.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/01-project-overview.md"
     },
     {
       "type": "Learning guide",
       "title": "Beginner-to-Technical Learning Bridge",
       "description": "Hashes, signatures, UEFI, Secure Boot, TPM, PCRs, attestation and dm-verity.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/docs/02-learning-bridge.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/02-learning-bridge.md"
     },
     {
       "type": "Threat model",
       "title": "Trust Chain & Threat Model v0.1",
       "description": "Core threats, boundaries and acceptance gates.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/docs/03-trust-chain-threat-model-v0.1.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/03-trust-chain-threat-model-v0.1.md"
     },
     {
       "type": "Architecture",
       "title": "External Evidence Anchoring",
       "description": "Future evidence hashing/signatures/history anchoring design.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/docs/04-external-evidence-anchoring.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/04-external-evidence-anchoring.md"
     },
     {
       "type": "Decision record",
       "title": "Architecture Decision Register",
       "description": "Durable decisions through ADR-042, including M14 canonical Ed25519 release signing and the future modular-runtime/external-workshop trust boundary.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/docs/05-architecture-decisions.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/05-architecture-decisions.md"
     },
     {
       "type": "Build specification",
       "title": "Prototype Build Specification v0.1",
       "description": "Actual M15 stages; root-hash binding remains separate.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/0046b5e72cf56b1d6d4416483b25cf705e13f00e/docs/06-prototype-build-specification-v0.1.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/06-prototype-build-specification-v0.1.md"
     },
     {
       "type": "Engineering record",
       "title": "Lessons Learned Register",
       "description": "Actual failures, fixes, accepted result and limitations.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/0046b5e72cf56b1d6d4416483b25cf705e13f00e/docs/07-lessons-learned.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/07-lessons-learned.md"
     },
     {
       "type": "Paused research",
       "title": "Community Compute Commons Feasibility Study",
       "description": "Preserved paused research.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/docs/08-compute-commons-feasibility-study.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/08-compute-commons-feasibility-study.md"
     },
     {
       "type": "Paused research",
       "title": "Community Compute Commons Architecture",
       "description": "Preserved future architecture.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/docs/09-community-compute-commons-architecture.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/09-community-compute-commons-architecture.md"
     },
     {
       "type": "Paused research",
       "title": "Community Compute Commons Threat Extension",
       "description": "Preserved future threat extension.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/docs/10-threat-model-extension-community-compute-v0.1.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/10-threat-model-extension-community-compute-v0.1.md"
     },
     {
       "type": "Build guide",
       "title": "Normal Prototype 1 Build Pipeline",
       "description": "Clean-work build commands and temporary privilege boundary.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/0046b5e72cf56b1d6d4416483b25cf705e13f00e/build/README.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/README.md"
     },
     {
       "type": "Build library",
       "title": "Strict Release Manifest Validator",
       "description": "Shared fail-closed validator enforcing exact canonical JSON bytes and the closed blackcat-release-manifest-v0.1 field/schema contract.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/build/lib/validate-release-manifest.sh"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/lib/validate-release-manifest.sh"
     },
     {
       "type": "Build script",
       "title": "Create Release Manifest",
       "description": "Creates canonical signed metadata binding exact artifact identity, source/build provenance and trusted Ed25519 public-key fingerprint, then passes it through the shared validator.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/build/40-create-release-manifest.sh"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/40-create-release-manifest.sh"
     },
     {
       "type": "Build script",
       "title": "Sign Release Manifest",
       "description": "Validates and signs exact canonical manifest bytes while refusing private-key/public-fingerprint mismatch.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/build/41-sign-release-manifest.sh"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/41-sign-release-manifest.sh"
     },
     {
       "type": "Verifier",
       "title": "Verify Authenticated Release",
       "description": "Independently verifies closed canonical manifest schema, Ed25519 key fingerprint/signature and optional exact artifact filename/size/SHA-256.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/build/42-verify-release.sh"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/42-verify-release.sh"
     },
     {
       "type": "Test",
       "title": "Release Signing Positive/Negative Test",
       "description": "Uses an ephemeral development keypair and rejects tampering, non-canonical JSON, unexpected fields, wrong filenames, malformed signatures, wrong keys, unsupported key types and invalid release IDs.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/tests/01-release-signing-check.sh"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/tests/01-release-signing-check.sh"
     },
     {
       "type": "Automation",
       "title": "Release Signing Self-Test Workflow",
       "description": "GitHub-hosted, read-only, no-production-secret workflow for M14 signing mechanics including the shared strict validator.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/.github/workflows/release-signing-self-test.yml"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/.github/workflows/release-signing-self-test.yml"
     },
     {
       "type": "Runtime diagnostic",
       "title": "Black Cat Quick Check",
       "description": "Root-owned no-typing runtime evidence collector.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/config/live-build/includes.chroot/usr/local/bin/blackcat-check"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/config/live-build/includes.chroot/usr/local/bin/blackcat-check"
     },
     {
       "type": "Build script",
       "title": "Artifact Manifest Generator",
       "description": "Unsigned build-provenance generator, intentionally distinct from M14 release authenticity.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/build/30-artifact-manifest.sh"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/30-artifact-manifest.sh"
     },
     {
       "type": "Test",
       "title": "Static Project Checks",
       "description": "Existing repository/static safety checks.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/tests/00-static-check.sh"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/tests/00-static-check.sh"
     },
     {
       "type": "Automation",
       "title": "Black Cat Boot Smoke Test",
       "description": "Hosted UEFI/QEMU/live-userspace smoke test for the ISO path.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/.github/workflows/blackcat-boot-smoke.yml"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/.github/workflows/blackcat-boot-smoke.yml"
     },
     {
       "type": "Automation",
       "title": "PTL First Live Build",
       "description": "Self-hosted ISO build/fingerprint plus hosted smoke gate.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/.github/workflows/ptl-live-build.yml"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/.github/workflows/ptl-live-build.yml"
     },
     {
       "type": "Live page",
@@ -272,115 +272,115 @@
       "type": "Operations runbook",
       "title": "Builder Access & Recovery Runbook",
       "description": "Safe SSH access recipe for ptl-builder-01, including public-key fingerprint, cPanel key path, recovery checks and explicit prohibition on storing private key material in GitHub.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/docs/11-builder-access-runbook.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/11-builder-access-runbook.md"
     },
     {
       "type": "Black Cat application",
       "title": "Black Cat Console Architecture",
       "description": "Purpose, local-first data model, MVP loop and security boundaries for the mobile-first project/AI controller.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/apps/blackcat-console/README.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/README.md"
     },
     {
       "type": "Black Cat application",
       "title": "Black Cat Console MVP",
       "description": "Broader mobile interface with project brain, prompt coaching, server-side OpenAI routing and API token/spend dashboard.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/apps/blackcat-console/index.php"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/apps/blackcat-console/index.php"
     },
     {
       "type": "Black Cat application",
       "title": "Black Cat Focus Tracker",
       "description": "Deliberately narrow mobile project tracker: one milestone, one next action, one blocker, backlog-only ideas, activity history and existing monthly API spend visibility.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/apps/blackcat-console/focus.php"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/apps/blackcat-console/focus.php"
     },
     {
       "type": "Black Cat design",
       "title": "Black Cat Focus Tracker Rules",
       "description": "Documents the anti-scope-creep state machine and why AI is not allowed to silently promote backlog items into active work.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/apps/blackcat-console/FOCUS.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/apps/blackcat-console/FOCUS.md"
     },
     {
       "type": "Black Cat architecture",
       "title": "Black Cat Browser Execution Architecture",
       "description": "Separates reasoning from browser execution and defines Playwright/Chromium as the preferred Black Cat-owned browser worker with explicit security and privacy boundaries.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/apps/blackcat-console/BROWSER.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/apps/blackcat-console/BROWSER.md"
     },
     {
       "type": "Black Cat economics",
       "title": "Black Cat AI Cost Accounting",
       "description": "Defines durable raw token evidence, versioned cost estimates, mobile spend visibility, routing principles and future hard-budget controls.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/apps/blackcat-console/COSTS.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/apps/blackcat-console/COSTS.md"
     },
     {
       "type": "Black Cat operations",
       "title": "Black Cat Console Deployment Guide",
       "description": "Deployment target, security gates and first real-device validation sequence for blackcat-chatbot-01.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/apps/blackcat-console/DEPLOY.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/apps/blackcat-console/DEPLOY.md"
     },
     {
       "type": "Black Cat operations",
       "title": "Black Cat Console Local Bootstrap",
       "description": "Safe Debian bootstrap that installs the Console locally on blackcat-chatbot-01, configures the monthly API planning budget and does not expose the application publicly before validation.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/apps/blackcat-console/deploy/bootstrap-local.sh"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/apps/blackcat-console/deploy/bootstrap-local.sh"
     },
     {
       "type": "Black Cat operations",
       "title": "Black Cat Console HTTPS Publisher",
       "description": "DNS-gated HTTPS publication script that refuses external exposure until the chosen domain resolves to the intended host.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/apps/blackcat-console/deploy/publish-https.sh"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/apps/blackcat-console/deploy/publish-https.sh"
     },
     {
       "type": "Test",
       "title": "Black Cat Console Static Checks",
       "description": "Checks the broader Console plus Focus Tracker source presence, focus-lock/backlog/milestone/blocker guards, secret-pattern absence and AI-spend metadata.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/tests/10-blackcat-console-static.sh"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/tests/10-blackcat-console-static.sh"
     },
     {
       "type": "Build script",
       "title": "First Real Builder Report",
       "description": "Single-command evidence collector executed successfully as a reporting mechanism on ptl-builder-01; individual preflight gates can still report failure inside a completed workflow.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/build/05-first-run-report.sh"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/05-first-run-report.sh"
     },
     {
       "type": "Build script",
       "title": "Host Preflight",
       "description": "Uses a deterministic system PATH and verifies Debian version, architecture, commands, package evidence and builder contamination/integration state.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/build/00-host-check.sh"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/00-host-check.sh"
     },
     {
       "type": "Build script",
       "title": "Dependency Installer",
       "description": "Installed and verified the first-stage Debian toolchain on ptl-builder-01.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/build/01-install-deps.sh"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/01-install-deps.sh"
     },
     {
       "type": "Build script",
       "title": "Prepare Live Build",
       "description": "Prepares controlled Debian Live configuration unprivileged in the stable work/live-build directory.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/build/10-prepare-live-build.sh"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/10-prepare-live-build.sh"
     },
     {
       "type": "Build script",
       "title": "Build Debian Live Artifact",
       "description": "Builds the first live artifact, isolates the privileged lb build step and captures its digest.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/build/20-build-live.sh"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/build/20-build-live.sh"
     },
     {
       "type": "Automation",
       "title": "First Builder Evidence Workflow",
       "description": "Repository-scoped GitHub Actions workflow targeting ptl-builder-01 and running core repository and Black Cat Console static checks before evidence collection.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/.github/workflows/ptl-first-builder-evidence.yml"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/.github/workflows/ptl-first-builder-evidence.yml"
     },
     {
       "type": "Review evidence",
       "title": "Canonical Graphical Design Reference",
       "description": "Canonical Graphical Design Reference",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/design/README.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/README.md"
     },
     {
       "type": "Review evidence",
       "title": "Graphical Candidate Evidence and Handoff",
       "description": "Graphical Candidate Evidence and Handoff",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/docs/20-graphical-candidate-evidence.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/20-graphical-candidate-evidence.md"
     },
     {
       "type": "Review evidence",
@@ -392,7 +392,7 @@
       "type": "Review evidence",
       "title": "Existing Candidate VM Harness",
       "description": "Existing Candidate VM Harness",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/codex/graphical-evidence-review/tests/03-existing-candidate-boot.py"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/tests/03-existing-candidate-boot.py"
     },
     {
       "type": "Review evidence",
@@ -404,13 +404,13 @@
       "type": "Recovery record",
       "title": "Runner Registration — Scoped Token Only",
       "description": "Current scoped-token procedure; failed broad OAuth approach explicitly historical and retired.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/ops/runner-recovery-20261110/docs/runner-registration-cli.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/runner-registration-cli.md"
     },
     {
       "type": "Recovery record",
       "title": "Runner Service Startup and Verification",
       "description": "Temporary root-equivalent sudo, routing assumptions and successful remote execution evidence.",
-      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/ops/runner-recovery-20261110/docs/runner-service-startup.md"
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/runner-service-startup.md"
     },
     {
       "type": "Recovery record",
@@ -429,16 +429,40 @@
       "title": "M15 Acceptance Record",
       "description": "Exact source/run/UKI/ISO identity, negative outcomes and bounded claims.",
       "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/0046b5e72cf56b1d6d4416483b25cf705e13f00e/evidence/2026-11-10-m15/report.json"
+    },
+    {
+      "type": "Binding plan",
+      "title": "JSON-only candidate publication recovery",
+      "description": "Existing PHP contract and evidence-bound JSON-only live acceptance.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/21-json-only-candidate-publication-plan.md"
+    },
+    {
+      "type": "Historical evidence",
+      "title": "Exact Candidate Malware Triage",
+      "description": "Bounded static check for the earlier exact artwork candidate only; no new-image transfer.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/22-candidate-malware-triage.md"
+    },
+    {
+      "type": "Implementation plan",
+      "title": "Automatic boot diagnostics and graphical recovery",
+      "description": "Existing implementation consolidated; exact-image recovery acceptance remains unverified in this session.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/23-automatic-boot-diagnostics-plan.md"
+    },
+    {
+      "type": "Integration record",
+      "title": "Main consolidation",
+      "description": "All starting histories preserved, exact-source CI and development-only build evidence.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/24-main-consolidation.md"
     }
   ],
   "sections": [
     {
       "title": "Current core priority and claim boundary",
-      "content": "M15 development-only acceptance is verified by a fresh normal pipeline. No other milestone was started. Source is unmerged; no firmware/runtime/physical or root-authentication assurance follows from this signature gate."
+      "content": "M15 development-only acceptance and a fresh combined-source main build are verified at the recorded source. All existing branch histories are consolidated in main. No physical, firmware-enforcement or authenticated-root assurance follows. No new milestone started."
     },
     {
       "title": "Runner recovery — execution verified within stated scope",
-      "content": "Disposable builder runner recovery is VERIFIED relative to two successful GitHub Actions account/sudo smoke checks. The runner executes as github-runner (UID 1001) on reported Debian 13.7 and obtains root through authorized passwordless sudo. Broad GitHub CLI OAuth was cancelled and that helper is retired. Root-equivalent sudo remains a temporary documented weakness; workflow approval settings are operator-asserted, not independently inspected. Full PTL dependencies, M15, historical artifact availability and live-page consistency remain unverified. This recovery-branch status does not approve an ISO or claim publication to the live viewer."
+      "content": "Disposable builder runner recovery is verified within the recorded account/sudo smoke scope. Full declared PTL dependencies and fresh normal M15 builds now pass. The authorized unrestricted sudo remains root-equivalent; generic-label privileged PR jobs are retired, and dedicated main/integration routing rejects PR events/refs and other repositories. This is not hardware attestation or release approval; live rendering remains UNKNOWN."
     },
     {
       "title": "Historical graphical validation focus — original image only",
@@ -474,7 +498,7 @@
     },
     {
       "title": "M15 development-key gate — VERIFIED within scope",
-      "content": "M15's requested DEVELOPMENT ONLY signed-UKI acceptance is VERIFIED at source 3125a1c99342b961ac614878d3ce9b3f874de33e, fresh normal run 42711645617. Correct-key/input verification and actual ISO EFI read-back passed; tampered, wrong-key and unsigned UKIs were rejected. All 28 M15 regressions passed. No production key, firmware enrollment, TPM ownership/PCR-policy action or target-device write was introduced. Firmware enforcement, physical boot, authenticated root and bit-for-bit reproducibility remain unverified; no approved ISO exists. Source remains on the unmerged development branch. The old graphical artifact is no longer listed and is not a current physical handoff. Live-page rendering is UNKNOWN after cloud proxy CONNECT 403. UKI: 67,962,376 bytes; SHA-256 e42219c658b6cfe285c02f1c667ce505768dcf32bfd7c78fdf10570e27cfddeb. Certificate DER SHA-256 af0794b4e3d1e1830f3610cf4532ed362df639864225ab45d654e4b0c9949193. Inspect the evidence bundle's m15/ folder. Binary artifact expiry: 17 November 2026, 06:38 AWST."
+      "content": "M15's requested DEVELOPMENT ONLY signed-UKI acceptance is VERIFIED at source 3125a1c99342b961ac614878d3ce9b3f874de33e, fresh normal run 42711645617. Correct-key/input verification and actual ISO EFI read-back passed; tampered, wrong-key and unsigned UKIs were rejected. All 28 M15 regressions passed. No production key, firmware enrollment, TPM ownership/PCR-policy action or target-device write was introduced. Firmware enforcement, physical boot, authenticated root and bit-for-bit reproducibility remain unverified; no approved ISO exists. The implementation is merged into canonical main; the integration record contains fresh combined-source and main build identities. Original UKI hashes and artifact details below remain attached to original run 42711645617, not the newer builds. The old graphical artifact is no longer listed and is not a current physical handoff. Live-page rendering is UNKNOWN after cloud proxy CONNECT 403. UKI: 67,962,376 bytes; SHA-256 e42219c658b6cfe285c02f1c667ce505768dcf32bfd7c78fdf10570e27cfddeb. Certificate DER SHA-256 af0794b4e3d1e1830f3610cf4532ed362df639864225ab45d654e4b0c9949193. Inspect the evidence bundle's m15/ folder. Binary artifact expiry: 17 November 2026, 06:38 AWST."
     },
     {
       "title": "Future modular Black Cat sessions",
@@ -494,7 +518,7 @@
     },
     {
       "title": "Current Test Candidate versus Approved ISO",
-      "content": "The exact M13B candidate remains development evidence. No Approved Black Cat ISO exists yet; production release-signing authority is not provisioned."
+      "content": "Historical M13B and artwork candidate observations remain attached to their exact old images. The old graphical artifact is unavailable and superseded. Current M15/main outputs are verification evidence only; no active physical-test handoff or Approved Black Cat ISO exists."
     },
     {
       "title": "Zero-new-inbound automation policy",
@@ -539,6 +563,10 @@
     {
       "title": "Console deployment gate",
       "content": "Safe local-bootstrap and DNS-gated HTTPS publication scripts exist, but the available DigitalOcean control connection exposes no remote shell/exec operation and no established SSH credential mapping for blackcat-chatbot-01 is currently documented. Deployment remains NOT VERIFIED until a safe administrative shell path is established and the scripts are executed and tested."
+    },
+    {
+      "title": "Canonical main and consolidated evidence",
+      "content": "All 17 starting branch tips are preserved in main. Hosted source, PHP publication fixtures, M14 negative tests, trusted routing and fresh development-only normal pipelines passed. Existing recovery and historical preview source is preserved without executing device writers or deployment. The two established JSON feeds receive identical final metadata; live rendering remains UNKNOWN. See docs/24-main-consolidation.md. Fresh main run 42720596290, source eb7b969f95ba419acc5a2e16ffe587c40c42446d; signed UKI SHA-256 4b39292b6fd5cb3c2c0ed92ec232b0ac20630980d5027f28bb7b58c8c52b4fe8; certificate DER SHA-256 948e5ed840a78cda310c73b140512d0a9020d0094c4b1ca8a894da4a6ff69ab2; ISO SHA-256 fa7a98cfcdab956969e9c11289a0d9779b57080f3f2257852785fae7bb4aa466. Evidence bundle: https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42720596290/artifacts/13720897217 (expires 2026-11-16T23:41:40Z). These are verification artifacts, not a physical-test candidate."
     }
   ],
   "milestones": [
@@ -624,7 +652,8 @@
       "scope": "Requested development-key construction/signature/input/ISO integration only; firmware enforcement UNKNOWN",
       "evidence_url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/0046b5e72cf56b1d6d4416483b25cf705e13f00e/evidence/2026-11-10-m15/report.json",
       "validation_run": 42711645617,
-      "merged_to_main": false
+      "merged_to_main": false,
+      "main_integration_record": "evidence/2026-11-10-main-integration/report.json"
     },
     {
       "id": "M16",
@@ -895,6 +924,18 @@
     }
   ],
   "changelog": [
+    {
+      "version": "3.8",
+      "date": "2026-11-10",
+      "summary": "Consolidated all existing histories into main after exact-source development pipeline verification. Retired legacy privileged PR routing, recovered historical recovery evidence and synchronized existing status feeds. No approved ISO or physical handoff; JSON written last.",
+      "changes": [
+        "Preserved every starting branch tip; retained current M15 evidence and M14 single-object rejection.",
+        "Fresh integration and main normal builds passed development signature/rejection/ISO-binding gates.",
+        "Retired legacy generic-label privileged PR routing; hosted checks and negative route tests passed.",
+        "Recovered divergent publication policy and kept both existing feeds synchronized without PHP migration.",
+        "Lessons, technical records and compact checkpoint updated before this final JSON write. No approved ISO or physical handoff."
+      ]
+    },
     {
       "version": "3.7",
       "date": "2026-11-10",
@@ -1232,20 +1273,20 @@
   "handoff": {
     "ready_for_lighter_model": true,
     "checkpoint": "AI_WORK_STATE.md",
-    "review_branch": "codex/m15-signed-uki-development",
-    "merged": false,
-    "next_action": "M15 development acceptance is verified. Review the unmerged source and await the next operator task. Main merge remains HUMAN_GATE; no physical handoff or next milestone starts automatically.",
+    "review_branch": "main",
+    "merged": true,
+    "next_action": "Use main for future work. Preserve binary evidence before finite artifact expiry or deleting the builder. Await the next concrete task; no physical handoff or next milestone starts automatically.",
     "last_passed_source_check": {
-      "run": 42711645617,
-      "commit": "3125a1c99342b961ac614878d3ce9b3f874de33e",
-      "scope": "28 M15 regressions plus fresh normal build/signature/ISO acceptance"
+      "run": 42720596290,
+      "commit": "eb7b969f95ba419acc5a2e16ffe587c40c42446d",
+      "scope": "Fresh main normal build, M15 actual-tool regressions, M14 negatives, source/PHP and final ISO binding"
     },
-    "completion_scope": "Requested M15 development acceptance passed; no production, firmware enforcement, physical boot or authenticated-root claim. Live page UNKNOWN.",
+    "completion_scope": "Main consolidation and development-only UKI gate verified at exact recorded source. No release, physical boot, firmware enforcement or authenticated-root claim.",
     "checkpoint_contract": "Strict continuity headings restored and statically guarded.",
     "live_candidate_handoff": {
       "url": "https://easyai.com.au/USB/project.php",
       "status": "no-current-physical-handoff; live-rendering-UNKNOWN",
-      "source_branch": "project-status-live",
+      "source_branch": "codex/remove-chroot-systemd-boot (last verified deployment; both existing feeds synchronized)",
       "fail_closed": true,
       "required_match_fields": [
         "filename",
@@ -1371,6 +1412,19 @@
         "reason_for_removal": "UNKNOWN"
       },
       "retired_from_handoff": "2026-11-10"
+    },
+    {
+      "status": "historical-not-current",
+      "channel": "automatic-recovery-vm-only",
+      "filename": "live-image-amd64.hybrid.iso",
+      "size_bytes": 778043392,
+      "sha256": "ada9d032a4c957a995f874c693b6181014f64863c312dc0c86b892ec1d1fde65",
+      "source_commit": "ab5ebe0093bc78b9145fb670090520168be24e04",
+      "build_run": 35268766563,
+      "artifact_id": 10518144528,
+      "artifact_availability": "NOT LISTED",
+      "physical_validation": "UNKNOWN",
+      "note": "Retained CI log records normal GUI/check and injected recovery menu for this exact old image only. No current handoff or complete acceptance claim."
     }
   ],
   "historical_status_snapshots": [
@@ -1580,8 +1634,8 @@
     "date_local": "2026-11-10",
     "timezone": "Australia/Perth",
     "implementation_source_commit": "3125a1c99342b961ac614878d3ce9b3f874de33e",
-    "source_branch": "codex/m15-signed-uki-development",
-    "merged_to_main": false,
+    "source_branch": "main",
+    "merged_to_main": true,
     "run_id": 42711645617,
     "job_id": 129482434136,
     "run_conclusion": "success",
@@ -1732,34 +1786,191 @@
       "physical_boot": "UNKNOWN",
       "root_authentication": "NOT VERIFIABLE within M15; M17 not implemented",
       "legacy_bios": "NOT VERIFIABLE within this UKI gate"
-    }
+    },
+    "original_source_branch": "codex/m15-signed-uki-development",
+    "main_merge_commit": "eb7b969f95ba419acc5a2e16ffe587c40c42446d",
+    "latest_combined_source_validation": {
+      "source_commit": "eb7b969f95ba419acc5a2e16ffe587c40c42446d",
+      "run_id": 42720596290,
+      "job_id": 129513260667,
+      "conclusion": "success",
+      "run_url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42720596290",
+      "uki_sha256": "4b39292b6fd5cb3c2c0ed92ec232b0ac20630980d5027f28bb7b58c8c52b4fe8",
+      "uki_size_bytes": 67962376,
+      "certificate_der_sha256": "948e5ed840a78cda310c73b140512d0a9020d0094c4b1ca8a894da4a6ff69ab2",
+      "public_key_spki_sha256": "85b9c7dfd670e9b34ee95fb6b6afdab807ef608e36b38e18d2c6333838ef60fb",
+      "iso_sha256": "fa7a98cfcdab956969e9c11289a0d9779b57080f3f2257852785fae7bb4aa466",
+      "artifact": {
+        "id": 13720897217,
+        "name": "blackcat-m15-development-evidence-42720596290",
+        "size_bytes": 68477219,
+        "zip_sha256": "d00ff23c689bfe16fbaf92df23c1997e479d25f01a4fa23c86a69ea40f49bd1f",
+        "expires_at": "2026-11-16T23:41:40Z",
+        "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42720596290/artifacts/13720897217"
+      },
+      "evidence_record": "evidence/2026-11-10-main-integration/main-build/",
+      "acceptance": "Fresh normal pipeline, correct key and exact bindings, tamper/wrong-key/unsigned/changed-cmdline rejection, actual ISO filesystem and boot extent read-back",
+      "m15_regressions_passed": 28,
+      "runner_regressions_passed": 12,
+      "source_and_M14_negative_checks": "passed",
+      "local_public_key_checks": "Certificate/public-key DER/SPKI hashes and certificate-derived key equality independently checked locally; actual UKI signature and ISO verified in CI, not claimed as local binary download",
+      "raw_provenance_limit": "Inner github_run_id remains unknown after sudo filtering; outer run/job/source bound by GitHub metadata, raw values preserved"
+    },
+    "original_acceptance_note": "The original run/key/UKI/ISO fields remain the original 3125a1c acceptance. Current main build identities are separate under latest_combined_source_validation and main_integration."
   },
   "public_status": {
     "canonical_feed_branch": "project-status-live",
-    "metadata_branch": "codex/m15-signed-uki-development",
-    "implementation_branch": "codex/m15-signed-uki-development",
-    "main_merged": false,
+    "metadata_branch": "main",
+    "implementation_branch": "main",
+    "main_merged": true,
     "live_page_url": "https://easyai.com.au/USB/project.php",
     "live_display_verification": {
       "status": "UNKNOWN",
-      "reason": "Cloud proxy CONNECT 403; no live HTTPS page content obtained",
+      "reason": "Current cloud HTTPS request returns 403; no live page content obtained. Feed synchronization is not live rendering verification.",
       "checked_local_date": "2026-11-10"
-    }
+    },
+    "canonical_development_branch": "main",
+    "existing_publication_endpoints": [
+      "project-status-live",
+      "codex/remove-chroot-systemd-boot"
+    ],
+    "last_verified_deployed_source": "codex/remove-chroot-systemd-boot per historical docs/21 acceptance; current configuration UNKNOWN"
   },
   "main_integration": {
-    "status": "IN PROGRESS",
-    "authorized_by": "Explicit operator instruction to consolidate all existing work into main",
-    "branch": "integration/main-20261110",
+    "status": "VERIFIED",
+    "scope": "History consolidation, trusted routing, hosted checks and fresh development-only normal pipeline; not release or hardware assurance",
+    "canonical_branch": "main",
+    "pull_request": 9,
+    "pull_request_url": "https://github.com/efrgdgr0024345/portable-trusted-linux/pull/9",
     "starting_main": "15697b2fb4261cc2785082550c9aeae3fa4668dc",
+    "merge_commit": "eb7b969f95ba419acc5a2e16ffe587c40c42446d",
     "branch_tips_record": "evidence/2026-11-10-main-integration/branch-tips.json",
-    "combined_source_build": "PENDING",
-    "merge": "PENDING",
+    "all_17_starting_branch_tips_preserved": true,
+    "integration_build": {
+      "source_commit": "f2bca2c189328f492c3a0c6be18d63fd3e8dc36a",
+      "run_id": 42718280786,
+      "job_id": 129505353931,
+      "conclusion": "success",
+      "run_url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42718280786",
+      "uki_sha256": "c532696d3750933ee163f789d56042aef603c6267f3642f8f75b9085f06f2fde",
+      "certificate_der_sha256": "2c58014dcc3f5895a152d135f2219634f44426dfb137b0bd9fdfbe6ab176e3b0",
+      "public_key_spki_sha256": "8f0523112349400628391aed1f2fdf48d8ac780e920523e7400e21ff9fd33342",
+      "iso_sha256": "60eebada83aad6ba0799083318ae80d248cebbbb42cfe0a1976f29c1e4ef4635",
+      "artifact": {
+        "id": 13720190466,
+        "name": "blackcat-m15-development-evidence-42718280786",
+        "size_bytes": 68474779,
+        "zip_sha256": "86a37bb7f3cface5caf9e057a7f6f0e6927bca2f5f4798e12bd51f24058aaa84",
+        "expires_at": "2026-11-16T23:24:36Z",
+        "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42718280786/artifacts/13720190466"
+      },
+      "evidence_record": "evidence/2026-11-10-main-integration/integration-build/",
+      "acceptance": "Fresh normal pipeline, correct key and exact bindings, tamper/wrong-key/unsigned/changed-cmdline rejection, actual ISO filesystem and boot extent read-back"
+    },
+    "main_build": {
+      "source_commit": "eb7b969f95ba419acc5a2e16ffe587c40c42446d",
+      "run_id": 42720596290,
+      "job_id": 129513260667,
+      "conclusion": "success",
+      "run_url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42720596290",
+      "uki_sha256": "4b39292b6fd5cb3c2c0ed92ec232b0ac20630980d5027f28bb7b58c8c52b4fe8",
+      "uki_size_bytes": 67962376,
+      "certificate_der_sha256": "948e5ed840a78cda310c73b140512d0a9020d0094c4b1ca8a894da4a6ff69ab2",
+      "public_key_spki_sha256": "85b9c7dfd670e9b34ee95fb6b6afdab807ef608e36b38e18d2c6333838ef60fb",
+      "iso_sha256": "fa7a98cfcdab956969e9c11289a0d9779b57080f3f2257852785fae7bb4aa466",
+      "artifact": {
+        "id": 13720897217,
+        "name": "blackcat-m15-development-evidence-42720596290",
+        "size_bytes": 68477219,
+        "zip_sha256": "d00ff23c689bfe16fbaf92df23c1997e479d25f01a4fa23c86a69ea40f49bd1f",
+        "expires_at": "2026-11-16T23:41:40Z",
+        "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42720596290/artifacts/13720897217"
+      },
+      "evidence_record": "evidence/2026-11-10-main-integration/main-build/",
+      "acceptance": "Fresh normal pipeline, correct key and exact bindings, tamper/wrong-key/unsigned/changed-cmdline rejection, actual ISO filesystem and boot extent read-back",
+      "m15_regressions_passed": 28,
+      "runner_regressions_passed": 12,
+      "source_and_M14_negative_checks": "passed",
+      "local_public_key_checks": "Certificate/public-key DER/SPKI hashes and certificate-derived key equality independently checked locally; actual UKI signature and ISO verified in CI, not claimed as local binary download",
+      "raw_provenance_limit": "Inner github_run_id remains unknown after sudo filtering; outer run/job/source bound by GitHub metadata, raw values preserved"
+    },
+    "record": "evidence/2026-11-10-main-integration/report.json",
     "publication": {
+      "existing_endpoints": [
+        "project-status-live",
+        "codex/remove-chroot-systemd-boot"
+      ],
+      "strategy": "Fast-forward existing feeds to canonical main with identical JSON; no PHP or endpoint migration",
       "last_verified_deployed_source": "codex/remove-chroot-systemd-boot (historical docs/21 record)",
       "repository_php_source": "project-status-live",
-      "live_rendering": "UNKNOWN",
-      "strategy": "Synchronize both existing JSON endpoints after merge; no PHP migration"
+      "live_rendering": "UNKNOWN: current HTTPS read returns 403"
     },
-    "limitations": "Original M15 evidence remains source-specific; no approved ISO or physical handoff"
+    "authorization": "Explicit operator instruction in this session; future main merges retain the normal human gate",
+    "closeout_source_check": {
+      "run_id": 42723148448,
+      "source_commit": "042436eacfcbb388a2bb188bea9c4713e1b497ba",
+      "conclusion": "success",
+      "scope": "Hosted source/PHP/publication/M14 and routing checks after exact continuity-sentence correction"
+    },
+    "closeout_regression": {
+      "run_id": 42722974676,
+      "source_commit": "bf4ca09c540d79463fe40d188774960b79b3f415",
+      "conclusion": "failure",
+      "cause": "Documentation checkpoint paraphrased the exact checked continuity sentence; restored without weakening guard. UKI/build code unchanged.",
+      "lesson": "docs/07-lessons-learned.md"
+    },
+    "technical_record_commit": "042436eacfcbb388a2bb188bea9c4713e1b497ba"
+  },
+  "model_hierarchy_policy": {
+    "scope": "All higher-model plans, ideas and suggestions across this project",
+    "rule": "A lower model must not change them without explicit human sign-off.",
+    "self_approved_exceptions": false,
+    "unknown_rank": "Preserve direction; obtain human clarification before changing it.",
+    "provenance": "Record model/version when reliably exposed; do not invent rankings."
+  },
+  "historical_recovery_observation": {
+    "run_id": 35268766563,
+    "job_id": 105362480213,
+    "run_conclusion": "success",
+    "report_from_retained_job_log": {
+      "iso_sha256": "ada9d032a4c957a995f874c693b6181014f64863c312dc0c86b892ec1d1fde65",
+      "size_bytes": 778043392,
+      "source_commit": "ab5ebe0093bc78b9145fb670090520168be24e04",
+      "build_run": 35268766563,
+      "network": "no guest NIC",
+      "scope": "development VM observations, no release approval",
+      "gui": {
+        "status": "GUI_INTERACTIONS_OBSERVED",
+        "frames": {
+          "selected": "gui-selected.png",
+          "cleared": "gui-cleared.png",
+          "desktop": "gui-desktop.png",
+          "desktop_settled": "gui-desktop-settled.png"
+        },
+        "checkbox": "Browser summary observed",
+        "clear": "none summary observed",
+        "open_desktop": "preview absent from two successive frames; screenshots retained"
+      },
+      "check": {
+        "status": "QUICK_CHECK_SETTLED_PROMPT_OBSERVED",
+        "frame": "check-140.png",
+        "selected_menu": true,
+        "elapsed_seconds": 140
+      },
+      "recovery": {
+        "status": "AUTOMATIC_RECOVERY_MENU_OBSERVED",
+        "frame": "recovery-140.png",
+        "elapsed_seconds": 140,
+        "injection": "LightDM masked; short test-only readiness deadline",
+        "scope": "VM failure-injection observation; not physical GPU compatibility"
+      }
+    },
+    "historical_artifact": {
+      "id": 10518144528,
+      "zip_sha256": "21c2c6fed4fe542a96dd8b7f4d2d54256c1268b4bce6c3039398b22b837fd4f6",
+      "availability": "NOT LISTED by current artifacts API; reason UNKNOWN",
+      "builder_copy_availability": "UNKNOWN"
+    },
+    "scope": "Historical exact-image VM observations; no transfer to current signed-UKI image or physical GPU assurance"
   }
 }
