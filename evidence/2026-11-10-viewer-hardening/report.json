@@ -32,5 +32,27 @@
     "No production key, firmware enrollment, TPM policy/ownership, target device operation, approved ISO or new milestone.",
     "Existing hosting PHP/cURL/token scope, Apache overrides, TLS configuration and host security are not established by local fixtures.",
     "A source hash shown by a page must be compared with an independently obtained artifact; the page is not its own ultimate verifier."
-  ]
+  ],
+  "hosted_ci": {
+    "run_id": 42771083159,
+    "job_id": 129678782976,
+    "source_commit": "452ee2c15128d73cff5d797eb7f8c6276e3a3497",
+    "conclusion": "success",
+    "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42771083159",
+    "steps": "source/release negatives/recovery/publication and real-browser CSP/print negatives all passed"
+  },
+  "delivery": {
+    "files_sha256": {
+      "project.php": "c626ec161163ced601ba2db6b41ab5d8bf38652a663bd923cfa553c38789f7cc",
+      "project_cache/.htaccess": "70e75118bdbdd76c0b1dbd64819c334f2984cf66128f262b0a3e33cb5678a7d9",
+      "blackcat-project-viewer.zip": "1b38975a0c2ab4368d26cb2214d0bf9a4a27a58b7c4f70fca31d743fe98b086c"
+    },
+    "zip_entries": [
+      "project.php",
+      "project_cache/.htaccess"
+    ],
+    "zip_mode": "0644 public application/config files; no credentials",
+    "zip_timestamp": "Fixed source-date timestamp for stable delivery checksum",
+    "hosting_installation": "UNKNOWN; requires existing hosting access"
+  }
 }
