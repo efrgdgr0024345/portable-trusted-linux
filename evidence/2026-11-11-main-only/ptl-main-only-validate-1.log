@@ -1,0 +1,31 @@
+BLACK CAT RELEASE MANIFEST: CREATED
+Manifest: /tmp/tmp.zxBgWlF6ix/release-manifest.json
+Artifact SHA-256: 26f2394e4d29d1132d9eff4393499845ba127c788cc306d77812203ca2cf25db
+Release key fingerprint: a7243bac0ba56d33cb8ec8647e5da74b43d82be582e421be0f0bf5c2fab86456
+BLACK CAT RELEASE MANIFEST: SIGNED
+Manifest: /tmp/tmp.zxBgWlF6ix/release-manifest.json
+Signature: /tmp/tmp.zxBgWlF6ix/release-manifest.sig
+Release key fingerprint: a7243bac0ba56d33cb8ec8647e5da74b43d82be582e421be0f0bf5c2fab86456
+MANIFEST CANONICAL FORM: VERIFIED
+MANIFEST SCHEMA: VERIFIED
+RELEASE KEY FINGERPRINT: VERIFIED (a7243bac0ba56d33cb8ec8647e5da74b43d82be582e421be0f0bf5c2fab86456)
+RELEASE SIGNATURE: VERIFIED
+ARTIFACT FILENAME: VERIFIED
+ARTIFACT SIZE: VERIFIED
+ARTIFACT SHA-256: VERIFIED (26f2394e4d29d1132d9eff4393499845ba127c788cc306d77812203ca2cf25db)
+BLACK CAT AUTHENTICATED RELEASE VERIFICATION: PASS
+[PASS] valid signed manifest and artifact verify
+[PASS] tampered artifact is rejected
+[PASS] tampered signed manifest is rejected
+[PASS] non-canonical manifest is rejected
+[PASS] validator rejects multiple top-level JSON documents
+[PASS] signer rejects multiple top-level JSON documents
+[PASS] verifier rejects signed multiple top-level JSON documents
+[PASS] unexpected manifest fields are rejected
+[PASS] wrong artifact filename is rejected
+[PASS] malformed signature is rejected
+[PASS] wrong public key is rejected
+[PASS] signer rejects private-key/fingerprint mismatch
+[PASS] non-Ed25519 release public key is rejected
+[PASS] invalid release id is rejected
+BLACK CAT RELEASE SIGNING SELF-TEST: PASS

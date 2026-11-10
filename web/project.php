@@ -2,14 +2,13 @@
 declare(strict_types=1);
 
 /* Black Cat living viewer. Metadata checks are not host or runtime attestation.
- * This release keeps the operator-supplied deployed feed (docs/21), not a branch migration.
+ * Main is the sole production data source under the authorized main-only policy.
  * One protected token file, no credential fallback, no stale-data success on upstream failure.
  */
-const VIEWER_VERSION = '2026-11-10.1';
+const VIEWER_VERSION = '2026-11-11.1';
 const GITHUB_OWNER = 'efrgdgr0024345';
 const GITHUB_REPO = 'portable-trusted-linux';
-const GITHUB_BRANCH = 'codex/remove-chroot-systemd-boot';
-const CANONICAL_BRANCH = 'main';
+const GITHUB_BRANCH = 'main';
 const CONTENT_FILE = 'project_content.json';
 const TOKEN_FILE = '/home/learning/.blackcat/github_token';
 const BUILDER_STATUS_FILE = '/home/learning/.blackcat/builder_status.json';
@@ -202,13 +201,9 @@ function fetchProject(): array {
     if ($token === '') return ['ok' => false, 'error' => 'Protected viewer credential is unavailable or failed file checks. Downloads are disabled.'];
     $feed = readProjectRef(GITHUB_BRANCH, $token);
     if (!$feed['ok']) return $feed;
-    $main = GITHUB_BRANCH === CANONICAL_BRANCH ? $feed : readProjectRef(CANONICAL_BRANCH, $token);
-    $feed['main_sha'] = $main['ok'] ? $main['sha'] : '';
-    $feed['main_match'] = $main['ok'] && hash_equals($feed['sha'], $main['sha']);
+    $feed['source_ref'] = GITHUB_BRANCH;
     $feed['warnings'] = consistencyWarnings($feed['project']);
-    if (!$main['ok']) $feed['warnings'][] = 'Canonical main could not be validated; feed/main match is UNKNOWN and downloads are blocked.';
-    elseif (!$feed['main_match']) $feed['warnings'][] = 'Feed JSON differs from main; downloads are blocked.';
-    $feed['publication_ok'] = $feed['main_match'] && $feed['warnings'] === [];
+    $feed['publication_ok'] = $feed['warnings'] === [];
     $feed['checked_at'] = gmdate(DATE_ATOM);
     return $feed;
 }
@@ -315,7 +310,7 @@ $releaseCheck = releaseGate($release, $publicationOkay); $downloadEnabled = $rel
 $checks = [
     ['label' => 'Protected credential file prerequisites', 'status' => githubToken() !== '' ? 'OBSERVED' : 'FAILED', 'detail' => 'Checked file location, restrictive permissions and available ownership checks; token value is never rendered. Token scope and host security are not attested.'],
     ['label' => 'Project JSON structure and Git blob identity', 'status' => $project !== null ? 'VERIFIED' : 'FAILED', 'detail' => 'Bounded typed contract and standard Git object identifier; not release or runtime trust.'],
-    ['label' => 'Feed JSON matches canonical main snapshot', 'status' => $project === null ? 'UNKNOWN' : (($result['main_match'] ?? false) ? 'VERIFIED' : 'WARNING'), 'detail' => 'Compares this feed with main JSON fetched/revalidated for this request; not all repository files or deployment synchronization.'],
+    ['label' => 'Main publication JSON identity', 'status' => $project !== null ? 'VERIFIED' : 'UNKNOWN', 'detail' => 'Reads the fixed main ref and validates the returned JSON/blob for this request. This is not an independent comparison with a deployed host or all repository files.'],
     ['label' => 'Repeated status consistency', 'status' => $publicationOkay ? 'VERIFIED' : 'WARNING', 'detail' => implode(' ', $result['warnings'] ?? []) ?: 'Known repeated merge-status fields agree.'],
     ['label' => 'Firmware, target runtime and independent attestation', 'status' => 'UNKNOWN', 'detail' => 'This webpage does not inspect or attest the target system.']
 ];
@@ -349,7 +344,7 @@ $viewerSha = @hash_file('sha256', __FILE__) ?: 'UNKNOWN';
 
 <section class="section" id="status"><div class="wrap"><div class="kicker">Operational observation</div><h2>Builder / Server Status</h2><div class="pill pending"><?= h($builderStatus['status']) ?></div><p><?= h($builderStatus['reason']) ?></p><div class="statusgrid"><?php foreach ($builderRows as $row): ?><div class="statuscard"><strong><?= h(str_replace('_', ' ', $row['label'])) ?></strong><span><?= h($row['value']) ?></span></div><?php endforeach; ?></div><div class="mutednote">Only allowlisted enum/numeric fields from a private snapshot are displayed. This is display-only operational telemetry. It cannot enable, replace, supersede or approve project/candidate/release data. Old public project_cache/builder_status.json files need removal or explicit web-server access denial; this PHP cannot protect a separate static URL.</div></div></section>
 
-<section class="section" id="source"><div class="wrap"><div class="sourcebox"><div class="kicker">Project Data Source</div><h2>Data identity checked for this request</h2><div class="pill pending">FETCHED DATA — SCOPE SHOWN BELOW</div><div class="sourcegrid"><div class="sourceitem"><strong>Repository</strong><span><?= h(GITHUB_OWNER . '/' . GITHUB_REPO) ?></span></div><div class="sourceitem"><strong>Feed branch</strong><code><?= h(GITHUB_BRANCH) ?></code></div><div class="sourceitem"><strong>Project data</strong><span><?= h(CONTENT_FILE) ?></span></div><div class="sourceitem"><strong>Feed Git blob</strong><code><?= h($githubSha) ?></code></div><div class="sourceitem"><strong>Main Git blob</strong><code><?= h((string)($result['main_sha'] ?? 'UNKNOWN')) ?></code></div><div class="sourceitem"><strong>Checked at UTC</strong><span><?= h((string)($result['checked_at'] ?? 'UNKNOWN')) ?></span></div></div><p class="mutednote">GitHub HTTPS API data, with conditional revalidation when a private cache is available. An upstream failure never substitutes a cached success. Matching JSON is not proof of deployed PHP identity, ISO signatures or runtime security.</p></div></div></section>
+<section class="section" id="source"><div class="wrap"><div class="sourcebox"><div class="kicker">Project Data Source</div><h2>Data identity checked for this request</h2><div class="pill pending">FETCHED DATA — SCOPE SHOWN BELOW</div><div class="sourcegrid"><div class="sourceitem"><strong>Repository</strong><span><?= h(GITHUB_OWNER . '/' . GITHUB_REPO) ?></span></div><div class="sourceitem"><strong>Repository branch</strong><code><?= h(GITHUB_BRANCH) ?></code></div><div class="sourceitem"><strong>Project data</strong><span><?= h(CONTENT_FILE) ?></span></div><div class="sourceitem"><strong>Main Git blob</strong><code><?= h($githubSha) ?></code></div><div class="sourceitem"><strong>Index contract</strong><code><?= h((string)($project['viewer_schema_version'] ?? 'legacy typed contract')) ?></code></div><div class="sourceitem"><strong>Checked at UTC</strong><span><?= h((string)($result['checked_at'] ?? 'UNKNOWN')) ?></span></div></div><p class="mutednote">GitHub HTTPS API data, with conditional revalidation when a private cache is available. An upstream failure never substitutes a cached success. Fetching main JSON is not proof of deployed PHP identity, ISO signatures or runtime security.</p></div></div></section>
 
 <section class="docs" id="documents"><div class="wrap"><div class="kicker">Project library</div><h2>Documents &amp; project files</h2><div class="docgrid"><?php foreach ($documents as $doc): $url = safeHttpsUrl((string)($doc['url'] ?? '')); if ($url === '') continue; ?><a class="doc" href="<?= h($url) ?>" target="_blank" rel="noopener noreferrer"><div class="doctype"><?= h((string)($doc['type'] ?? 'Document')) ?></div><h3><?= h((string)($doc['title'] ?? 'Untitled')) ?></h3><p><?= h((string)($doc['description'] ?? '')) ?></p><div class="doclink">Open document →</div></a><?php endforeach; ?></div></div></section>
 

@@ -3,6 +3,10 @@
 Author: Codex, GPT-6 family; exact deployed variant unknown. Date: 10 November 2026 (AWST).
 Authority: the operator explicitly requested a new updated project.php addressing the review findings. This authorizes the bounded PHP replacement; it is not approval for a release ISO, platform changes or a different feed. docs/21's existing-feed JSON-only publication rule remains intact.
 
+## Later main-only migration — 11 November 2026
+
+This document records the earlier 2026-11-10.1 delivery and its original configured-feed decision. The operator has now explicitly superseded that feed decision: the production viewer must read main. The current replacement is 2026-11-11.1; use docs/27-main-only-consolidation.md for its exact accepted source/delivery and live migration state. Earlier hashes/results below stay attached to their original source; they are not claims of current deployment. Credential handling, strict candidate/release gates and no-overclaim limits remain in force.
+
 ## Scope and current state
 
 `web/project.php` is the deployable single-file replacement, viewer version `2026-11-10.1`. It preserves the supplied deployed feed `codex/remove-chroot-systemd-boot` and the sole protected token path `/home/learning/.blackcat/github_token`. The previous repository-only `project-status-live` target was not the supplied deployed PHP's target. The static guard now follows the actual configured feed and binding docs/21 plan. `main` is used for a separate per-request JSON-identity comparison, not a publication-source migration. Routine index changes still do not require replacing PHP.

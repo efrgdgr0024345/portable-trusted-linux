@@ -24,7 +24,7 @@ for m in BASE['milestones']:
     if m['id']=='M15':m['merged_to_main']=True
 BASE['m15']['merged_to_main']=True
 REPO='efrgdgr0024345/portable-trusted-linux'
-FEED='/contents/project_content.json?ref=codex%2Fremove-chroot-systemd-boot'
+FEED='/contents/project_content.json?ref=main'
 MAIN='/contents/project_content.json?ref=main'
 SRC='b'*40
 
@@ -47,8 +47,8 @@ def release():
             'authentication':{'status':'VERIFIED','manifest_sha256':'d'*64,'public_key_spki_sha256':'e'*64}}
 
 
-def routes(project,main=None):
-    r={FEED:{'status':200,'data':api_content(project),'etag':'"feed-test"'},MAIN:{'status':200,'data':api_content(project if main is None else main),'etag':'"main-test"'}}
+def routes(project):
+    r={FEED:{'status':200,'data':api_content(project),'etag':'"main-test"'}}
     r['/actions/runs/123']={'status':200,'data':{'id':123,'status':'completed','conclusion':'success','head_sha':SRC,'repository':{'full_name':REPO}}}
     r['/actions/artifacts/456']={'status':200,'data':{'id':456,'name':'synthetic-test','size_in_bytes':5120,'expired':False,'expires_at':STAMP(3600),'digest':'sha256:'+'c'*64,'workflow_run':{'id':123,'head_sha':SRC}}}
     r['/releases/789']={'status':200,'data':{'id':789,'tag_name':'v-test','draft':False,'prerelease':False,'assets':[{'id':987,'name':'test.iso','state':'uploaded','size':4096,'digest':'sha256:'+'a'*64,'browser_download_url':f'https://github.com/{REPO}/releases/download/v-test/test.iso'}]}}
@@ -92,7 +92,7 @@ function curl_close($c){}
         source=SOURCE.replace('declare(strict_types=1);','declare(strict_types=1);\n'+stub,1)
         source,n=re.subn(r"const TOKEN_FILE = '[^']*';","const TOKEN_FILE = '"+str(token or self.token)+"';",source);assert n==1
         source,n=re.subn(r"const BUILDER_STATUS_FILE = '[^']*';","const BUILDER_STATUS_FILE = '"+str(self.status)+"';",source);assert n==1
-        source+='''\n<?php echo "\\nVIEWER_TEST_RESULT=".json_encode(['project_ok'=>$project!==null,'publication_ok'=>$publicationOkay,'main_match'=>$result['main_match']??false,'candidate_enabled'=>$candidateEnabled,'candidate_reason'=>$candidateCheck['reason'],'release_enabled'=>$downloadEnabled,'release_reason'=>$releaseCheck['reason'],'telemetry'=>$builderStatus,'http_status'=>http_response_code(),'requests'=>$GLOBALS['requests']]); ?>\n'''
+        source+='''\n<?php echo "\\nVIEWER_TEST_RESULT=".json_encode(['project_ok'=>$project!==null,'publication_ok'=>$publicationOkay,'source_ref'=>$result['source_ref']??null,'candidate_enabled'=>$candidateEnabled,'candidate_reason'=>$candidateCheck['reason'],'release_enabled'=>$downloadEnabled,'release_reason'=>$releaseCheck['reason'],'telemetry'=>$builderStatus,'http_status'=>http_response_code(),'requests'=>$GLOBALS['requests']]); ?>\n'''
         self.path.write_text(source)
     def run(self,routes_,**kw):
         self.write(routes_,**kw)
@@ -131,12 +131,18 @@ class ViewerTests(unittest.TestCase):
     def test_response_and_decoded_size_limits(self):
         r=routes(BASE);r[FEED]={'status':200,'body':'x'*(2097152+1)};_,d=self.f.run(r);self.assertFalse(d['project_ok'])
         p=dict(BASE,summary='x'*(1048576+1));_,d=self.f.run(routes(p));self.assertFalse(d['project_ok'])
-    def test_main_mismatch_and_unavailable(self):
-        p=self.project('candidate')
-        for main in [dict(p,version='different'),None]:
-            r=routes(p,main); 
-            if main is None:r[MAIN]={'status':403,'data':{'message':'synthetic denied'}}
-            _,d=self.f.run(r);self.assertTrue(d['project_ok']);self.assertFalse(d['publication_ok']);self.assertFalse(d['candidate_enabled'])
+    def test_main_source_is_fixed_and_unavailable_refuses(self):
+        p=self.project('candidate');html,d=self.f.run(routes(p))
+        self.assertEqual(d['source_ref'],'main')
+        contents=[r['path'] for r in d['requests'] if r['path'].startswith('/contents/')]
+        self.assertEqual(contents,[MAIN])
+        self.assertIn('<strong>Repository branch</strong><code>main</code>',html)
+        self.assertNotIn('codex/remove-chroot-systemd-boot',SOURCE)
+        self.assertNotIn('project-status-live',SOURCE)
+        for status in [403,404,500,0]:
+            with self.subTest(status=status):
+                r=routes(p);r[MAIN]={'status':status,'data':{'message':'synthetic denied'}}
+                _,d=self.f.run(r);self.assertFalse(d['project_ok']);self.assertFalse(d['publication_ok']);self.assertFalse(d['candidate_enabled']);self.assertFalse(d['release_enabled']);self.assertEqual(d['http_status'],503)
     def test_conflicting_merge_state_and_unknown_status_preservation(self):
         p=self.project('candidate')
         for m in p['milestones']:

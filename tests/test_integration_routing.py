@@ -19,20 +19,21 @@ def permits(event,ref,repository=REPO):
     return eval(compile(tree,'<guard>','eval'),{'__builtins__':{}},{})
 
 class IntegrationRouting(unittest.TestCase):
-    def test_trusted_main_and_integration(self):
-        for branch in ('main','integration/main-20261110'):
+    def test_trusted_main_only(self):
+        for branch in ('main',):
             for event in ('push','workflow_dispatch'):
                 self.assertTrue(permits(event,'refs/heads/'+branch))
     def test_reject_pr_events_even_on_trusted_ref(self):
         for event in ('pull_request','pull_request_target','workflow_run'):
             self.assertFalse(permits(event,'refs/heads/main'))
     def test_reject_untrusted_ref_and_repository(self):
-        for ref in ('refs/pull/9/merge','refs/heads/main-evil','refs/heads/codex/automatic-boot-recovery'):
+        for ref in ('refs/pull/9/merge','refs/heads/main-evil','refs/heads/codex/automatic-boot-recovery','refs/heads/integration/main-20261110'):
             self.assertFalse(permits('push',ref))
         self.assertFalse(permits('push','refs/heads/main','someone/fork'))
     def test_least_privilege_and_exact_checkout(self):
         self.assertEqual(WORKFLOW['permissions'],{'contents':'read'})
         self.assertEqual(set(WORKFLOW['on']),{'push','workflow_dispatch'})
+        self.assertEqual(WORKFLOW['on']['push']['branches'],['main'])
         self.assertEqual(WORKFLOW['jobs']['m15']['runs-on'],['ptl-trusted-20261110'])
         checkout=WORKFLOW['jobs']['m15']['steps'][0]['with']
         self.assertIs(checkout['persist-credentials'],False)

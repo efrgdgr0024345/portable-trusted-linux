@@ -1,0 +1,175 @@
+{
+  "schema": "blackcat-main-only-source-acceptance-v1",
+  "status": "VERIFIED",
+  "scope": "Exact local PHP/source/routing/browser controls; not live deployment, whole-host security or target attestation",
+  "date_local": "2026-11-11",
+  "timezone": "Australia/Perth",
+  "inventory_commit": "becd42bc0e453831ad175e78a406ce474eda3892",
+  "starting_main": "6bf3711820cf6fe55c1dbef86a34a586bd49243d",
+  "integration_pr": 10,
+  "viewer": {
+    "version": "2026-11-11.1",
+    "source_path": "web/project.php",
+    "source_sha256": "91dd5349537955c5f82ce11b19885be74713c89cd3f6f070f3e0bc3631512cd1",
+    "size_bytes": 45937,
+    "github_branch": "main",
+    "temporary_source_refs_remaining": false
+  },
+  "local_validation": {
+    "finished_utc": "2026-11-10T18:47:49.872574+00:00",
+    "results": [
+      {
+        "command": [
+          "bash",
+          "tests/00-static-check.sh"
+        ],
+        "exit_code": 0,
+        "log": "evidence/2026-11-11-main-only/ptl-main-only-validate-0.log",
+        "tail": [
+          "[OK]      Black Cat boot splash decodes to expected SHA-256",
+          "[OK]      GRUB menu references Black Cat boot splash",
+          "[OK]      Syslinux menu references Black Cat boot splash",
+          "Static checks passed."
+        ]
+      },
+      {
+        "command": [
+          "bash",
+          "tests/01-release-signing-check.sh"
+        ],
+        "exit_code": 0,
+        "log": "evidence/2026-11-11-main-only/ptl-main-only-validate-1.log",
+        "tail": [
+          "[PASS] signer rejects private-key/fingerprint mismatch",
+          "[PASS] non-Ed25519 release public key is rejected",
+          "[PASS] invalid release id is rejected",
+          "BLACK CAT RELEASE SIGNING SELF-TEST: PASS"
+        ]
+      },
+      {
+        "command": [
+          "bash",
+          "tests/02-session-ui-check.sh"
+        ],
+        "exit_code": 0,
+        "log": "evidence/2026-11-11-main-only/ptl-main-only-validate-2.log",
+        "tail": [
+          "BLACK CAT UI DEVELOPMENT STATIC CHECK: PASS (not a boot or module-loading test)"
+        ]
+      },
+      {
+        "command": [
+          "bash",
+          "tests/05-boot-recovery-check.sh"
+        ],
+        "exit_code": 0,
+        "log": "evidence/2026-11-11-main-only/ptl-main-only-validate-3.log",
+        "tail": [
+          "BLACK CAT AUTOMATIC RECOVERY SOURCE CHECK: PASS (physical/VM boot still required)"
+        ]
+      },
+      {
+        "command": [
+          "bash",
+          "tests/10-blackcat-console-static.sh"
+        ],
+        "exit_code": 0,
+        "log": "evidence/2026-11-11-main-only/ptl-main-only-validate-4.log",
+        "tail": [
+          "No syntax errors detected in /workspace/work/ptl-viewer-hardening/apps/blackcat-console/index.php",
+          "No syntax errors detected in /workspace/work/ptl-viewer-hardening/apps/blackcat-console/focus.php",
+          "PASS: Black Cat Console + Focus Tracker static checks"
+        ]
+      },
+      {
+        "command": [
+          "python3",
+          "tests/04-review-source.py"
+        ],
+        "exit_code": 0,
+        "log": "evidence/2026-11-11-main-only/ptl-main-only-validate-5.log",
+        "tail": [
+          "No syntax errors detected in web/project.php",
+          "No syntax errors detected in apps/blackcat-console/focus.php",
+          "No syntax errors detected in apps/blackcat-console/index.php",
+          "PHP LINT PASS; actual-renderer positive/negative contract tests are required by tests/00-static-check.sh"
+        ]
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-p",
+          "test_integration_*.py"
+        ],
+        "exit_code": 0,
+        "log": "evidence/2026-11-11-main-only/ptl-main-only-validate-6.log",
+        "tail": [
+          "----------------------------------------------------------------------",
+          "Ran 5 tests in 0.001s",
+          "",
+          "OK"
+        ]
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-p",
+          "test_runner_*.py"
+        ],
+        "exit_code": 0,
+        "log": "evidence/2026-11-11-main-only/ptl-main-only-validate-7.log",
+        "tail": [
+          "----------------------------------------------------------------------",
+          "Ran 12 tests in 0.012s",
+          "",
+          "OK"
+        ]
+      },
+      {
+        "command": [
+          "python3",
+          "tests/07-project-viewer-browser.py"
+        ],
+        "exit_code": 0,
+        "log": "evidence/2026-11-11-main-only/ptl-main-only-validate-8.log",
+        "tail": [
+          "{\"status\": \"VERIFIED\", \"scope\": \"Local synthetic renderer browser controls only; not live hosting\", \"valid_nonce_print_listener\": \"passed\", \"inline_event_injection\": \"blocked\", \"non_nonce_script_injection\": \"blocked\", \"nonce_changes_each_response\": \"passed\", \"no_store_html\": \"passed\", \"mobile_width_390\": \"passed\", \"live_deployment\": \"UNKNOWN\"}"
+        ]
+      }
+    ]
+  },
+  "actual_php_groups_passed": 22,
+  "integration_routing_tests_passed": 5,
+  "runner_regression_tests_passed": 12,
+  "main_unavailable_negatives": [
+    403,
+    404,
+    500,
+    0
+  ],
+  "negative_scope": "Unavailable main disables both candidate and approved release with HTTP 503. Other tests retain complete run/artifact/expiry/signature-record requirements. Browser rejects unauthorized inline event/script execution.",
+  "deployment": {
+    "status": "UNKNOWN",
+    "executor": "operator will upload after reviewing exact file",
+    "public_url": "https://easyai.com.au/USB/project.php",
+    "authenticated_hosting_available": false,
+    "live_verification": "PENDING; current shell proxy blocks public host; browser opening failed on missing requirements"
+  },
+  "branch_cleanup": {
+    "status": "PENDING",
+    "deleted_count": 0,
+    "required_gate": "Actual HTTPS main-source verification followed by fresh exact-tip ancestry checks"
+  },
+  "m15": "Recorded development-only acceptance is preserved; original and main images retain distinct source/run/hash identities; no approved ISO or active candidate",
+  "production_or_platform_actions": "NONE"
+}

@@ -4,6 +4,10 @@ Author: Codex, GPT-5-based assistant. Exact deployed model/version is not expose
 Authority: User instruction to rewrite the resolution plan and require human sign-off for lower-model deviations.
 Status: COMPLETE — JSON-only publication accepted live at 2026-09-17T09:17:52Z.
 
+## Supersession recorded — 11 November 2026 (AWST)
+
+The operator explicitly authorized main-only consolidation, production PHP/data migration to main and later obsolete-branch deletion after live-main verification. Active policy/implementation is now PROJECT_RULES.md Rule 16 and docs/27-main-only-consolidation.md. The original September acceptance and ordered recovery below are retained as history; their branch-preservation instruction is no longer the future publication policy. Evidence identity, fail-closed behaviour, JSON-last maintenance, no alternative ISO handoff and real live verification remain required. This supersession is based on explicit human instruction, not inferred model rank or convenience.
+
 ## Binding execution rule
 
 Any successor model, including a lower/lighter model, MUST follow this plan. It MUST NOT silently rewrite, skip, weaken or substitute its requirements. A proposed deviation must state the evidence, reason, risks and exact alternative and receive explicit human sign-off before implementation. If execution is impossible or unsafe, stop the affected action and report the blocker; do not blindly execute. This rule does not override platform safety or authorization requirements.

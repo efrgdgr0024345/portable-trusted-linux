@@ -347,10 +347,10 @@ else
   failures=1
 fi
 
-if grep -Fq "const GITHUB_BRANCH = 'codex/remove-chroot-systemd-boot';" "$viewer"; then
-  printf '[OK]      viewer preserves the configured deployed feed required by docs/21\n'
+if grep -Fq "const GITHUB_BRANCH = 'main';" "$viewer"; then
+  printf '[OK]      viewer reads the sole production source main\n'
 else
-  printf '[FAILED]  viewer must preserve the configured deployed feed; migration is a separate change\n'
+  printf '[FAILED]  viewer must read main under the main-only policy\n'
   failures=1
 fi
 
@@ -361,8 +361,8 @@ else
   failures=1
 fi
 
-if grep -Fq 'Project Data Source' "$viewer" && grep -Fq 'Feed JSON matches canonical main snapshot' "$viewer" && grep -Fq 'function projectSchemaErrors' "$viewer"; then
-  printf '[OK]      viewer separates schema, data identity and feed/main checks\n'
+if grep -Fq 'Project Data Source' "$viewer" && grep -Fq 'Main publication JSON identity' "$viewer" && grep -Fq 'function projectSchemaErrors' "$viewer"; then
+  printf '[OK]      viewer separates schema and main publication identity checks\n'
 else
   printf '[FAILED]  viewer lost its bounded data checks\n'
   failures=1

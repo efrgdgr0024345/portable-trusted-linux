@@ -7,7 +7,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = json.loads((ROOT / ".github/workflows/runner-recovery.yml").read_text())
-BRANCH = "ops/runner-recovery-20261110"
+BRANCH = "main"
 REPO = "efrgdgr0024345/portable-trusted-linux"
 
 def permits(event, ref, repository=REPO):
@@ -22,20 +22,19 @@ def permits(event, ref, repository=REPO):
     return eval(compile(tree, "<workflow guard>", "eval"), {"__builtins__": {}}, {})
 
 class RoutingTests(unittest.TestCase):
-    def test_trusted_push_and_dispatch(self):
-        for event in ("push", "workflow_dispatch"):
-            self.assertTrue(permits(event, "refs/heads/" + BRANCH))
+    def test_trusted_main_dispatch_only(self):
+        self.assertTrue(permits("workflow_dispatch", "refs/heads/" + BRANCH))
+        self.assertFalse(permits("push", "refs/heads/" + BRANCH))
     def test_reject_untrusted_events(self):
         for event in ("pull_request", "pull_request_target", "workflow_run"):
             self.assertFalse(permits(event, "refs/heads/" + BRANCH))
     def test_reject_other_refs_and_repositories(self):
-        for ref in ("refs/heads/main", "refs/pull/1/merge", "refs/heads/" + BRANCH + "-lookalike"):
-            self.assertFalse(permits("push", ref))
-        self.assertFalse(permits("push", "refs/heads/" + BRANCH, "someone/fork"))
+        for ref in ("refs/heads/ops/runner-recovery-20261110", "refs/pull/1/merge", "refs/heads/" + BRANCH + "-lookalike"):
+            self.assertFalse(permits("workflow_dispatch", ref))
+        self.assertFalse(permits("workflow_dispatch", "refs/heads/" + BRANCH, "someone/fork"))
     def test_dedicated_label_and_no_pull_request_trigger(self):
         self.assertEqual(WORKFLOW["jobs"]["recovery"]["runs-on"], ["ptl-trusted-20261110"])
-        self.assertEqual(set(WORKFLOW["on"]), {"push", "workflow_dispatch"})
-        self.assertEqual(WORKFLOW["on"]["push"]["branches"], [BRANCH])
+        self.assertEqual(set(WORKFLOW["on"]), {"workflow_dispatch"})
     def test_smoke_requires_nonroot_runner_and_root_sudo(self):
         script = WORKFLOW["jobs"]["recovery"]["steps"][0]["run"]
         self.assertIn('test "$(id -un)" = github-runner', script)

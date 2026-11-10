@@ -16,7 +16,13 @@ A suggestion is not automatically authorization to execute it. Safety, platform 
 
 ## Binding plan and model-attribution rule
 
-The active resolution plan is `docs/21-json-only-candidate-publication-plan.md`. Any successor model, including a lower/lighter model, MUST follow it or obtain explicit human sign-off before deviating. It must report blockers rather than silently changing the approach. Record the authoring model/version for every plan or substantive suggestion when reliably known; otherwise state unknown. This is a project instruction, not a technical guarantee of model compliance, and never overrides higher-priority safety/authorization requirements.
+The active resolution plan is `docs/27-main-only-consolidation.md`, explicitly authorized by the operator on 11 November 2026 (AWST). `docs/21-json-only-candidate-publication-plan.md` remains the historical recovery record; its temporary-source retention is superseded by this explicit main-only directive. Any successor model, including a lower/lighter model, MUST follow the authorized plan or obtain explicit human sign-off before materially deviating. It must report blockers rather than silently changing the approach. Record the authoring model/version for every plan or substantive suggestion when reliably known; otherwise state unknown. This is a project instruction, not a technical guarantee of model compliance, and never overrides higher-priority safety/authorization requirements.
+
+## Main-only source and publication policy
+
+Main is the only long-lived branch and the only production JSON source. See PROJECT_RULES.md Rule 16 and docs/27-main-only-consolidation.md. A new long-lived status/ops/development branch requires a separately recorded HUMAN_GATE exception; a short-lived tested PR branch is not a permanent publication endpoint. Routine JSON updates are written on main after technical/lesson/checkpoint updates, with JSON last.
+
+The operator's 11 November 2026 directive explicitly authorizes the current final integration/main merge, viewer-source migration/deployment, and deletion of superseded branches after actual live-main verification and exact-tip ancestry checks. No repeat approval is needed for those specified actions. Main merges outside that authorization keep their normal gate. Missing tools/authenticated hosting are capability boundaries, not a reason to invent approval questions or claim deployment. Keep current branch cleanup blocked until its explicit live verification condition passes.
 
 ## Core operating rule
 
