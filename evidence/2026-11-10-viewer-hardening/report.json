@@ -1,0 +1,36 @@
+{
+  "status": "VERIFIED",
+  "scope": "Local tested source/renderer controls only; not a claim of full host or target security",
+  "viewer_version": "2026-11-10.1",
+  "date_local": "2026-11-10",
+  "timezone": "Australia/Perth",
+  "author": "Codex, GPT-6 family; exact deployed variant unknown",
+  "base_review_commit": "9eb4d2057426fd227415a2b3a95691007e813726",
+  "source_sha256": "c626ec161163ced601ba2db6b41ab5d8bf38652a663bd923cfa553c38789f7cc",
+  "feed": "codex/remove-chroot-systemd-boot",
+  "feed_migration": false,
+  "protected_credential_source_changed": false,
+  "php_groups_passed": 22,
+  "actual_renderer_fixtures": "Valid project and candidate/release records; invalid JSON/object/schema/blob/size/status/URL/run/artifact/expiry/release-tag-asset/auth-record/credential/cache/telemetry cases. No production credentials or API traffic.",
+  "browser_result": "browser-results.json",
+  "runtime": "Debian PHP 8.4.24 -n without mbstring; system Chromium and Python Playwright 1.62.0; extracted package provenance in ../2026-11-10-viewer-review/package-provenance.json",
+  "earlier_findings": "../2026-11-10-viewer-review/report.json",
+  "failures_preserved": [
+    "First unknown-status fixture exposed lowercasing of the exact display label; raw status display restored.",
+    "Browser harness initially read hidden nonce attribute instead of IDL property; corrected with actual execution controls.",
+    "CLI-only diagnostic text was accidentally included in the browser fixture and caused synthetic layout overflow; removed from served test document. Long production hashes also receive explicit wrapping."
+  ],
+  "deployment": {
+    "status": "UNKNOWN",
+    "authorized": "Operator requested the updated PHP replacement",
+    "capability_boundary": "No authenticated hosting connection/tool available; live page blocked by Linux proxy and inaccessible to independent web tool. Deliverable needs installation through existing hosting access.",
+    "legacy_static_cache_access": "UNKNOWN until hosting deny/removal is externally checked; .htaccess is an Apache 2.4 deployment aid, not proof of enforcement.",
+    "canonical_main_merge": "Separate existing policy gate; not performed by this source change."
+  },
+  "limits": [
+    "No ISO downloaded or signature independently verified by this PHP. Authentication/approval/smoke claims are publisher records; checked API metadata is reported separately.",
+    "No production key, firmware enrollment, TPM policy/ownership, target device operation, approved ISO or new milestone.",
+    "Existing hosting PHP/cURL/token scope, Apache overrides, TLS configuration and host security are not established by local fixtures.",
+    "A source hash shown by a page must be compared with an independently obtained artifact; the page is not its own ultimate verifier."
+  ]
+}

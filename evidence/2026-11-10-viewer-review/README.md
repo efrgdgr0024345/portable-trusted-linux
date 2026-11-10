@@ -21,3 +21,7 @@ python3 evidence/2026-11-10-viewer-review/reproduce.py \
 The helper prints its temporary synthetic fixture directory. With Python Playwright and Chromium, pass that directory to browser-reproduce.py using --fixtures, along with --php, --mbstring and --output. It binds only loopback and stops the server after the test. The optional --library-dir supports locally extracted packages. Supplied PHP is not republished in this evidence directory; its full hash identifies it.
 
 Current main, project-status-live and codex/remove-chroot-systemd-boot JSON blobs matched at the review baseline. The proposed branch changes one stale M15 merged flag and appends review status; it does not deploy PHP, move publication refs or enable downloads. Original M15 and combined-main build identities remain unchanged.
+
+## Reproduction after the hardened viewer is introduced
+
+These original findings belong to the exact review baseline, not the later fixed PHP. Obtain that source with `git show 6bf3711820cf6fe55c1dbef86a34a586bd49243d:web/project.php > /tmp/blackcat-original-viewer.php` and pass that file to `--canonical` when reproducing the retained original diagnostics. The new acceptance tests are tests/06-project-viewer-check.py and tests/07-project-viewer-browser.py; unlike this historical diagnostic, they require the unsafe cases to be refused.

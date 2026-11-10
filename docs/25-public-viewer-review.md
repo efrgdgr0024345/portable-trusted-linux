@@ -41,3 +41,7 @@ Both sources pass actual PHP syntax lint. Escaping, TLS verification, redirect r
 5. After an authorized deployment, inspect the actual live HTTPS response and compare its source/blob, viewer identity, status text and disabled download state against evidence. Until that succeeds, live rendering remains UNKNOWN and physical handoff stays closed.
 
 No PHP source, credential, platform state, build pipeline or live deployment was changed by this review. The proposed JSON correction is on `review/viewer-feedback-20261110`; main and both publication feeds are unchanged. No approved ISO or new runtime trust claim follows. Technical records and lessons precede the final JSON write on the review branch.
+
+## Subsequent authorized remediation
+
+The operator then explicitly requested an updated project.php addressing this review. Implementation and deployment limits are recorded in docs/26-viewer-hardening-and-deployment.md. Historical findings above remain unchanged as evidence for their original source hashes. The replacement preserves the actual supplied feed rather than migrating it, replaces the duplicated test predicate with actual-renderer negative tests, and does not claim to attest the host. Live deployment and legacy static-cache denial still require independent observation.
