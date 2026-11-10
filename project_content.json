@@ -1,9 +1,9 @@
 {
   "title": "Black Cat",
-  "version": "4.0",
+  "version": "4.1",
   "phase": "Prototype 1 Engineering",
   "updated": "2026-11-11",
-  "summary": "M15 development-only signed-UKI acceptance is verified at its exact recorded sources/images; firmware enforcement, physical boot and authenticated root remain UNKNOWN. Main is the sole permitted long-lived branch and production JSON source. The final viewer integration is being validated in PR #10; operator upload/live verification and conditional branch cleanup remain pending. No approved Black Cat ISO or current test candidate exists.",
+  "summary": "All valuable M15, viewer and status work is integrated in main through the final PR #10. Exact main source/browser checks and a fresh normal development-only M15 pipeline passed. Main is the sole permitted long-lived branch and production JSON source. Operator upload/live verification and subsequent obsolete-ref deletion remain pending; all 20 remote heads are retained for that gate. No approved ISO or current test candidate exists. Firmware enforcement, physical boot and authenticated root remain UNKNOWN.",
   "candidate": {
     "status": "none",
     "channel": "prototype-development",
@@ -63,7 +63,7 @@
       "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/16-authenticated-release-signing.md"
     },
     {
-      "type": "M15 preparation",
+      "type": "M15 development acceptance",
       "title": "M15 Development-Signed UKI Gate",
       "description": "Exact accepted run and scoped positive/negative results.",
       "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/17-signed-uki-development-plan.md"
@@ -119,7 +119,7 @@
     {
       "type": "Project index",
       "title": "Black Cat Repository README",
-      "description": "Capability-level status, current graphical candidate evidence and roadmap.",
+      "description": "Capability-level status, exact historical image observations, main-only policy and roadmap.",
       "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/README.md"
     },
     {
@@ -377,7 +377,7 @@
     {
       "type": "Review evidence",
       "title": "Graphical Candidate Evidence and Handoff",
-      "description": "Graphical Candidate Evidence and Handoff",
+      "description": "Historical graphical evidence/handoff record; no current candidate or physical handoff.",
       "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/20-graphical-candidate-evidence.md"
     },
     {
@@ -395,7 +395,7 @@
     {
       "type": "Review evidence",
       "title": "Artwork Candidate VM Evidence Report",
-      "description": "Machine-readable evidence for the exact artwork-enabled candidate and bounded VM observations.",
+      "description": "Machine-readable historical observations for the exact old artwork image; no current artifact/handoff availability claim.",
       "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/evidence/2026-09-17-artwork-candidate/report.json"
     },
     {
@@ -431,7 +431,7 @@
     {
       "type": "Binding plan",
       "title": "JSON-only candidate publication recovery",
-      "description": "Existing PHP contract and evidence-bound JSON-only live acceptance.",
+      "description": "Historical accepted recovery and compatibility record; temporary feed retention explicitly superseded by the current main-only directive.",
       "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/21-json-only-candidate-publication-plan.md"
     },
     {
@@ -449,7 +449,7 @@
     {
       "type": "Integration record",
       "title": "Main consolidation",
-      "description": "All starting histories preserved, exact-source CI and development-only build evidence.",
+      "description": "Historical PR #9 and exact development build evidence; temporary-route/dual-feed policy superseded by the main-only plan.",
       "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/main/docs/24-main-consolidation.md"
     },
     {
@@ -596,11 +596,11 @@
     },
     {
       "title": "Updated viewer — checked controls, deployment still UNKNOWN",
-      "content": "Viewer 2026-11-11.1 reads project_content.json only from main and checks typed JSON/blob, exact run/artifact/release identity and expiry, private allowlisted telemetry and nonce-protected printing. Twenty-two actual-PHP groups and real Chromium controls pass locally; main API errors fail closed. These are bounded source checks, not host/target attestation. Operator upload/live verification and cache-rule enforcement remain UNKNOWN. No approved ISO or current test candidate is enabled."
+      "content": "Viewer 2026-11-11.1 reads project_content.json only from main and checks typed JSON/blob, exact run/artifact/release identity and expiry, private allowlisted telemetry and nonce-protected printing. Twenty-two actual-PHP groups and real Chromium controls pass locally and in exact merged-main hosted CI; main API errors fail closed. These are bounded source checks, not host/target attestation. Operator upload/live verification and cache-rule enforcement remain UNKNOWN. No approved ISO or current test candidate is enabled."
     },
     {
       "title": "Main-only policy and remaining consolidation gates",
-      "content": "Main is the sole permitted long-lived branch and public JSON source. Initial inventory: 20 remote heads; 18 already contained, two aliases share one valuable viewer stream. Existing PR #10 carries the final integration. Operator will upload the completed main-only PHP after review; actual HTTPS main/status/blob/closed-gate verification must pass before exact-tip ancestry checks and obsolete-ref deletion. Zero refs deleted so far; consolidation is incomplete until those conditions pass."
+      "content": "Main is the sole permitted long-lived branch and public JSON source. Final PR #10 is merged; all 20 initial and postmerge tips are reachable with zero unique commits outside recorded main. Exact main source/browser checks and normal development-only M15 pipeline passed. Operator will upload the completed main-only PHP after review; actual HTTPS main/status/blob/closed-gate verification must pass before fresh exact-tip checks and obsolete-ref deletion. Zero refs deleted; consolidation remains incomplete until those conditions pass."
     }
   ],
   "milestones": [
@@ -961,10 +961,15 @@
       "title": "Main is the sole long-lived branch and production source",
       "date": "2026-11-11",
       "text": "Explicit operator authorization supersedes temporary production feeds. Reuse final PR #10, preserve all exact histories, require actual live-main verification before obsolete-ref deletion, and require HUMAN_GATE for any future long-lived status/ops branch. No key/platform/release delegation.",
-      "status": "authorized; deployment and cleanup pending"
+      "status": "source/policy integrated; deployment and cleanup pending"
     }
   ],
   "changelog": [
+    {
+      "version": "4.1",
+      "date": "2026-11-11",
+      "summary": "Final PR #10 merged with all 20 starting/current tips preserved. Exact main source/browser and normal development-only M15 pipeline passed. Main-only policy, current navigation, historical-image labels and truthful incomplete outcome recorded. Operator upload/live verification and obsolete-ref cleanup still pending; zero refs deleted. No approved ISO/current candidate. JSON written LAST."
+    },
     {
       "version": "4.0",
       "date": "2026-11-11",
@@ -1314,7 +1319,9 @@
       "github_artifact": "Not returned by run artifact listing",
       "builder_copy": "UNKNOWN",
       "operator_handoff": "Not authorized; original VM observations retained as historical"
-    }
+    },
+    "record_type": "historical-superseded-image; no active candidate or physical handoff",
+    "current_candidate": false
   },
   "design_reference": {
     "folder": "/linux usb project/Graphical design for black cat project",
@@ -1322,22 +1329,24 @@
     "file_count": 18,
     "repository_manifest": "design/source-manifest.json",
     "authority": "Brand notes govern new derivatives: Stealth. Intelligence. Independence.",
-    "in_current_iso": true,
     "selected_build_assets": 7,
-    "selected_scope": "One wallpaper and six category icons; remaining files retained as references."
+    "selected_scope": "One wallpaper and six category icons; remaining files retained as references.",
+    "historical_in_current_iso": true,
+    "historical_iso_identity": "f498776780c543013e437161a878e22ca4fc40a66f47fc271d6fd6a964c29d75",
+    "scope": "Selected assets were observed in the exact historical graphical image above. No current candidate or approved ISO is designated; this record is not assurance of current-image rendering."
   },
   "handoff": {
     "ready_for_lighter_model": true,
     "checkpoint": "AI_WORK_STATE.md",
     "review_branch": "main",
     "merged": true,
-    "next_action": "Finish PR #10 hosted checks and authorized main merge, then deliver exact main-only project.php for operator upload/review. Verify real HTTPS main source/status/closed gates before deleting any obsolete ref. No next security milestone or physical handoff starts automatically.",
+    "next_action": "Operator reviews/uploads the exact main-only project.php. Verify the real HTTPS page reads main with the current blob, scoped status, no current candidate/release and closed download gates. Only then recheck exact current tips and delete superseded contained refs. No next security milestone or physical handoff starts automatically.",
     "last_passed_source_check": {
       "run": 42720596290,
       "commit": "eb7b969f95ba419acc5a2e16ffe587c40c42446d",
       "scope": "Fresh main normal build, M15 actual-tool regressions, M14 negatives, source/PHP and final ISO binding"
     },
-    "completion_scope": "Historical M15/main build acceptance preserved; current main-only source checks pass locally. Deployment and branch cleanup remain pending.",
+    "completion_scope": "Main source/history/policy integration and exact source/browser/development pipeline checks passed. Live deployment and conditional obsolete-ref deletion remain incomplete.",
     "checkpoint_contract": "Strict continuity headings restored and statically guarded.",
     "live_candidate_handoff": {
       "url": "https://easyai.com.au/USB/project.php",
@@ -1379,9 +1388,19 @@
       "commit": "c1b623d0989c4c6d30814f4b92b80a44b79f501a"
     },
     "last_passed_viewer_check": {
-      "source_commit": "3e2a304f72eafb2a4d8d8711fa7c832dd50ebcdb",
-      "record": "evidence/2026-11-11-main-only/source-report.json",
-      "scope": "Local actual PHP positive/negative and real Chromium; not live hosting"
+      "source_commit": "29cd6ba203e9da012480a5bf65a2557becd34bf5",
+      "run_id": 42879857672,
+      "job_id": 130052902239,
+      "record": "evidence/2026-11-11-main-only/hosted-source-summary.json",
+      "scope": "Exact hosted actual-PHP and real Chromium controls; not live hosting"
+    },
+    "last_passed_main_pipeline": {
+      "source_commit": "29cd6ba203e9da012480a5bf65a2557becd34bf5",
+      "run_id": 42879857403,
+      "job_id": 130052901271,
+      "conclusion": "success",
+      "scope": "Exact main development-only normal pipeline and actual-tool tests reported by GitHub CI; not firmware enforcement, physical boot, production approval or independent local binary re-verification",
+      "record": "evidence/2026-11-11-main-only/consolidation-report.json"
     }
   },
   "capabilities": [
@@ -1397,14 +1416,14 @@
       "scope": "Runs 42691361475 / 42691382043; github-runner UID 1001 and non-interactive root sudo. Not hardware attestation, full toolchain validation, hostile-PR isolation or M15 completion."
     },
     {
-      "title": "Graphical ISO build",
+      "title": "Historical graphical ISO build",
       "stage": "built-and-uploaded",
-      "scope": "Source ed5d80ac09c3f1650d67594242643d27efcf15e9; run 35179377345; exact identity in graphical_candidate."
+      "scope": "Source ed5d80ac09c3f1650d67594242643d27efcf15e9; run 35179377345; exact identity in graphical_candidate. Historical image only; no current candidate or approved ISO."
     },
     {
-      "title": "Candidate identity",
+      "title": "Historical candidate identity",
       "stage": "build-and-harness-verified",
-      "scope": "SHA-256 and size matched before the evidence harness booted the image; not independent authenticated provenance."
+      "scope": "SHA-256 and size matched before the evidence harness booted the image; not independent authenticated provenance. Applies to old artwork ISO f498776780c543013e437161a878e22ca4fc40a66f47fc271d6fd6a964c29d75, not newer M15/main images or a current handoff."
     },
     {
       "title": "Graphical boot",
@@ -1419,7 +1438,7 @@
     {
       "title": "Physical graphical boot",
       "stage": "pending",
-      "scope": "No physical evidence for the exact f4987767… artwork candidate; historical M13B evidence belongs to a different ISO."
+      "scope": "No physical evidence for the exact f4987767… artwork candidate; historical M13B evidence belongs to a different ISO. No active physical-test candidate is designated."
     },
     {
       "title": "Release signing",
@@ -2031,8 +2050,7 @@
     "canonical_development_branch": "main",
     "metadata_branch": "main",
     "implementation_branch": "main",
-    "main_merged": false,
-    "pending_integration_pr": 10,
+    "main_merged": true,
     "live_page_url": "https://easyai.com.au/USB/project.php",
     "existing_publication_endpoints": [
       "main"
@@ -2040,10 +2058,11 @@
     "last_verified_deployed_source": "Historical temporary feed per docs/21; current deployment UNKNOWN. Operator will replace PHP with the accepted main-only artifact.",
     "live_display_verification": {
       "status": "UNKNOWN",
-      "reason": "Operator will upload after review. No authenticated hosting connection; cloud public inspection unavailable. Source delivery and a main-only policy are not deployment evidence.",
+      "reason": "Operator will upload the exact reviewed main-only file. No authenticated hosting connection or working public inspection here; actual HTTPS main/status/blob/closed-gate verification remains required. Repository merge, source CI and file delivery are not deployment.",
       "checked_local_date": "2026-11-11"
     },
-    "retiring_refs": "20 heads at initial inventory; obsolete refs retained until actual live-main verification and fresh ancestry checks. No deletions yet."
+    "retiring_refs": "20 heads at initial inventory; obsolete refs retained until actual live-main verification and fresh ancestry checks. No deletions yet.",
+    "integration_merge_commit": "29cd6ba203e9da012480a5bf65a2557becd34bf5"
   },
   "main_integration": {
     "status": "VERIFIED",
@@ -2194,14 +2213,12 @@
     "canonical_php_sha256": "4314b172b1d5634030f7903f0ee68eaaa6ce4de293c3c4737b5eb0b469be2f3b",
     "open_findings": [],
     "metadata_correction": "M15 repeated merge flags agree. Current source/status migration is explicitly authorized in docs/27.",
-    "production_php_modified": false,
-    "main_or_live_feeds_updated": false,
     "live_rendering": "UNKNOWN; cloud proxy and independent web tool cannot obtain page",
     "gate": "Current main-only migration explicitly authorized; operator upload/live verification pending. No release or physical handoff.",
     "remediation": {
       "implementation": "viewer_hardening",
       "source_commit": "3e2a304f72eafb2a4d8d8711fa7c832dd50ebcdb",
-      "scope": "Actual PHP/browser fixes pass locally; PR #10 pending final hosted acceptance/main merge. Production remediation UNKNOWN."
+      "scope": "Actual PHP/browser fixes are merged in main and passed exact hosted checks. Historical failure evidence is retained. Production remediation remains UNKNOWN."
     },
     "historical_record": {
       "branch": "review/viewer-feedback-20261110",
@@ -2215,15 +2232,17 @@
       "main_or_live_feeds_updated": false,
       "gate": "PHP/source migration requires explicit sign-off under docs/21; no release or physical handoff"
     },
-    "record_type": "Historical findings with source remediation recorded separately; live remediation UNKNOWN"
+    "record_type": "Historical findings with source remediation recorded separately; live remediation UNKNOWN",
+    "main_source_remediation": "VERIFIED at exact merged main source/browser CI",
+    "production_deployment": "UNKNOWN; operator upload and actual HTTPS verification pending"
   },
   "viewer_schema_version": "blackcat-project-index-v1",
   "viewer_hardening": {
     "status": "VERIFIED",
-    "scope": "Exact local source/renderer/routing/browser controls only; not main integration, live hosting, whole-host or target security",
+    "scope": "Exact local and GitHub-hosted main source/renderer/routing/browser controls only; not deployed host or target security",
     "viewer_version": "2026-11-11.1",
     "branch": "main",
-    "integration_pending": true,
+    "integration_pending": false,
     "source_commit": "3e2a304f72eafb2a4d8d8711fa7c832dd50ebcdb",
     "source_sha256": "91dd5349537955c5f82ce11b19885be74713c89cd3f6f070f3e0bc3631512cd1",
     "record": "evidence/2026-11-11-main-only/source-report.json",
@@ -2233,7 +2252,7 @@
     "deployed": "UNKNOWN",
     "hosting_boundary": "Operator will upload exact file after review; actual HTTPS verification required",
     "production_feed": "main",
-    "main_merged": false,
+    "main_merged": true,
     "limits": "Publisher authentication/approval/hash/test fields are records; API metadata checks do not independently verify ISO signatures, host compromise or target runtime. Legacy static-cache denial and live hosting state require post-deployment observation.",
     "delivery_sha256": {
       "project.php": "91dd5349537955c5f82ce11b19885be74713c89cd3f6f070f3e0bc3631512cd1",
@@ -2270,6 +2289,14 @@
         "blackcat-project-viewer.zip": "1b38975a0c2ab4368d26cb2214d0bf9a4a27a58b7c4f70fca31d743fe98b086c"
       },
       "delivery_version": "2026-11-10.1"
+    },
+    "merge_commit": "29cd6ba203e9da012480a5bf65a2557becd34bf5",
+    "hosted_ci": {
+      "run_id": 42879857672,
+      "job_id": 130052902239,
+      "source_commit": "29cd6ba203e9da012480a5bf65a2557becd34bf5",
+      "conclusion": "success",
+      "scope": "Actual renderer and real Chromium controls at merged main; live hosting UNKNOWN"
     }
   },
   "main_only_consolidation": {
@@ -2285,11 +2312,51 @@
     "final_integration_pr": 10,
     "source_commit": "3e2a304f72eafb2a4d8d8711fa7c832dd50ebcdb",
     "task_1": "VERIFIED inventory and lessons committed before code",
-    "task_2": "Source/controls checked locally; final hosted acceptance and main merge pending",
+    "task_2": "VERIFIED final PR #10 merged with all valuable history; exact main source/browser and normal development M15 pipeline passed",
     "task_3": "UNKNOWN operator upload and actual HTTPS verification pending",
     "task_4": "PENDING live verification gate; zero refs deleted",
-    "task_5": "Policy/technical records/lessons written; final outcome will be appended after actual checks",
+    "task_5": "Main-only policy, incomplete outcome, technical evidence and canonical lessons recorded; project_content.json written LAST",
     "definition_of_done": "INCOMPLETE until actual live-main verification and conditional obsolete-ref deletion",
-    "authorization": "Explicit operator task list; no repeat merge/source-migration approval needed. Production key/platform/release gates unchanged."
+    "authorization": "Explicit operator task list; no repeat merge/source-migration approval needed. Production key/platform/release gates unchanged.",
+    "merge_commit": "29cd6ba203e9da012480a5bf65a2557becd34bf5",
+    "main_merged": true,
+    "all_20_initial_and_postmerge_tips_reachable": true,
+    "unique_unmerged_commits_at_snapshot": 0,
+    "ancestry_record": "evidence/2026-11-11-main-only/post-integration-ancestry.json",
+    "hosted_source": {
+      "run_id": 42879857672,
+      "job_id": 130052902239,
+      "conclusion": "success",
+      "source_commit": "29cd6ba203e9da012480a5bf65a2557becd34bf5"
+    },
+    "fresh_main_m15": {
+      "run_id": 42879857403,
+      "job_id": 130052901271,
+      "source_commit": "29cd6ba203e9da012480a5bf65a2557becd34bf5",
+      "status": "completed",
+      "scope": "Exact main development-only normal pipeline and actual-tool tests reported by GitHub CI; not firmware enforcement, physical boot, production approval or independent local binary re-verification",
+      "conclusion": "success",
+      "evidence_status": "VERIFIED",
+      "record": "evidence/2026-11-11-main-only/fresh-main-m15-summary.json",
+      "actual_m15_regressions_passed": 28,
+      "required_positive_and_negative_controls": "VERIFIED within development-only source/input/signature scope",
+      "final_iso_binding": "VERIFIED",
+      "artifacts": [
+        {
+          "id": 13795286780,
+          "name": "blackcat-m15-development-evidence-42879857403",
+          "size_bytes": 68475662,
+          "zip_digest": "sha256:20b55d474fd717b7f04109855e08dbd377d74a91dde71191787e3dad15e54846",
+          "expires_at": "2026-11-17T19:14:31Z",
+          "expired": false,
+          "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42879857403/artifacts/13795286780"
+        }
+      ],
+      "signed_uki_sha256": "85128fb26559da34d47f09ef5146df1fa812821dca0ac07f7f2ccb4074f8316d",
+      "signed_uki_size": 67962376,
+      "certificate_der_sha256": "64958b6a31ed245184469bff78192cb3e119f9bef949338299d7fa3dc3fd7989",
+      "iso_sha256": "f8adb941e4441360825e24f63648c6d2563d174f0dbd4f4556c7ca5528565f64"
+    },
+    "technical_record_commit": "f5b79ed5528b208e80401c388c38cd09062a6313"
   }
 }
