@@ -1,5 +1,7 @@
 # Main consolidation — 10 November 2026 (AWST)
 
+> 11 November 2026 supersession: this is the historical PR #9/source-image record. Its temporary integration-route and dual-feed retention descriptions are superseded by the operator-authorized [main-only consolidation](27-main-only-consolidation.md). The privileged workflow now accepts exact main only. Historical hashes, conclusions and evidence below retain their original scope.
+
 Author: Codex, GPT-6 (platform-provided family; exact deployed variant unknown). Authority: operator explicitly instructed "proceed ... get this all onto one main" after the divergence review. Status: main merge OBSERVED at eb7b969f95ba419acc5a2e16ffe587c40c42446d; combined-source acceptance passed in run 42718280786 at f2bca2c189328f492c3a0c6be18d63fd3e8dc36a. Fresh main run 42720596290 passed; final technical records precede JSON-last publication and both existing feed fast-forwards.
 
 ## Scope and history

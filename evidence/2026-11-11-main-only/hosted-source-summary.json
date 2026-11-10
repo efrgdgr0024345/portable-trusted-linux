@@ -1,0 +1,72 @@
+{
+  "schema": "blackcat-main-only-hosted-source-acceptance-v1",
+  "status": "VERIFIED",
+  "scope": "GitHub-hosted exact-source actual PHP and real Chromium controls; not live hosting or target assurance",
+  "pull_request": {
+    "number": 10,
+    "run_id": 42879650576,
+    "job_id": 130052186389,
+    "source_commit": "1951c50ee7cf9a72a86d3cf8c747e318d202b74e",
+    "conclusion": "success"
+  },
+  "main": {
+    "run_id": 42879857672,
+    "job_id": 130052902239,
+    "source_commit": "29cd6ba203e9da012480a5bf65a2557becd34bf5",
+    "conclusion": "success",
+    "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42879857672",
+    "jobs": [
+      {
+        "id": 130052902239,
+        "name": "source",
+        "status": "completed",
+        "conclusion": "success",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Install public verification tools",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Source, release negatives, recovery and publication fixtures",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Real browser CSP and print negative tests (loopback fixtures only)",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      }
+    ]
+  },
+  "log_excerpts": [
+    "2026-11-10T18:54:34.3587975Z Ran 22 tests in 1.854s",
+    "2026-11-10T18:54:34.4794364Z Static checks passed.",
+    "2026-11-10T18:54:35.0214933Z BLACK CAT RELEASE SIGNING SELF-TEST: PASS",
+    "2026-11-10T18:54:35.7027475Z Ran 5 tests in 0.002s",
+    "2026-11-10T18:54:58.2790369Z {\"status\": \"VERIFIED\", \"scope\": \"Local synthetic renderer browser controls only; not live hosting\", \"valid_nonce_print_listener\": \"passed\", \"inline_event_injection\": \"blocked\", \"non_nonce_script_injection\": \"blocked\", \"nonce_changes_each_response\": \"passed\", \"no_store_html\": \"passed\", \"mobile_width_390\": \"passed\", \"live_deployment\": \"UNKNOWN\"}"
+  ],
+  "limits": "Test API responses and credentials are synthetic; neither hosted CI success nor a source self-digest establishes the installed PHP or external host state."
+}

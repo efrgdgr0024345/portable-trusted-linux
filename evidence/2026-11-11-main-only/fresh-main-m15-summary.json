@@ -1,0 +1,206 @@
+{
+  "schema": "blackcat-main-only-fresh-development-pipeline-v1",
+  "status": "VERIFIED",
+  "scope": "Exact main development-only normal pipeline and actual-tool tests reported by GitHub CI; not firmware enforcement, physical boot, production approval or independent local binary re-verification",
+  "source_commit": "29cd6ba203e9da012480a5bf65a2557becd34bf5",
+  "run_id": 42879857403,
+  "job_id": 130052901271,
+  "conclusion": "success",
+  "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42879857403",
+  "artifacts": [
+    {
+      "id": 13795286780,
+      "name": "blackcat-m15-development-evidence-42879857403",
+      "size_bytes": 68475662,
+      "zip_digest": "sha256:20b55d474fd717b7f04109855e08dbd377d74a91dde71191787e3dad15e54846",
+      "expires_at": "2026-11-17T19:14:31Z",
+      "expired": false,
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42879857403/artifacts/13795286780"
+    }
+  ],
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Checkout exact authorized main source",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Restore declared build dependencies",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run source and fail-closed regression checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Normal Prototype 1 pipeline including mandatory signed UKI gate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Preserve public evidence and summarize exact identities",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Upload development UKI evidence only (not an approved ISO)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Post Checkout exact authorized main source",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "regression_log": [
+    "Ran 22 tests in 3.899s",
+    "OK",
+    "Ran 12 tests in 0.025s",
+    "OK",
+    "Ran 28 tests in 8.703s",
+    "OK",
+    "BLACK CAT RELEASE SIGNING SELF-TEST: PASS",
+    "    \"signature_output\": \"Signature verification OK\"",
+    "    \"signature_output\": \"Signature verification OK\"",
+    "    \"signature_output\": \"Signature verification OK\""
+  ],
+  "public_records": {
+    "provenance.json": {
+      "status": "VERIFIED",
+      "scope": "UKI construction, signature and negative controls; final ISO extraction check is separate",
+      "key_policy": "EPHEMERAL DEVELOPMENT ONLY; NEVER ENROLLED",
+      "created_utc": "2026-11-10T19:13:50.199934+00:00",
+      "source_commit": "29cd6ba203e9da012480a5bf65a2557becd34bf5",
+      "live_input_source_commit": "29cd6ba203e9da012480a5bf65a2557becd34bf5",
+      "builder": "ptl-builder-01",
+      "kernel_version": "6.12.116+deb13-amd64",
+      "signed_uki_sha256": "85128fb26559da34d47f09ef5146df1fa812821dca0ac07f7f2ccb4074f8316d",
+      "signed_uki_size": 67962376,
+      "certificate_der_sha256": "64958b6a31ed245184469bff78192cb3e119f9bef949338299d7fa3dc3fd7989",
+      "public_key_spki_sha256": "3f9a033473a4104c0faab4cfef22d4a33c1b571a96aaeb29a9f67791b57bd348",
+      "esp_sha256": "235e4f5007928fc5203517888be78cf2f611155cbfa2f3545914b7efe9b7f554",
+      "commands": "commands.jsonl",
+      "github_run_id": "unknown",
+      "firmware_enforcement": "NOT VERIFIED",
+      "measured_boot": "NOT VERIFIED",
+      "protected_root_binding": "NOT IMPLEMENTED (M17)",
+      "private_key_policy": "Fresh one-day development keys in tmpfs, unlinked before success; no private key retained"
+    },
+    "tests.json": {
+      "positive": {
+        "status": "VERIFIED",
+        "scope": "Signature and bound inputs relative to supplied development certificate and manifest; not firmware enforcement",
+        "uki_sha256": "85128fb26559da34d47f09ef5146df1fa812821dca0ac07f7f2ccb4074f8316d",
+        "certificate_der_sha256": "64958b6a31ed245184469bff78192cb3e119f9bef949338299d7fa3dc3fd7989",
+        "sections": {
+          ".cmdline": {
+            "sha256": "b414a438e165804f2f58aec5b60089781cb1a8152dcc1b1f396b5ace061da968",
+            "size": 26
+          },
+          ".initrd": {
+            "sha256": "66771669d49e32269b7f7016145e2310b22ba085e06252402e9926d94aca0f66",
+            "size": 55699131
+          },
+          ".linux": {
+            "sha256": "a21f79197954256e75fd352692e63263face31601f671c14c9c9d8803785a6c3",
+            "size": 12167104
+          },
+          ".osrel": {
+            "sha256": "23d70b36123603e22cb97d786af470f2d9719cd581ab1eb0c31bd1648f7527f2",
+            "size": 385
+          },
+          ".sbat": {
+            "sha256": "21480310a1facf66e17a115fa5e1f18253131cd96db7a19010d977138303ef2e",
+            "size": 351
+          },
+          ".uname": {
+            "sha256": "1d13be3d536ea7923730276d7ffb01b2f20acf8f601fd4731e9516b5f8c803e9",
+            "size": 20
+          }
+        },
+        "signature_output": "Signature verification OK"
+      },
+      "negative-tampered": {
+        "status": "VERIFIED",
+        "meaning": "Expected signature rejection",
+        "fixture_sha256": "09729988be93f51af5f83b9aedaa91e53224ecd03d3e2edba56928b9328bbea1"
+      },
+      "negative-wrong-key": {
+        "status": "VERIFIED",
+        "meaning": "Expected signature rejection",
+        "fixture_sha256": "85128fb26559da34d47f09ef5146df1fa812821dca0ac07f7f2ccb4074f8316d"
+      },
+      "negative-unsigned": {
+        "status": "VERIFIED",
+        "meaning": "Expected signature rejection",
+        "fixture_sha256": "7c2eaaae9c5b630f7009e4b802d2955333eaf93c13b2cd6375aad57eb8f8dd44"
+      },
+      "negative-bound-command-line": {
+        "status": "VERIFIED",
+        "meaning": "Expected command-line binding rejection"
+      },
+      "private_key_cleanup": {
+        "status": "OBSERVED",
+        "meaning": "TemporaryDirectory exited; private key paths unlinked from tmpfs; not proof of RAM erasure"
+      }
+    },
+    "iso-verification.json": {
+      "status": "VERIFIED",
+      "iso_sha256": "f8adb941e4441360825e24f63648c6d2563d174f0dbd4f4556c7ca5528565f64",
+      "iso_size": 997658624,
+      "source_commit": "29cd6ba203e9da012480a5bf65a2557becd34bf5",
+      "firmware_enforcement": "NOT VERIFIED",
+      "scope": "Read-back of signed UKI and expected live inputs from actual ISO/boot extents",
+      "signature": {
+        "status": "VERIFIED",
+        "scope": "Signature and bound inputs relative to supplied development certificate and manifest; not firmware enforcement",
+        "uki_sha256": "85128fb26559da34d47f09ef5146df1fa812821dca0ac07f7f2ccb4074f8316d",
+        "certificate_der_sha256": "64958b6a31ed245184469bff78192cb3e119f9bef949338299d7fa3dc3fd7989",
+        "sections": {
+          ".cmdline": {
+            "sha256": "b414a438e165804f2f58aec5b60089781cb1a8152dcc1b1f396b5ace061da968",
+            "size": 26
+          },
+          ".initrd": {
+            "sha256": "66771669d49e32269b7f7016145e2310b22ba085e06252402e9926d94aca0f66",
+            "size": 55699131
+          },
+          ".linux": {
+            "sha256": "a21f79197954256e75fd352692e63263face31601f671c14c9c9d8803785a6c3",
+            "size": 12167104
+          },
+          ".osrel": {
+            "sha256": "23d70b36123603e22cb97d786af470f2d9719cd581ab1eb0c31bd1648f7527f2",
+            "size": 385
+          },
+          ".sbat": {
+            "sha256": "21480310a1facf66e17a115fa5e1f18253131cd96db7a19010d977138303ef2e",
+            "size": 351
+          },
+          ".uname": {
+            "sha256": "1d13be3d536ea7923730276d7ffb01b2f20acf8f601fd4731e9516b5f8c803e9",
+            "size": 20
+          }
+        },
+        "signature_output": "Signature verification OK"
+      },
+      "el_torito_uefi_lba": 100,
+      "hybrid_efi_start_sector": 400,
+      "hybrid_efi_sector_size": 512
+    }
+  },
+  "private_key_scope": "Ephemeral development-only; public evidence does not prove RAM erasure. No production secret or platform ownership change introduced."
+}

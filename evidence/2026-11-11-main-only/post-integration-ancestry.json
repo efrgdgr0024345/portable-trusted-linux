@@ -1,0 +1,233 @@
+{
+  "schema": "blackcat-main-only-post-integration-ancestry-v1",
+  "checked_utc": "2026-11-10T18:55:46.292262+00:00",
+  "main": "29cd6ba203e9da012480a5bf65a2557becd34bf5",
+  "merge_pr": 10,
+  "initial_snapshot_preserved": true,
+  "initial_tips": [
+    {
+      "branch": "archive/2026-09-16-pre-integration-118224d5",
+      "tip_commit": "118224d5b696e5e8cc0ec45841adbb2930febb3b",
+      "contained_in_main": true
+    },
+    {
+      "branch": "build/graphical-iso-2026-09-16",
+      "tip_commit": "86ddbb8eac1a0dbf912c035d5b916b70453dff88",
+      "contained_in_main": true
+    },
+    {
+      "branch": "codex/automatic-boot-recovery",
+      "tip_commit": "ab5ebe0093bc78b9145fb670090520168be24e04",
+      "contained_in_main": true
+    },
+    {
+      "branch": "codex/candidate-malware-scan",
+      "tip_commit": "3d0098b00f041a71f2ddc8fff0cb3d3a0331d6aa",
+      "contained_in_main": true
+    },
+    {
+      "branch": "codex/dependency-verification",
+      "tip_commit": "cc79c94934dd9e991161ef369c38d561618746ca",
+      "contained_in_main": true
+    },
+    {
+      "branch": "codex/first-live-build",
+      "tip_commit": "c0a302b663ad9b875016abbb51f6f36e8c4f4e02",
+      "contained_in_main": true
+    },
+    {
+      "branch": "codex/graphical-evidence-review",
+      "tip_commit": "df46ad1504815d9799e2009aa3706b25fcb72f68",
+      "contained_in_main": true
+    },
+    {
+      "branch": "codex/live-build-attempt-2",
+      "tip_commit": "b2eb461e5c4581b391a83dd50f84de7e2be223f8",
+      "contained_in_main": true
+    },
+    {
+      "branch": "codex/m15-signed-uki-development",
+      "tip_commit": "64dbd49a3de8103de5b163c808f46e975372b561",
+      "contained_in_main": true
+    },
+    {
+      "branch": "codex/remove-chroot-systemd-boot",
+      "tip_commit": "6bf3711820cf6fe55c1dbef86a34a586bd49243d",
+      "contained_in_main": true
+    },
+    {
+      "branch": "codex/runner-smoke-test",
+      "tip_commit": "8a47e7de4530ecc1600f716e72763d0bae6a287d",
+      "contained_in_main": true
+    },
+    {
+      "branch": "codex/systemd-boot-state-diagnostic",
+      "tip_commit": "5e6adb7edf61abf24cd0a1071d557d4831d6091c",
+      "contained_in_main": true
+    },
+    {
+      "branch": "fix/project-viewer-hardening-20261110",
+      "tip_commit": "6615900a4d32f8201c5cc87b5ac28943ee188d99",
+      "contained_in_main": true
+    },
+    {
+      "branch": "integration/main-20261110",
+      "tip_commit": "f2bca2c189328f492c3a0c6be18d63fd3e8dc36a",
+      "contained_in_main": true
+    },
+    {
+      "branch": "main",
+      "tip_commit": "6bf3711820cf6fe55c1dbef86a34a586bd49243d",
+      "contained_in_main": true
+    },
+    {
+      "branch": "ops/makephone-viewer-20260920",
+      "tip_commit": "8d9a196f089930751ca6bcb7b903d2fb6ad32c7d",
+      "contained_in_main": true
+    },
+    {
+      "branch": "ops/runner-recovery-20261110",
+      "tip_commit": "cd3966b805c7376d327154d332b6e217af41a452",
+      "contained_in_main": true
+    },
+    {
+      "branch": "project-status-live",
+      "tip_commit": "6bf3711820cf6fe55c1dbef86a34a586bd49243d",
+      "contained_in_main": true
+    },
+    {
+      "branch": "recovery-verify-ubuntu-26041",
+      "tip_commit": "d27c70b08a5c39d3974ca03a328c8d40dcd27718",
+      "contained_in_main": true
+    },
+    {
+      "branch": "review/viewer-feedback-20261110",
+      "tip_commit": "6615900a4d32f8201c5cc87b5ac28943ee188d99",
+      "contained_in_main": true
+    }
+  ],
+  "current_heads": [
+    {
+      "branch": "archive/2026-09-16-pre-integration-118224d5",
+      "tip_commit": "118224d5b696e5e8cc0ec45841adbb2930febb3b",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    },
+    {
+      "branch": "build/graphical-iso-2026-09-16",
+      "tip_commit": "86ddbb8eac1a0dbf912c035d5b916b70453dff88",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    },
+    {
+      "branch": "codex/automatic-boot-recovery",
+      "tip_commit": "ab5ebe0093bc78b9145fb670090520168be24e04",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    },
+    {
+      "branch": "codex/candidate-malware-scan",
+      "tip_commit": "3d0098b00f041a71f2ddc8fff0cb3d3a0331d6aa",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    },
+    {
+      "branch": "codex/dependency-verification",
+      "tip_commit": "cc79c94934dd9e991161ef369c38d561618746ca",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    },
+    {
+      "branch": "codex/first-live-build",
+      "tip_commit": "c0a302b663ad9b875016abbb51f6f36e8c4f4e02",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    },
+    {
+      "branch": "codex/graphical-evidence-review",
+      "tip_commit": "df46ad1504815d9799e2009aa3706b25fcb72f68",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    },
+    {
+      "branch": "codex/live-build-attempt-2",
+      "tip_commit": "b2eb461e5c4581b391a83dd50f84de7e2be223f8",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    },
+    {
+      "branch": "codex/m15-signed-uki-development",
+      "tip_commit": "64dbd49a3de8103de5b163c808f46e975372b561",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    },
+    {
+      "branch": "codex/remove-chroot-systemd-boot",
+      "tip_commit": "6bf3711820cf6fe55c1dbef86a34a586bd49243d",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    },
+    {
+      "branch": "codex/runner-smoke-test",
+      "tip_commit": "8a47e7de4530ecc1600f716e72763d0bae6a287d",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    },
+    {
+      "branch": "codex/systemd-boot-state-diagnostic",
+      "tip_commit": "5e6adb7edf61abf24cd0a1071d557d4831d6091c",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    },
+    {
+      "branch": "fix/project-viewer-hardening-20261110",
+      "tip_commit": "6615900a4d32f8201c5cc87b5ac28943ee188d99",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    },
+    {
+      "branch": "integration/main-20261110",
+      "tip_commit": "f2bca2c189328f492c3a0c6be18d63fd3e8dc36a",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    },
+    {
+      "branch": "main",
+      "tip_commit": "29cd6ba203e9da012480a5bf65a2557becd34bf5",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    },
+    {
+      "branch": "ops/makephone-viewer-20260920",
+      "tip_commit": "8d9a196f089930751ca6bcb7b903d2fb6ad32c7d",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    },
+    {
+      "branch": "ops/runner-recovery-20261110",
+      "tip_commit": "cd3966b805c7376d327154d332b6e217af41a452",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    },
+    {
+      "branch": "project-status-live",
+      "tip_commit": "6bf3711820cf6fe55c1dbef86a34a586bd49243d",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    },
+    {
+      "branch": "recovery-verify-ubuntu-26041",
+      "tip_commit": "d27c70b08a5c39d3974ca03a328c8d40dcd27718",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    },
+    {
+      "branch": "review/viewer-feedback-20261110",
+      "tip_commit": "1951c50ee7cf9a72a86d3cf8c747e318d202b74e",
+      "contained_in_main": true,
+      "unique_commits_not_in_main": 0
+    }
+  ],
+  "deletions_performed": 0,
+  "deletion_gate": "BLOCKED until actual HTTPS main-source verification"
+}

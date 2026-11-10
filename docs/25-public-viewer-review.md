@@ -1,5 +1,7 @@
 # Public project viewer review — 10 November 2026 (AWST)
 
+> 11 November 2026 source-remediation update: preserve this review as the historical observed failure record. The fixes and main-only source routing are merged in PR #10 at 29cd6ba203e9da012480a5bf65a2557becd34bf5 and passed exact-source PHP/browser CI. This does not establish production installation/remediation: operator upload and actual HTTPS verification remain pending. Current plan and checked artifacts: [main-only consolidation](27-main-only-consolidation.md).
+
 Author: Codex, GPT-6 family; exact deployed variant unknown. Scope: the PHP copy supplied by the operator, canonical `web/project.php`, and index at main `6bf3711820cf6fe55c1dbef86a34a586bd49243d`. Status: **WARNING — reproducible open findings**. This is a review and metadata-correction proposal, not approval to replace production PHP or change its configured feed. The existing JSON-only publication plan in docs/21 is preserved.
 
 ## Main diagnosis

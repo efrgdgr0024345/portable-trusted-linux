@@ -1,0 +1,91 @@
+{
+  "schema": "blackcat-main-only-consolidation-v1",
+  "status": "WARNING",
+  "scope": "Repository source/history/policy integration verified; live deployment and conditional ref cleanup incomplete",
+  "date_local": "2026-11-11",
+  "timezone": "Australia/Perth",
+  "inventory_commit": "becd42bc0e453831ad175e78a406ce474eda3892",
+  "starting_main": "6bf3711820cf6fe55c1dbef86a34a586bd49243d",
+  "integration": {
+    "pr": 10,
+    "head": "1951c50ee7cf9a72a86d3cf8c747e318d202b74e",
+    "merge_commit": "29cd6ba203e9da012480a5bf65a2557becd34bf5",
+    "merge_method": "merge",
+    "all_20_initial_tips_reachable": true,
+    "all_20_postmerge_heads_contained": true,
+    "unique_unmerged_commits_at_postmerge_snapshot": 0,
+    "ancestry_record": "post-integration-ancestry.json"
+  },
+  "source_acceptance": {
+    "local_record": "source-report.json",
+    "hosted_record": "hosted-source-summary.json",
+    "pr_run": 42879650576,
+    "main_run": 42879857672,
+    "conclusion": "success"
+  },
+  "fresh_main_m15": {
+    "run_id": 42879857403,
+    "job_id": 130052901271,
+    "source_commit": "29cd6ba203e9da012480a5bf65a2557becd34bf5",
+    "status": "completed",
+    "scope": "Exact main development-only normal pipeline and actual-tool tests reported by GitHub CI; not firmware enforcement, physical boot, production approval or independent local binary re-verification",
+    "conclusion": "success",
+    "evidence_status": "VERIFIED",
+    "record": "evidence/2026-11-11-main-only/fresh-main-m15-summary.json",
+    "actual_m15_regressions_passed": 28,
+    "required_positive_and_negative_controls": "VERIFIED within development-only source/input/signature scope",
+    "final_iso_binding": "VERIFIED",
+    "artifacts": [
+      {
+        "id": 13795286780,
+        "name": "blackcat-m15-development-evidence-42879857403",
+        "size_bytes": 68475662,
+        "zip_digest": "sha256:20b55d474fd717b7f04109855e08dbd377d74a91dde71191787e3dad15e54846",
+        "expires_at": "2026-11-17T19:14:31Z",
+        "expired": false,
+        "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/actions/runs/42879857403/artifacts/13795286780"
+      }
+    ],
+    "signed_uki_sha256": "85128fb26559da34d47f09ef5146df1fa812821dca0ac07f7f2ccb4074f8316d",
+    "signed_uki_size": 67962376,
+    "certificate_der_sha256": "64958b6a31ed245184469bff78192cb3e119f9bef949338299d7fa3dc3fd7989",
+    "iso_sha256": "f8adb941e4441360825e24f63648c6d2563d174f0dbd4f4556c7ca5528565f64"
+  },
+  "viewer": {
+    "version": "2026-11-11.1",
+    "branch": "main",
+    "size_bytes": 45937,
+    "source_sha256": "91dd5349537955c5f82ce11b19885be74713c89cd3f6f070f3e0bc3631512cd1",
+    "delivery_sha256": {
+      "project.php": "91dd5349537955c5f82ce11b19885be74713c89cd3f6f070f3e0bc3631512cd1",
+      "project_cache/.htaccess": "70e75118bdbdd76c0b1dbd64819c334f2984cf66128f262b0a3e33cb5678a7d9",
+      "INSTALL.txt": "a63f5347e1e9f049ca97eb8419c8a9b0ee801f94bfde5d44a393e65849cc8d6f",
+      "blackcat-main-only-viewer.zip": "4be43f16d7d307eb4270a0b8ae5696492447ed5b008b4dded1736c6a9c82b514"
+    }
+  },
+  "task_results": {
+    "task_1": "VERIFIED initial inventory/lessons committed before code",
+    "task_2": "VERIFIED critical source/history merged and main-only viewer/source checks passed; JSON closeout written last",
+    "task_3": "UNKNOWN operator upload and actual HTTPS main-source/status/closed-gate verification pending",
+    "task_4": "PENDING explicit live gate; zero obsolete refs deleted",
+    "task_5": "Policy and outcome/limits recorded; JSON written last in the closeout cycle"
+  },
+  "deployment": {
+    "status": "UNKNOWN",
+    "executor": "Operator agreed to upload after review",
+    "page": "https://easyai.com.au/USB/project.php",
+    "boundary": "No authenticated hosting connection; current shell HTTPS proxy blocked and cloud browser requirements failure",
+    "file_delivery_is_deployment": false
+  },
+  "cleanup": {
+    "deleted_count": 0,
+    "current_remote_head_count_at_snapshot": 20,
+    "condition": "Do not delete before actual live-main verification, then reread current tips and main ancestry with no valuable unique history lost",
+    "automatic_branch_delete_on_merge": false
+  },
+  "policy": "main only long-lived; public source main; long-lived status/ops exceptions require HUMAN_GATE",
+  "no_approved_iso": true,
+  "no_active_candidate": true,
+  "assurance_limits": "M15 development-only source/image-specific evidence remains; no firmware/physical/authenticated-root claim; no production secret/platform state action",
+  "definition_of_done": "INCOMPLETE until deployed HTTPS main verification and conditional obsolete-ref deletion"
+}
