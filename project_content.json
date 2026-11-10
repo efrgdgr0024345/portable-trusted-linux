@@ -1,6 +1,6 @@
 {
   "title": "Black Cat",
-  "version": "3.9",
+  "version": "3.10",
   "phase": "Prototype 1 Engineering",
   "updated": "2026-11-10",
   "summary": "Main consolidates all existing project histories. M15 development-key signing, required rejection tests and final ISO binding pass on the combined source. No approved Black Cat ISO exists; firmware enforcement, physical boot and authenticated root remain unverified.",
@@ -459,6 +459,12 @@
       "title": "Public Viewer Review",
       "description": "Reproduced source/status/download-gate/CSP/extension findings; local evidence only, no PHP deployment.",
       "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/review/viewer-feedback-20261110/docs/25-public-viewer-review.md"
+    },
+    {
+      "type": "Implementation and deployment",
+      "title": "Viewer Hardening and Deployment",
+      "description": "Bounded JSON/publication/download/telemetry/CSP controls, exact artifact/rollback and unresolved hosting boundary.",
+      "url": "https://github.com/efrgdgr0024345/portable-trusted-linux/blob/fix/project-viewer-hardening-20261110/docs/26-viewer-hardening-and-deployment.md"
     }
   ],
   "sections": [
@@ -577,6 +583,10 @@
     {
       "title": "Public viewer review — open findings",
       "content": "The operator-supplied PHP differs from canonical main and misrepresents current progress/M15 labels. Actual local PHP fixtures reproduce empty-schema green badges and mismatched candidate download links; browser tests reproduce the CSP-blocked print control. Telemetry freshness/filtering and mbstring prerequisites need hardening. The repeated M15 merged flag is corrected on this review branch. Main/publication feeds and production PHP remain unchanged; live rendering UNKNOWN. See docs/25-public-viewer-review.md; routine JSON publication does not require PHP redeployment."
+    },
+    {
+      "title": "Updated viewer — checked controls, deployment still UNKNOWN",
+      "content": "Viewer 2026-11-10.1 implements typed JSON/blob checks, exact source/run/artifact/release binding and expiry, feed/main consistency, private allowlisted telemetry without mbstring, and nonce-protected printing. Actual PHP negative cases and real browser controls pass. This is not host or target attestation. It preserves the existing deployed feed. Source delivery is distinct from installing/verifying PHP on the hosting server; live deployment and legacy-cache denial remain UNKNOWN. No approved ISO or physical handoff is enabled."
     }
   ],
   "milestones": [
@@ -935,6 +945,11 @@
     }
   ],
   "changelog": [
+    {
+      "version": "3.10",
+      "date": "2026-11-10",
+      "summary": "Implement operator-requested single-file viewer hardening with actual-renderer negative tests and real browser CSP controls. Preserve current deployed feed, existing credential source and exact M15 evidence; supply deployment/rollback boundary. No hosting upload, main merge, approved release or platform state change is claimed; JSON written last."
+    },
     {
       "version": "3.9",
       "date": "2026-11-10",
@@ -2007,6 +2022,28 @@
     "production_php_modified": false,
     "main_or_live_feeds_updated": false,
     "live_rendering": "UNKNOWN; cloud proxy and independent web tool cannot obtain page",
-    "gate": "PHP/source migration requires explicit sign-off under docs/21; no release or physical handoff"
+    "gate": "PHP/source migration requires explicit sign-off under docs/21; no release or physical handoff",
+    "remediation": {
+      "implementation": "viewer_hardening",
+      "source": "fix/project-viewer-hardening-20261110",
+      "scope": "Implemented and locally tested; original findings remain historical, production remediation UNKNOWN"
+    }
+  },
+  "viewer_schema_version": "blackcat-project-index-v1",
+  "viewer_hardening": {
+    "status": "VERIFIED",
+    "scope": "Local source/renderer and browser controls only; not whole-host or target security",
+    "viewer_version": "2026-11-10.1",
+    "branch": "fix/project-viewer-hardening-20261110",
+    "source_sha256": "c626ec161163ced601ba2db6b41ab5d8bf38652a663bd923cfa553c38789f7cc",
+    "record": "evidence/2026-11-10-viewer-hardening/report.json",
+    "deployment_guide": "docs/26-viewer-hardening-and-deployment.md",
+    "php_groups_passed": 22,
+    "browser_controls": "nonce print succeeds; unauthorized inline handler/script blocked; fresh nonce/no-store/mobile passed",
+    "deployed": "UNKNOWN",
+    "hosting_boundary": "No authenticated hosting connection; external live verification unavailable",
+    "feed_preserved": "codex/remove-chroot-systemd-boot",
+    "main_merged": false,
+    "limits": "Publisher authentication/approval/hash/test fields are records; API metadata checks do not independently verify ISO signatures, host compromise or target runtime. Legacy static-cache denial and live hosting state require post-deployment observation."
   }
 }
