@@ -2044,6 +2044,19 @@
     "hosting_boundary": "No authenticated hosting connection; external live verification unavailable",
     "feed_preserved": "codex/remove-chroot-systemd-boot",
     "main_merged": false,
-    "limits": "Publisher authentication/approval/hash/test fields are records; API metadata checks do not independently verify ISO signatures, host compromise or target runtime. Legacy static-cache denial and live hosting state require post-deployment observation."
+    "limits": "Publisher authentication/approval/hash/test fields are records; API metadata checks do not independently verify ISO signatures, host compromise or target runtime. Legacy static-cache denial and live hosting state require post-deployment observation.",
+    "hosted_ci": {
+      "run_id": 42771083159,
+      "job_id": 129678782976,
+      "source_commit": "452ee2c15128d73cff5d797eb7f8c6276e3a3497",
+      "conclusion": "success",
+      "scope": "Actual renderer and real-browser source/negative controls; not live hosting"
+    },
+    "delivery_sha256": {
+      "project.php": "c626ec161163ced601ba2db6b41ab5d8bf38652a663bd923cfa553c38789f7cc",
+      "project_cache/.htaccess": "70e75118bdbdd76c0b1dbd64819c334f2984cf66128f262b0a3e33cb5678a7d9",
+      "blackcat-project-viewer.zip": "1b38975a0c2ab4368d26cb2214d0bf9a4a27a58b7c4f70fca31d743fe98b086c"
+    },
+    "delivery_version": "2026-11-10.1"
   }
 }
