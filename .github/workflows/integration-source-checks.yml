@@ -3,8 +3,7 @@
   "on": {
     "push": {
       "branches": [
-        "main",
-        "integration/main-20261110"
+        "main"
       ]
     },
     "pull_request": {
@@ -34,11 +33,15 @@
         },
         {
           "name": "Install public verification tools",
-          "run": "sudo apt-get update\nsudo apt-get install -y --no-install-recommends jq php-cli openssl\n"
+          "run": "sudo apt-get update\nsudo apt-get install -y --no-install-recommends jq php-cli openssl python3-venv\n"
         },
         {
           "name": "Source, release negatives, recovery and publication fixtures",
           "run": "set -Eeuo pipefail\nbash tests/00-static-check.sh\nbash tests/01-release-signing-check.sh\nbash tests/02-session-ui-check.sh\nbash tests/05-boot-recovery-check.sh\nbash tests/10-blackcat-console-static.sh\npython3 tests/04-review-source.py\npython3 -m unittest discover -s tests -p \"test_integration_*.py\"\n"
+        },
+        {
+          "name": "Real browser CSP and print negative tests (loopback fixtures only)",
+          "run": "set -Eeuo pipefail\npython3 -m venv \"$RUNNER_TEMP/blackcat-viewer-browser\"\n\"$RUNNER_TEMP/blackcat-viewer-browser/bin/pip\" install playwright==1.62.0\n\"$RUNNER_TEMP/blackcat-viewer-browser/bin/python\" tests/07-project-viewer-browser.py\n"
         }
       ]
     }

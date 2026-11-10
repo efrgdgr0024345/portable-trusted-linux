@@ -1,0 +1,24 @@
+{
+  "uploaded": {
+    "http_status": 200,
+    "csp_header": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; frame-ancestors 'self'; base-uri 'none'; form-action 'none'",
+    "test_hook_initial_value": false,
+    "inline_print_click_executed": false,
+    "direct_test_hook_control_executed": true,
+    "csp_violation_observed": true,
+    "console_messages": [
+      "Executing inline event handler violates the following Content Security Policy directive 'default-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-...'), or a nonce ('nonce-...') is required to enable inline execution. Note that hashes do not apply to event handlers, style attributes and javascript: navigations unless the 'unsafe-hashes' keyword is present. Note also that 'script-src' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked."
+    ]
+  },
+  "repository": {
+    "http_status": 200,
+    "csp_header": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; frame-ancestors 'self'; base-uri 'none'; form-action 'none'",
+    "test_hook_initial_value": false,
+    "inline_print_click_executed": false,
+    "direct_test_hook_control_executed": true,
+    "csp_violation_observed": true,
+    "console_messages": [
+      "Executing inline event handler violates the following Content Security Policy directive 'default-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-...'), or a nonce ('nonce-...') is required to enable inline execution. Note that hashes do not apply to event handlers, style attributes and javascript: navigations unless the 'unsafe-hashes' keyword is present. Note also that 'script-src' was not explicitly set, so 'default-src' is used as a fallback. The action has been blocked."
+    ]
+  }
+}

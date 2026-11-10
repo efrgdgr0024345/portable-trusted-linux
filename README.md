@@ -212,3 +212,8 @@ A successful physical boot proves bootability on the tested configuration. An au
 
 Every meaningful engineering/research session updates `docs/07-lessons-learned.md`, relevant technical/decision documents and the compact work-state checkpoint when materially affected, then updates `project_content.json` **last**. See `PROJECT_RULES.md`.
 
+
+
+## Main-only publication and branch retirement
+
+Main is the only long-lived branch and the public viewer's required data source. Status/ops branches are not publication endpoints. The operator-authorized transition, complete initial inventory and live-before-delete gate are in [the main-only plan](docs/27-main-only-consolidation.md). Tested viewer hardening is being integrated through the existing PR #10; production deployment and branch removal must be reported separately from source integration. No approved/current test ISO is created by this process.

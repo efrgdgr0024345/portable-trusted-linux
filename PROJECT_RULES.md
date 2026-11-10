@@ -14,7 +14,9 @@ A suggestion is not automatically authorization to execute it. Safety, platform 
 
 ## Binding plan and model-attribution rule
 
-The active resolution plan is `docs/21-json-only-candidate-publication-plan.md`. Any successor model, including a lower/lighter model, MUST follow it or obtain explicit human sign-off before deviating. It must report blockers rather than silently changing the approach. Record the authoring model/version for every plan or substantive suggestion when reliably known; otherwise state unknown. This is a project instruction, not a technical guarantee of model compliance, and never overrides higher-priority safety/authorization requirements.
+The active main-only consolidation and publication plan is `docs/27-main-only-consolidation.md`, explicitly authorized by the operator on 11 November 2026 (AWST). `docs/21-json-only-candidate-publication-plan.md` remains the historical accepted recovery record; its instruction to retain a temporary production feed is superseded by this explicit authorization. The evidence-first, compatible-JSON-last and actual-live-verification requirements remain binding.
+
+Preserve plan provenance and model attribution. Material departures still require explicit human sign-off; the current operator directive specifically authorizes this main integration, production feed migration and conditional cleanup. It does not delegate production-key, platform or release authority.
 
 ## Priority Rule 0 — The live candidate page is the physical-test authority
 
@@ -22,7 +24,7 @@ The operator-facing page at `https://easyai.com.au/USB/project.php` is the singl
 
 Before asking the operator to download, write or test an ISO, the assistant MUST:
 
-1. publish compatible candidate JSON to the source branch the deployed PHP actually reads, following `docs/21-json-only-candidate-publication-plan.md`; do not require a PHP replacement for routine ISO updates;
+1. publish compatible candidate JSON on `main`, the sole permitted production source; the deployed viewer must hard-code `GITHUB_BRANCH = 'main'`; routine ISO/index updates must not require replacing PHP;
 2. verify the live page itself over HTTPS;
 3. compare the displayed filename, exact byte size, SHA-256, source commit, build run, artifact ID and download URL with the authoritative evidence record;
 4. confirm the page does not label a superseded candidate as current; and
@@ -177,3 +179,14 @@ When `AI_WORK_STATE.md` is materially refreshed during a work cycle, it must be 
 Report progress per capability as designed, implemented, tested and physically observed, with the exact source/image identity, environment and evidence link. Never derive overall security assurance from a milestone count or a single completion percentage. Record unavailable evidence and failed harnesses separately from product failures. Historical evidence for a different image must stay attached to that image.
 
 For visual changes, consult `design/README.md`, `design/brand-notes-2026-09-16.txt` and the user-selected **Graphical design for black cat project** folder before implementation. Preserve source assets and the recognizable cat. The canonical tagline is **Stealth. Intelligence. Independence.** A design mockup neither implements nor proves security controls.
+
+
+## Rule 16 — Main is the only long-lived branch
+
+`main` is the only long-lived development, status and production-data branch. The public viewer MUST read project_content.json from main and must not silently fall back to a status, ops or development alias. Current documentation links use main or immutable evidence commits, not refs scheduled for deletion.
+
+Do not create or retain another long-lived status, ops, release-tracking or development branch without a separately recorded HUMAN_GATE exception. Short-lived implementation/PR branches may be used for review, validated, merged under the applicable human authorization and removed when their purpose is complete. Do not turn those branches into permanent publication feeds.
+
+Before deleting a ref, check its exact current tip against actual main (or an explicitly approved archive); stop if valuable unique content remains or a concurrent tip moved. Preserve source, evidence and conclusions in reachable history. For the current 11 November cleanup, obsolete branches are retained only as retiring refs until the real HTTPS viewer is verified to read main, then deleted. This conditional retention is part of the operator's directive, not a new permanent-branch exception. If deployment or verification is unavailable, report the boundary and keep deletion blocked; do not call the definition of done complete.
+
+Production-key custody, platform enrollment/ownership, physical/destructive media actions and release approval retain their HUMAN_GATE controls. This policy does not increase any assurance claim.

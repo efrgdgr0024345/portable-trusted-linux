@@ -1,0 +1,80 @@
+{
+  "uploaded": {
+    "current_index": {
+      "progress_0_displayed": true,
+      "capability_section_present": false,
+      "M15_displayed_as_planned": true,
+      "M15_json_status": "development-verified",
+      "M15_json_merged_to_main": false,
+      "top_level_m15_merged_to_main": true,
+      "candidate_disabled": true
+    },
+    "empty_project_array": {
+      "accepted": true,
+      "green_live_badge": true
+    },
+    "mismatched_candidate_artifact_url": {
+      "download_enabled": true,
+      "unrelated_url_rendered": true,
+      "ready_label_displayed": true
+    },
+    "upstream_failure": {
+      "http_status": 503,
+      "no_live_badge": true,
+      "no_active_candidate_link": true
+    },
+    "builder_telemetry": {
+      "secret_key_filtered": true,
+      "generic_message_value_displayed": true,
+      "stale_status_accepted": true
+    },
+    "without_mbstring": {
+      "exit_code": 255,
+      "undefined_mb_substr": true
+    },
+    "source": {
+      "sha256": "d64501a25ecbe79f05e80f998b9e9cc1f1d1b9c9c96b7adbf5485d691500fa1c",
+      "inline_print_handler": true,
+      "script_src_explicitly_allows_inline": false
+    }
+  },
+  "repository": {
+    "current_index": {
+      "progress_0_displayed": false,
+      "capability_section_present": true,
+      "M15_displayed_as_planned": false,
+      "M15_json_status": "development-verified",
+      "M15_json_merged_to_main": false,
+      "top_level_m15_merged_to_main": true,
+      "candidate_disabled": true
+    },
+    "empty_project_array": {
+      "accepted": true,
+      "green_live_badge": true
+    },
+    "mismatched_candidate_artifact_url": {
+      "download_enabled": true,
+      "unrelated_url_rendered": true,
+      "ready_label_displayed": true
+    },
+    "upstream_failure": {
+      "http_status": 503,
+      "no_live_badge": true,
+      "no_active_candidate_link": true
+    },
+    "builder_telemetry": {
+      "secret_key_filtered": true,
+      "generic_message_value_displayed": true,
+      "stale_status_accepted": true
+    },
+    "without_mbstring": {
+      "exit_code": 255,
+      "undefined_mb_substr": true
+    },
+    "source": {
+      "sha256": "4314b172b1d5634030f7903f0ee68eaaa6ce4de293c3c4737b5eb0b469be2f3b",
+      "inline_print_handler": true,
+      "script_src_explicitly_allows_inline": false
+    }
+  }
+}

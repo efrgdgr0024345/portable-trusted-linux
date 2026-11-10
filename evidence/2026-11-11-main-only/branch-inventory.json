@@ -1,0 +1,172 @@
+{
+  "date_local": "2026-11-11",
+  "timezone": "Australia/Perth",
+  "captured_utc": "2026-11-10T18:35:43.512067+00:00",
+  "main_at_inventory": "6bf3711820cf6fe55c1dbef86a34a586bd49243d",
+  "remote_head_count": 20,
+  "inventory_source": "git ls-remote --heads origin; ancestry/count checked against exact commit SHAs",
+  "code_changes_before_inventory": false,
+  "branches": [
+    {
+      "branch": "archive/2026-09-16-pre-integration-118224d5",
+      "tip_commit": "118224d5b696e5e8cc0ec45841adbb2930febb3b",
+      "classification": "historical_superseded",
+      "fully_contained_in_main": true,
+      "unique_commits_not_in_main": 0,
+      "reason": "Historical development/experiment line; history already reachable from main."
+    },
+    {
+      "branch": "build/graphical-iso-2026-09-16",
+      "tip_commit": "86ddbb8eac1a0dbf912c035d5b916b70453dff88",
+      "classification": "historical_superseded",
+      "fully_contained_in_main": true,
+      "unique_commits_not_in_main": 0,
+      "reason": "Historical development/experiment line; history already reachable from main."
+    },
+    {
+      "branch": "codex/automatic-boot-recovery",
+      "tip_commit": "ab5ebe0093bc78b9145fb670090520168be24e04",
+      "classification": "historical_superseded",
+      "fully_contained_in_main": true,
+      "unique_commits_not_in_main": 0,
+      "reason": "Historical development/experiment line; history already reachable from main."
+    },
+    {
+      "branch": "codex/candidate-malware-scan",
+      "tip_commit": "3d0098b00f041a71f2ddc8fff0cb3d3a0331d6aa",
+      "classification": "historical_superseded",
+      "fully_contained_in_main": true,
+      "unique_commits_not_in_main": 0,
+      "reason": "Historical development/experiment line; history already reachable from main."
+    },
+    {
+      "branch": "codex/dependency-verification",
+      "tip_commit": "cc79c94934dd9e991161ef369c38d561618746ca",
+      "classification": "historical_superseded",
+      "fully_contained_in_main": true,
+      "unique_commits_not_in_main": 0,
+      "reason": "Historical development/experiment line; history already reachable from main."
+    },
+    {
+      "branch": "codex/first-live-build",
+      "tip_commit": "c0a302b663ad9b875016abbb51f6f36e8c4f4e02",
+      "classification": "historical_superseded",
+      "fully_contained_in_main": true,
+      "unique_commits_not_in_main": 0,
+      "reason": "Historical development/experiment line; history already reachable from main."
+    },
+    {
+      "branch": "codex/graphical-evidence-review",
+      "tip_commit": "df46ad1504815d9799e2009aa3706b25fcb72f68",
+      "classification": "historical_superseded",
+      "fully_contained_in_main": true,
+      "unique_commits_not_in_main": 0,
+      "reason": "Historical development/experiment line; history already reachable from main."
+    },
+    {
+      "branch": "codex/live-build-attempt-2",
+      "tip_commit": "b2eb461e5c4581b391a83dd50f84de7e2be223f8",
+      "classification": "historical_superseded",
+      "fully_contained_in_main": true,
+      "unique_commits_not_in_main": 0,
+      "reason": "Historical development/experiment line; history already reachable from main."
+    },
+    {
+      "branch": "codex/m15-signed-uki-development",
+      "tip_commit": "64dbd49a3de8103de5b163c808f46e975372b561",
+      "classification": "fully_contained_in_main",
+      "fully_contained_in_main": true,
+      "unique_commits_not_in_main": 0,
+      "reason": "Already reachable from main; retain ref until live-main verification gate passes."
+    },
+    {
+      "branch": "codex/remove-chroot-systemd-boot",
+      "tip_commit": "6bf3711820cf6fe55c1dbef86a34a586bd49243d",
+      "classification": "historical_superseded",
+      "fully_contained_in_main": true,
+      "unique_commits_not_in_main": 0,
+      "reason": "Historical development/experiment line; history already reachable from main."
+    },
+    {
+      "branch": "codex/runner-smoke-test",
+      "tip_commit": "8a47e7de4530ecc1600f716e72763d0bae6a287d",
+      "classification": "historical_superseded",
+      "fully_contained_in_main": true,
+      "unique_commits_not_in_main": 0,
+      "reason": "Historical development/experiment line; history already reachable from main."
+    },
+    {
+      "branch": "codex/systemd-boot-state-diagnostic",
+      "tip_commit": "5e6adb7edf61abf24cd0a1071d557d4831d6091c",
+      "classification": "historical_superseded",
+      "fully_contained_in_main": true,
+      "unique_commits_not_in_main": 0,
+      "reason": "Historical development/experiment line; history already reachable from main."
+    },
+    {
+      "branch": "fix/project-viewer-hardening-20261110",
+      "tip_commit": "6615900a4d32f8201c5cc87b5ac28943ee188d99",
+      "classification": "unique_commits_need_evaluation",
+      "fully_contained_in_main": false,
+      "unique_commits_not_in_main": 6,
+      "reason": "Viewer review/hardening, evidence, status correction and tests are valuable and must be integrated; compare exact diff."
+    },
+    {
+      "branch": "integration/main-20261110",
+      "tip_commit": "f2bca2c189328f492c3a0c6be18d63fd3e8dc36a",
+      "classification": "fully_contained_in_main",
+      "fully_contained_in_main": true,
+      "unique_commits_not_in_main": 0,
+      "reason": "Already reachable from main; retain ref until live-main verification gate passes."
+    },
+    {
+      "branch": "main",
+      "tip_commit": "6bf3711820cf6fe55c1dbef86a34a586bd49243d",
+      "classification": "fully_contained_in_main",
+      "fully_contained_in_main": true,
+      "unique_commits_not_in_main": 0,
+      "reason": "Canonical long-lived branch."
+    },
+    {
+      "branch": "ops/makephone-viewer-20260920",
+      "tip_commit": "8d9a196f089930751ca6bcb7b903d2fb6ad32c7d",
+      "classification": "historical_superseded",
+      "fully_contained_in_main": true,
+      "unique_commits_not_in_main": 0,
+      "reason": "Historical development/experiment line; history already reachable from main."
+    },
+    {
+      "branch": "ops/runner-recovery-20261110",
+      "tip_commit": "cd3966b805c7376d327154d332b6e217af41a452",
+      "classification": "fully_contained_in_main",
+      "fully_contained_in_main": true,
+      "unique_commits_not_in_main": 0,
+      "reason": "Already reachable from main; retain ref until live-main verification gate passes."
+    },
+    {
+      "branch": "project-status-live",
+      "tip_commit": "6bf3711820cf6fe55c1dbef86a34a586bd49243d",
+      "classification": "fully_contained_in_main",
+      "fully_contained_in_main": true,
+      "unique_commits_not_in_main": 0,
+      "reason": "Already reachable from main; retain ref until live-main verification gate passes."
+    },
+    {
+      "branch": "recovery-verify-ubuntu-26041",
+      "tip_commit": "d27c70b08a5c39d3974ca03a328c8d40dcd27718",
+      "classification": "historical_superseded",
+      "fully_contained_in_main": true,
+      "unique_commits_not_in_main": 0,
+      "reason": "Historical development/experiment line; history already reachable from main."
+    },
+    {
+      "branch": "review/viewer-feedback-20261110",
+      "tip_commit": "6615900a4d32f8201c5cc87b5ac28943ee188d99",
+      "classification": "unique_commits_need_evaluation",
+      "fully_contained_in_main": false,
+      "unique_commits_not_in_main": 6,
+      "reason": "Viewer review/hardening, evidence, status correction and tests are valuable and must be integrated; compare exact diff."
+    }
+  ],
+  "deletion_gate": "No deletion until useful content is preserved on main (or explicit archive) AND live production viewer is verified to read main."
+}

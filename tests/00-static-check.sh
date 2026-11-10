@@ -347,10 +347,10 @@ else
   failures=1
 fi
 
-if grep -Fq "const GITHUB_BRANCH = 'project-status-live';" "$viewer"; then
-  printf '[OK]      viewer targets the stable project-status-live source\n'
+if grep -Fq "const GITHUB_BRANCH = 'main';" "$viewer"; then
+  printf '[OK]      viewer reads the sole production source main\n'
 else
-  printf '[FAILED]  viewer must target the stable project-status-live source\n'
+  printf '[FAILED]  viewer must read main under the main-only policy\n'
   failures=1
 fi
 
@@ -361,17 +361,17 @@ else
   failures=1
 fi
 
-if grep -Fq 'Project Data Source' "$viewer" && grep -Fq 'LIVE STATUS FEED' "$viewer" && grep -Fq 'Live GitHub API only' "$viewer"; then
-  printf '[OK]      viewer clearly identifies authoritative live project data\n'
+if grep -Fq 'Project Data Source' "$viewer" && grep -Fq 'Main publication JSON identity' "$viewer" && grep -Fq 'function projectSchemaErrors' "$viewer"; then
+  printf '[OK]      viewer separates schema and main publication identity checks\n'
 else
-  printf '[FAILED]  viewer lost the clear Project Data Source panel\n'
+  printf '[FAILED]  viewer lost its bounded data checks\n'
   failures=1
 fi
 
-if grep -Fq "preg_match('/token|secret|password|passwd|private|authorization|credential|api[_-]?key|ssh[_-]?key/i'" "$viewer"; then
-  printf '[OK]      viewer filters secret-like builder-status keys\n'
+if grep -Fq 'blackcat-public-telemetry-v1' "$viewer" && grep -Fq 'function readTelemetry' "$viewer" && grep -Fq 'TELEMETRY_MAX_AGE' "$viewer" && grep -Fq "const BUILDER_STATUS_FILE = '/home/learning/.blackcat/builder_status.json';" "$viewer"; then
+  printf '[OK]      viewer uses typed allowlisted private telemetry and freshness limits\n'
 else
-  printf '[FAILED]  builder-status display is missing its secret-like key filter\n'
+  printf '[FAILED]  viewer lost private telemetry/schema/freshness controls\n'
   failures=1
 fi
 

@@ -134,3 +134,8 @@ It should not look like:
 `PROJECT_RULES.md` is the master repository policy. `AI_AUTONOMY_POLICY.md` is the canonical operational action-class table used before pausing or advancing. This manifesto provides the explanatory principles behind that table.
 
 This manifesto does not override safety, platform authorization requirements, security policy or explicit operator instructions. It defines how aggressively the project should proceed **inside** those boundaries.
+
+
+## Main-only publication policy (11 November 2026)
+
+PROJECT_RULES.md Rule 16 and docs/27-main-only-consolidation.md govern the sole long-lived main and fixed-main public viewer. Any long-lived status/ops exception is a HUMAN_GATE. Current operator authorization covers final integration, live migration and conditional ref deletion; continue those authorized steps automatically when capabilities/gates permit, while preserving evidence and writing JSON last. Deployment inability is a capability boundary; no live verification means no current branch cleanup.

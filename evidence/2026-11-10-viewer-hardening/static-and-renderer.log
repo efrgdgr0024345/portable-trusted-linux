@@ -1,0 +1,125 @@
+[OK]      PROJECT_RULES.md
+[OK]      AI_AUTONOMY_POLICY.md
+[OK]      AI_WORK_STATE.md
+[OK]      project_content.json
+[OK]      web/project.php
+[OK]      docs/05-architecture-decisions.md
+[OK]      docs/06-prototype-build-specification-v0.1.md
+[OK]      docs/07-lessons-learned.md
+[OK]      docs/11-automation-manifesto.md
+[OK]      docs/12-high-security-controller-architecture.md
+[OK]      docs/13-ai-continuity-and-context-recovery.md
+[OK]      docs/14-context-health-calibration-log.md
+[OK]      docs/15-black-cat-ai-project-automation.md
+[OK]      schema/ai-project-policy.schema.json
+[OK]      templates/ai-project/README.md
+[OK]      templates/ai-project/PROJECT_RULES.md
+[OK]      templates/ai-project/AI_AUTONOMY_POLICY.md
+[OK]      templates/ai-project/AI_WORK_STATE.md
+[OK]      templates/ai-project/project-policy.json
+[OK]      templates/ai-project/docs/architecture-decisions.md
+[OK]      templates/ai-project/docs/lessons-learned.md
+[OK]      assets/blackcat-boot-160x120.png.b64
+[OK]      build/00-host-check.sh
+[OK]      build/01-install-deps.sh
+[OK]      build/10-prepare-live-build.sh
+[OK]      build/20-build-live.sh
+[OK]      build/30-artifact-manifest.sh
+[OK]      config/live-build/includes.chroot/usr/local/bin/blackcat-check
+[OK]      config/live-build/includes.chroot/etc/profile.d/blackcat-auto-check.sh
+[OK]      config/live-build/bootloaders/grub-pc/grub.cfg
+[OK]      config/live-build/bootloaders/syslinux_common/live.cfg.in
+[OK]      project_content.json parses as JSON
+[OK]      AI project policy schema/template parse as JSON
+[OK]      AI project template retains fail-closed capability defaults
+[OK]      Current Test Candidate metadata is complete when enabled
+[OK]      M13B cannot silently lose its candidate record
+[OK]      project viewer index surfaces the root AI autonomy policy
+[OK]      project viewer index surfaces compact AI recovery/context documentation
+[OK]      project plan preserves post-core native AI project automation milestone
+test_304_without_cache_refuses (__main__.ViewerTests.test_304_without_cache_refuses) ... ok
+test_candidate_artifact_identity_expiry_and_api_denial (__main__.ViewerTests.test_candidate_artifact_identity_expiry_and_api_denial) ... ok
+test_candidate_incomplete_types_states_and_zip_digest (__main__.ViewerTests.test_candidate_incomplete_types_states_and_zip_digest) ... ok
+test_candidate_wrong_url_run_or_artifact (__main__.ViewerTests.test_candidate_wrong_url_run_or_artifact) ... ok
+test_conflicting_merge_state_and_unknown_status_preservation (__main__.ViewerTests.test_conflicting_merge_state_and_unknown_status_preservation) ... ok
+test_credential_missing_permissions_symlink_and_public_location (__main__.ViewerTests.test_credential_missing_permissions_symlink_and_public_location) ... ok
+test_current_schema_status_and_transport (__main__.ViewerTests.test_current_schema_status_and_transport) ... ok
+test_escape_and_non_https_document (__main__.ViewerTests.test_escape_and_non_https_document) ... ok
+test_etag_revalidation_requires_private_cache_and_no_stale_fallback (__main__.ViewerTests.test_etag_revalidation_requires_private_cache_and_no_stale_fallback) ... ok
+test_invalid_token_contents_and_private_directory (__main__.ViewerTests.test_invalid_token_contents_and_private_directory) ... ok
+test_main_mismatch_and_unavailable (__main__.ViewerTests.test_main_mismatch_and_unavailable) ... ok
+test_malformed_empty_and_incomplete_project (__main__.ViewerTests.test_malformed_empty_and_incomplete_project) ... ok
+test_malformed_upstream_and_project_json (__main__.ViewerTests.test_malformed_upstream_and_project_json) ... ok
+test_payload_blob_and_encoding_binding (__main__.ViewerTests.test_payload_blob_and_encoding_binding) ... ok
+test_release_asset_tag_and_visibility_binding (__main__.ViewerTests.test_release_asset_tag_and_visibility_binding) ... ok
+test_response_and_decoded_size_limits (__main__.ViewerTests.test_response_and_decoded_size_limits) ... ok
+test_run_identity_and_result (__main__.ViewerTests.test_run_identity_and_result) ... ok
+test_stale_future_and_invalid_telemetry (__main__.ViewerTests.test_stale_future_and_invalid_telemetry) ... ok
+test_unknown_telemetry_is_allowlisted_without_mbstring (__main__.ViewerTests.test_unknown_telemetry_is_allowlisted_without_mbstring) ... ok
+test_unsafe_telemetry_permissions (__main__.ViewerTests.test_unsafe_telemetry_permissions) ... ok
+test_valid_candidate_distinguishes_zip_and_iso (__main__.ViewerTests.test_valid_candidate_distinguishes_zip_and_iso) ... ok
+test_valid_release_and_negative_publisher_fields (__main__.ViewerTests.test_valid_release_and_negative_publisher_fields) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 1.506s
+
+OK
+[OK]      syntax build/00-host-check.sh
+[OK]      syntax build/01-install-deps.sh
+[OK]      syntax build/05-first-run-report.sh
+[OK]      syntax build/10-prepare-live-build.sh
+[OK]      syntax build/20-build-live.sh
+[OK]      syntax build/30-artifact-manifest.sh
+[OK]      syntax build/40-create-release-manifest.sh
+[OK]      syntax build/41-sign-release-manifest.sh
+[OK]      syntax build/42-verify-release.sh
+[OK]      syntax tests/00-static-check.sh
+[OK]      syntax tests/01-release-signing-check.sh
+[OK]      syntax tests/02-session-ui-check.sh
+[OK]      syntax tests/05-boot-recovery-check.sh
+[OK]      syntax tests/10-blackcat-console-static.sh
+[OK]      syntax config/live-build/includes.chroot/usr/local/bin/blackcat-check
+[OK]      syntax config/live-build/includes.chroot/etc/profile.d/blackcat-auto-check.sh
+[OK]      login hook is display-only; systemd remains sole report producer
+[OK]      login hook displays the root-owned text report
+[OK]      Automation Manifesto pre-pause rule is mandatory
+[OK]      root AI autonomy decision table is mandatory
+[OK]      compact AI recovery/context-health checkpoint is mandatory
+[OK]      Automation Manifesto forbids routine permission pauses
+[OK]      Automation Manifesto points to the root autonomy policy
+[OK]      live candidate handoff remains a top-level fail-closed rule
+[OK]      autonomy policy retains: Default = continue automatically
+[OK]      autonomy policy retains: ### AUTO
+[OK]      autonomy policy retains: ### AUTO_WITH_CHECKS
+[OK]      autonomy policy retains: ### HUMAN_GATE
+[OK]      autonomy policy retains: ### FORBIDDEN_BY_DEFAULT
+[OK]      autonomy policy retains: capability boundary, not an approval gate
+[OK]      autonomy policy retains: Fresh-session and context-recovery rule
+[OK]      autonomy policy retains: Context Health rule
+[OK]      autonomy policy retains: project_content.json` **last**
+[OK]      AI work state retains: ## Current project state
+[OK]      AI work state retains: ## Current exact test candidate
+[OK]      AI work state retains: ## Next automatic actions
+[OK]      AI work state retains: ## Next genuine human gate
+[OK]      AI work state retains: ## Context health
+[OK]      AI work state retains: ## Recovery sequence
+[OK]      AI work state retains: Context pressure itself is never a human-approval gate
+[OK]      AI_WORK_STATE.md remains compact (26 lines)
+[OK]      reusable AI continuity guide retains checkpoint/selective-reload boundaries
+[OK]      context-health calibration log preserves empirical/no-false-precision rules
+[OK]      future Black Cat AI project automation design retains authority, scaffold and roadmap boundaries
+[OK]      reusable AI project template retains durable-state/untrusted-data/autonomy/recovery boundaries
+[OK]      template AI_WORK_STATE.md remains compact (70 lines)
+[OK]      viewer uses the protected token-file source
+[OK]      viewer excludes PTL_GITHUB_TOKEN fallback/cache behavior
+[OK]      viewer excludes GITHUB_TOKEN_FALLBACK fallback/cache behavior
+[OK]      viewer excludes offline-cache fallback/cache behavior
+[OK]      viewer retains the separate Current Test Candidate panel
+[OK]      viewer preserves the configured deployed feed required by docs/21
+[OK]      viewer retains display-only builder/server status telemetry
+[OK]      viewer separates schema, data identity and feed/main checks
+[OK]      viewer uses typed allowlisted private telemetry and freshness limits
+[OK]      Black Cat boot splash decodes to expected SHA-256
+[OK]      GRUB menu references Black Cat boot splash
+[OK]      Syslinux menu references Black Cat boot splash
+Static checks passed.

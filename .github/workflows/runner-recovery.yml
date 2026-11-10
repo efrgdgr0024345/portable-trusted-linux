@@ -1,15 +1,6 @@
 {
   "name": "PTL Runner Recovery",
   "on": {
-    "push": {
-      "branches": [
-        "ops/runner-recovery-20261110"
-      ],
-      "paths": [
-        ".github/workflows/runner-recovery.yml",
-        "tests/test_runner_recovery_policy.py"
-      ]
-    },
     "workflow_dispatch": {}
   },
   "permissions": {
@@ -21,7 +12,7 @@
   },
   "jobs": {
     "recovery": {
-      "if": "${{ github.repository == 'efrgdgr0024345/portable-trusted-linux' && github.ref == 'refs/heads/ops/runner-recovery-20261110' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}",
+      "if": "${{ github.repository == 'efrgdgr0024345/portable-trusted-linux' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' }}",
       "runs-on": [
         "ptl-trusted-20261110"
       ],

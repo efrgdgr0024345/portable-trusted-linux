@@ -1,0 +1,4 @@
+No syntax errors detected in web/project.php
+No syntax errors detected in apps/blackcat-console/focus.php
+No syntax errors detected in apps/blackcat-console/index.php
+PHP LINT PASS; actual-renderer positive/negative contract tests are required by tests/00-static-check.sh

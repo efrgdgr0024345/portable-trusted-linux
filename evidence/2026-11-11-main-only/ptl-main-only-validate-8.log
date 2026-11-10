@@ -1,0 +1,1 @@
+{"status": "VERIFIED", "scope": "Local synthetic renderer browser controls only; not live hosting", "valid_nonce_print_listener": "passed", "inline_event_injection": "blocked", "non_nonce_script_injection": "blocked", "nonce_changes_each_response": "passed", "no_store_html": "passed", "mobile_width_390": "passed", "live_deployment": "UNKNOWN"}

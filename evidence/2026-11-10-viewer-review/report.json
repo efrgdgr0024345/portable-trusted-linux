@@ -1,0 +1,97 @@
+{
+  "status": "WARNING",
+  "scope": "Review of user-provided PHP and canonical repository renderer; isolated PHP/browser findings, not live deployment verification",
+  "date_local": "2026-11-10",
+  "timezone": "Australia/Perth",
+  "author": "Codex, GPT-6 family; exact deployed variant unknown",
+  "review_base": "6bf3711820cf6fe55c1dbef86a34a586bd49243d",
+  "uploaded_source_sha256": "d64501a25ecbe79f05e80f998b9e9cc1f1d1b9c9c96b7adbf5485d691500fa1c",
+  "canonical_source_sha256": "4314b172b1d5634030f7903f0ee68eaaa6ce4de293c3c4737b5eb0b469be2f3b",
+  "uploaded_git_blob": "7c8a74178e60f1f0b6b57d83a9d18fcc7fe054a7",
+  "index_blob_on_all_three_feeds": "d7d2f0937e9130274e14acd076cca802352cf614",
+  "feeds": [
+    "main",
+    "project-status-live",
+    "codex/remove-chroot-systemd-boot"
+  ],
+  "github_repository_private": false,
+  "runtime": {
+    "php": "8.4.24 Debian CLI, non-root extracted packages",
+    "chromium": "system /usr/bin/chromium, headless Playwright, loopback only",
+    "dependencies": "Package SHA-256 checked against cached Packages.xz; Release/Packages chain rechecked and InRelease verified with installed Debian archive keyring using gpg. No root/system installation."
+  },
+  "method": "Actual source fetch/decode/render functions executed with synthetic local token and mocked cURL responses. No real credentials or external requests in fixtures. Browser used real PHP headers on a temporary loopback-only server, stopped afterward. Hook initial-false/direct-call controls distinguish CSP refusal from a broken fixture. Diagnostic results are not security acceptance passes.",
+  "live_page": {
+    "url": "https://easyai.com.au/USB/project.php",
+    "status": "UNKNOWN",
+    "shell_boundary": "Latest shell read fails at proxy CONNECT 403 before reaching PHP",
+    "independent_web_tool": "Direct page read reports URL not accessible; no live contents obtained"
+  },
+  "findings": [
+    {
+      "id": "V1",
+      "priority": "P1",
+      "location": "uploaded lines 235,307,321",
+      "finding": "Current index has no overall progress field; uploaded viewer displays 0%, omits ten capabilities and clamps M15 development-verified to planned. Canonical renderer already fixes these display cases.",
+      "evidence": "render-results.json / current_index"
+    },
+    {
+      "id": "V2",
+      "priority": "P1",
+      "location": "uploaded lines 255-266; canonical candidateEnabled equivalent; tests/04-candidate-publication-contract.php",
+      "finding": "Ready-for-physical-testing/download enabled for synthetic unrelated HTTPS URL despite declared run/artifact IDs. Existing stricter publication helper is tested separately rather than enforcing its binding in the actual renderer. Does not prove anonymous exploitation; trusted metadata mistakes are not refused.",
+      "evidence": "render-results.json / mismatched_candidate_artifact_url"
+    },
+    {
+      "id": "V3",
+      "priority": "P1",
+      "location": "uploaded lines 135-150,315; canonical equivalents",
+      "finding": "Empty project array [] accepted by actual parser and displayed with green live badge. HTTP success plus array decode is not schema, evidence, candidate or deployment synchronization validation.",
+      "evidence": "render-results.json / empty_project_array"
+    },
+    {
+      "id": "V4",
+      "priority": "P2",
+      "location": "project_content.json milestone M15",
+      "finding": "M15 milestone merged_to_main=false contradicts top-level true and actual main history; proposed data correction on this review branch only.",
+      "evidence": "render-results.json / current_index"
+    },
+    {
+      "id": "V5",
+      "priority": "P2",
+      "location": "uploaded lines 166-215,226-228,313; canonical equivalents",
+      "finding": "Blacklist filters secret-looking keys but not arbitrary values; old observation dates accepted without stale classification. Builder status lives below document directory; direct web access protection is UNKNOWN, not tested.",
+      "evidence": "render-results.json / builder_telemetry"
+    },
+    {
+      "id": "V6",
+      "priority": "P2",
+      "location": "uploaded line 181; canonical equivalent",
+      "finding": "Undefined mb_substr fatal when nonempty string telemetry is present without mbstring; installed production extension state UNKNOWN.",
+      "evidence": "render-results.json / without_mbstring"
+    },
+    {
+      "id": "V7",
+      "priority": "P2",
+      "location": "uploaded lines 35,302; canonical equivalents",
+      "finding": "Inline Print/PDF handler blocked by actual CSP in local Chromium. Keep CSP; use a same-origin external script/event listener or existing browser print controls rather than weakening script policy.",
+      "evidence": "browser-results.json"
+    }
+  ],
+  "positive_controls": [
+    "Both sources pass PHP syntax lint.",
+    "Actual upstream HTTP 503 produces fail-closed page/status and no green source badge.",
+    "Current index superseded candidate remains disabled.",
+    "Synthetic secret-looking token key is filtered; generic-value canary shows the filter limitation.",
+    "Local browser print hook starts false and direct invocation succeeds, while inline click is refused with CSP violation."
+  ],
+  "source_review_additional_limits": [
+    "Candidate/release href validation only requires HTTPS, not an exact allowed artifact identity/host or server-side expiry check.",
+    "Every page request synchronously fetches GitHub without conditional ETag/rate-aware server caching. Any cache design must preserve fail-closed download behavior and label stale data.",
+    "Repository and uploaded comments call the repository private; current API reports public. The protected-token policy must not be silently removed or replaced with broader OAuth.",
+    "Filesystem ownership/symlink/web-server cache-path access and live token scope/configuration were not audited."
+  ],
+  "production_php_modified": false,
+  "deployment_or_branch_source_migration": false,
+  "new_runtime_trust_claim": false
+}
