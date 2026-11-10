@@ -1,6 +1,7 @@
 # Black Cat AI Work State
 
 ## Current project state
+- New task: operator-supplied PHP viewer review. Branch review/viewer-feedback-20261110; baseline main 6bf3711820cf6fe55c1dbef86a34a586bd49243d. Prioritized verified local findings in docs/25-public-viewer-review.md and evidence/2026-11-10-viewer-review/. PHP/main feeds are unchanged; metadata correction and review status are proposed on this branch.
 - Canonical development branch: main. Operator explicitly authorized this consolidation; PR #9 merged at eb7b969f95ba419acc5a2e16ffe587c40c42446d. All 17 inventoried starting tips are ancestors; prior PRs incorporated/closed. No force push or history deletion.
 - Fresh combined-source run 42718280786 at f2bca2c189328f492c3a0c6be18d63fd3e8dc36a passed. Fresh merged-main run 42720596290, job 129513260667, passed; hosted main-source run 42720596315 passed.
 - M15 DEVELOPMENT ONLY acceptance is VERIFIED within signature/input/ISO scope. Both builds pass 28 M15 and 12 runner regressions plus M14/source/PHP checks; hosted routing guards pass. Original M15 source 3125a1c99342b961ac614878d3ce9b3f874de33e/run 42711645617 retains its own original evidence.
@@ -13,8 +14,7 @@ Artifact 13720897217: blackcat-m15-development-evidence-42720596290, inspect m15
 Historical artwork and recovery VM observations stay attached to their old images. Their GitHub artifacts are no longer listed; builder-copy availability UNKNOWN. Recovered recovery report does not establish combined-image VM or physical acceptance.
 
 ## Next automatic actions
-This closure writes final evidence/docs/lessons/checkpoint, then project_content.json LAST (target 3.8). Verify actual final index/ref identity on main, project-status-live and codex/remove-chroot-systemd-boot before reporting synchronization; if interrupted, finish standard JSON-last maintenance and fast-forward existing feeds, never force-push. Both old publication endpoints are retained without PHP migration. Last verified deployed source is the historical docs/21 codex/remove-chroot-systemd-boot record; current live rendering UNKNOWN after HTTP 403. Keep handoff closed.
-After closure, use main and await the next concrete task; no M16/M17 implementation is authorized. Routine JSON writes and retention of existing public references are authorized without per-update permission.
+Finish this review with docs, canonical lessons and evidence, then project_content.json LAST on review/viewer-feedback-20261110. Correct the duplicated stale milestone M15 merged flag using existing main ancestry evidence; preserve original source/image identities. Report findings and proposed priorities. Do not deploy a PHP replacement or change its source branch as part of a review; docs/21's binding publication plan remains active. Main and both established feeds are at the completed 3.8 baseline; verify volatile facts on recovery. Routine JSON maintenance remains authorized without per-write approval.
 
 ## Next genuine human gate
 This session's main consolidation was explicitly authorized and completed. Future main merges, production authority/key custody, platform enrollment/ownership, physical media actions and release promotion retain HUMAN_GATE. No broad OAuth grant is needed; cancelled helper stays retired. Private development keys were unlinked from tmpfs, not securely erased from RAM.
